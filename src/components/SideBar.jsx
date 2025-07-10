@@ -2,6 +2,7 @@ import React from 'react';
 import { FaRegEye, FaRegHeart, FaHistory, FaEnvelope } from 'react-icons/fa';
 
 const Sidebar = ({ isOpen, onClose }) => {
+  if (!isOpen) return null; // Only render when open
   return (
     <div
       className={`fixed top-0 right-0 h-full max-w-[80vw] md:w-80 bg-white shadow-xl z-50 overflow-y-auto transform transition-transform duration-300 ease-in-out ${
