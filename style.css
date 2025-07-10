@@ -16,6 +16,36 @@
   --via-gradient: #1a2650;
 }
 
+.footer-theme {
+  --footer-bg: #131b32;
+  --footer-text: #ffffff;
+  --footer-subtext: #9ca3af;
+  --footer-link: #d1d5db;
+  --footer-link-hover: #ffffff;
+  --footer-divider: rgba(255, 255, 255, 0.1);
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+}
+
+.footer-subtext {
+  color: var(--footer-subtext);
+}
+
+.footer-link {
+  color: var(--footer-link);
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: var(--footer-link-hover);
+  text-decoration: underline;
+}
+
+.footer-divider {
+  border-top: 1px solid var(--footer-divider);
+}
+
+
 @theme {
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
