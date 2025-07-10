@@ -1,0 +1,33 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  frontend-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run linter (ESLint)
+        run: npm run lint
+
+      - name: Build frontend (Vite)
+        run: npm run build
+
+      # Optional: Run tests if you have them
+      # - name: Run tests
+      #   run: npm test
