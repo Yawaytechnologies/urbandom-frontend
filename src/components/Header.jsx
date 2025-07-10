@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiMenu } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 const Header = ({ onToggleSidebar }) => {
   return (
@@ -14,11 +15,15 @@ const Header = ({ onToggleSidebar }) => {
 
         {/* Buttons */}
         <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm flex-wrap justify-center sm:justify-end">
-          <button className="bg-white text-pink-600 px-3 py-1 rounded-full font-semibold">
+          {/* Post Property Link */}
+          <Link
+            to="/dashboard"
+            className="bg-white text-pink-600 px-3 py-1 rounded-full font-semibold"
+          >
             Post Property
-          </button>
+          </Link>
 
-          {/* Avatar + Menu */}
+          {/* Avatar + Sidebar Menu */}
           <div
             className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-2 shadow cursor-pointer"
             onClick={onToggleSidebar}
