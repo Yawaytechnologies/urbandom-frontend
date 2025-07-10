@@ -1,7 +1,7 @@
 // src/App.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import MainLayout from './layout/MainLayout';
+import MainLayout from './Layout/MainLayout';
 import LandingPage from './pages/LandingPage';
 import UserActivity from './pages/UserActivity';
 import RentPage from './pages/RentPage';
