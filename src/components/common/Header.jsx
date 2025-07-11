@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
-import { motion } from "framer-motion"; // ✅ Proper named import with spacing
+import { motion } from "framer-motion";
 
 function Header({ onToggleSidebar }) {
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handlePostProperty = () => {
+    navigate("/dashboard");
+  };
 
   return (
     <motion.nav
@@ -47,6 +52,7 @@ function Header({ onToggleSidebar }) {
           {/* Post Property Button */}
           <motion.button
             whileHover={{ scale: 1.05 }}
+            onClick={handlePostProperty}
             className="bg-white text-[var(--accent)] font-semibold px-4 py-1 rounded-full shadow-sm transition"
           >
             Post Property

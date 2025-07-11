@@ -3,7 +3,8 @@ import DashboardHeader from "../components/Dashboard/DashboardHeader";
 import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
 import EnquiryMain from "../components/Dashboard/EnquiryMain.jsx";
 import ListingMain from "../components/Dashboard/ListingMain";
-import DashboardProfile from "../components/Dashboard/DashboardProfile"; // ✅ Add this
+import DashboardProfile from "../components/Dashboard/DashboardProfile"; 
+
 
 const DashBoard = () => {
   const [activeSection, setActiveSection] = useState("enquiries");

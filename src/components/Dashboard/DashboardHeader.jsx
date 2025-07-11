@@ -7,14 +7,12 @@ const DashboardHeader = ({ onMenuClick }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handle clicks outside dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -31,20 +29,21 @@ const DashboardHeader = ({ onMenuClick }) => {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-[#dac7ff] h-20 transition-shadow duration-300 ${
+      className={`sticky top-0 z-50 bg-[#dac7ff] transition-shadow duration-300 ${
         isScrolled ? "shadow-md rounded-b-3xl" : ""
       }`}
     >
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        {/* Top bar */}
+        <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
-          <div className="flex items-center gap-2 font-bold text-base md:text-lg text-text-secondary">
+          <div className="flex items-center gap-2 font-bold text-base md:text-lg text-[#131b32]">
             <span className="text-yellow-500 text-xl">▴</span>
             <span>urbandom.com</span>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-12 text-sm font-medium text-[#131b32]">
+          <nav className="hidden md:flex items-center gap-10 text-sm font-medium text-[#131b32]">
             <button
               onClick={() => onMenuClick("enquiries")}
               className="hover:text-purple-700 transition-colors"
@@ -58,6 +57,7 @@ const DashboardHeader = ({ onMenuClick }) => {
               Listings
             </button>
 
+            {/* More Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowMore((prev) => !prev)}
@@ -73,7 +73,7 @@ const DashboardHeader = ({ onMenuClick }) => {
               </button>
 
               {showMore && (
-                <div className="absolute top-8 right-0 bg-white shadow-lg rounded-md py-2 w-48 z-50">
+                <div className="absolute top-10 right-0 bg-white shadow-lg rounded-md py-2 w-48 z-50">
                   <button
                     onClick={() => {
                       onMenuClick("profile");
@@ -83,25 +83,20 @@ const DashboardHeader = ({ onMenuClick }) => {
                   >
                     My Profile
                   </button>
-
-                  <a
-                    href="https://urbandom.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
+                  <button
                     onClick={(e) => {
                       e.preventDefault();
-                      alert(
-                        "This site is currently unavailable. Please check back later."
-                      );
+                      alert("This site is currently unavailable.");
                     }}
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
                     Go to Urbandom.com
-                  </a>
-
+                  </button>
                   <button
-                    onClick={() => alert("Logging out...")}
-                    className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
+                    onClick={() => {
+                      alert("Logging out...");
+                    }}
+                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
                     Logout
                   </button>
@@ -110,7 +105,7 @@ const DashboardHeader = ({ onMenuClick }) => {
             </div>
           </nav>
 
-          {/* Add Property Button */}
+          {/* Desktop Add Property Button */}
           <a
             href="/add-property"
             className="hidden md:block bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-sm px-5 py-2 rounded-md font-semibold transition"
@@ -118,11 +113,11 @@ const DashboardHeader = ({ onMenuClick }) => {
             + Add Property
           </a>
 
-          {/* Hamburger Menu (Mobile) */}
+          {/* Hamburger Menu - Mobile Only */}
           <button
-            className="md:hidden text-gray-700 focus:outline-none"
+            className="md:hidden text-gray-700"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-label="Toggle mobile menu"
           >
             {mobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
@@ -149,36 +144,39 @@ const DashboardHeader = ({ onMenuClick }) => {
             >
               Listings
             </button>
-            <div className="relative" ref={dropdownRef}>
+
+            {/* Mobile More Dropdown */}
+            <div ref={dropdownRef}>
               <button
                 onClick={() => setShowMore(!showMore)}
                 className="flex items-center justify-between w-full text-left py-2 px-4 hover:bg-gray-100 rounded-md"
               >
                 <span>More</span>
                 <FiChevronDown
-                  className={`text-sm transition-transform ${showMore ? "rotate-180" : ""}`}
+                  className={`transition-transform ${
+                    showMore ? "rotate-180" : ""
+                  }`}
                 />
               </button>
+
               {showMore && (
-                <div className="bg-white shadow-md rounded-md py-2 mt-1 w-full">
+                <div className="mt-1 space-y-1 px-2">
                   <button
                     onClick={() => {
                       onMenuClick("profile");
                       setShowMore(false);
                       setMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-md"
                   >
                     My Profile
                   </button>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      alert(
-                        "This site is currently unavailable. Please check back later."
-                      );
+                      alert("This site is currently unavailable.");
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 rounded-md"
                   >
                     Go to Urbandom.com
                   </button>
@@ -187,13 +185,15 @@ const DashboardHeader = ({ onMenuClick }) => {
                       alert("Logging out...");
                       setMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 rounded-md"
                   >
                     Logout
                   </button>
                 </div>
               )}
             </div>
+
+            {/* Mobile Add Property Button */}
             <a
               href="/add-property"
               className="block bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-sm px-5 py-2 rounded-md font-semibold text-center transition"
