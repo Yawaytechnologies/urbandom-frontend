@@ -54,7 +54,7 @@ const HeroSection = ({ tabType = 'buy' }) => {
 
   return (
     <section
-      className="relative pt-32 pb-20 px-4 sm:px-6 min-h-[90vh] bg-no-repeat bg-center bg-cover select-none"
+      className="relative pt-32 pb-20 px-4 sm:px-6 min-h-[80vh] bg-no-repeat bg-center bg-cover select-none"
       style={{
         color: 'var(--text-primary)',
         backgroundImage: `linear-gradient(rgba(19, 27, 50, 0.6), rgba(19, 27, 50, 0.6)), url('${bgImages[tab]}')`,
