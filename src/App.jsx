@@ -6,7 +6,7 @@ import LandingPage from './pages/LandingPage';
 import UserActivity from './pages/UserActivity';
 import RentPage from './pages/RentPage';
 import BuyPage from './pages/BuyPage';
-// import SearchResults from './pages/SearchResults';
+import PropertyOverviewPage from './pages/PropertyOverviewPage'; // Static Property Overview Page
 
 const App = () => {
   return (
@@ -15,8 +15,7 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/buy" element={<BuyPage />} />
         <Route path="/rent" element={<RentPage />} />
-        
-        {/* <Route path="/search" element={<SearchResults />} /> */}
+        <Route path="/property" element={<PropertyOverviewPage />} /> {/* Static Route */}
         <Route path="/activity" element={<UserActivity />} />
       </Routes>
     </MainLayout>
