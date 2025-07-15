@@ -6,8 +6,7 @@ import LandingPage from './pages/LandingPage';
 import UserActivity from './pages/UserActivity';
 import RentPage from './pages/RentPage';
 import BuyPage from './pages/BuyPage';
-import PropertyForm from './components/PropertyForm/PropertyForm';
-import PropertyTypeSelector from './components/PropertyForm/PropertyType';
+import PropertyTypeSelector from './components/PropertyForm/PropertyType'; 
 // import SearchResults from './pages/SearchResults';
 
 const App = () => {
