@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, develop]
   pull_request:
-    branches: [main, develop]
+    branches: [develop]
 
 jobs:
   frontend-checks:
@@ -28,6 +28,17 @@ jobs:
       - name: Build frontend (Vite)
         run: npm run build
 
-      # Optional: Run tests if you have them
-      # - name: Run tests
-      #   run: npm test
+  auto-merge:
+    needs: frontend-checks
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Enable auto-merge
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          merge-method: merge

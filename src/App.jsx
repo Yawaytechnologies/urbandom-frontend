@@ -7,6 +7,8 @@ import UserActivity from './pages/UserActivity';
 import RentPage from './pages/RentPage';
 import BuyPage from './pages/BuyPage';
 import PropertyOverviewPage from './pages/PropertyOverviewPage'; // Static Property Overview Page
+import PropertyTypeSelector from './components/PropertyForm/PropertyType'; 
+// import SearchResults from './pages/SearchResults';
 
 const App = () => {
   return (
@@ -16,6 +18,8 @@ const App = () => {
         <Route path="/buy" element={<BuyPage />} />
         <Route path="/rent" element={<RentPage />} />
         <Route path="/property" element={<PropertyOverviewPage />} /> {/* Static Route */}
+        <Route path="/propertyform" element={<PropertyTypeSelector />} />
+        {/* <Route path="/search" element={<SearchResults />} /> */}
         <Route path="/activity" element={<UserActivity />} />
       </Routes>
     </MainLayout>
