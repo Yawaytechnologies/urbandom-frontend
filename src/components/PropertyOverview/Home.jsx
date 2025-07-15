@@ -1,188 +1,209 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { FaPhoneAlt, FaStar } from "react-icons/fa";
+import NavigationBar from "./NavigationBar.jsx";
 
 const Overview = () => {
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
+
+  const images = [
+    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1400&q=80",
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const openModal = (index) => {
+    setModalImageIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => setIsModalOpen(false);
+
+  const nextImage = () =>
+    setModalImageIndex((prev) => (prev + 1) % images.length);
+
+  const prevImage = () =>
+    setModalImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
 
   const propertyData = {
-    title: "Sameera New Vision Township",
-    developer: "SAMEERA GROUPS",
+    title: "JK New Vision Township",
+    developer: "JK GROUPS",
     location: "East Tambaram, Chennai South, Chennai",
-    bannerImage:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=80",
-    videoUrl: "/assets/video.mp4",
-    galleryImage: "/house.jpg",
-    galleryCount: 17,
     priceRange: "₹33.0 L - 2.22 Cr",
-    pricePerSqFt: "₹5.5 K/sq.ft",
+    pricePerSqFt: "5.5",
     emi: "EMI starts at ₹17.48 K",
     area: "600 - 4042 sq.ft",
     configuration: "Residential Plots",
     possession: "Ready to Move",
     rating: 4.2,
+    galleryCount: 17,
     lastUpdated: "Jul 6, 2025",
   };
 
   return (
-    <section className="max-w-screen-xl mx-auto px-4 py-6 text-gray-800">
+    <section  id="overview-home" className="w-full max-w-screen-xl mx-auto pt-6 pb-0 bg-white text-gray-800 relative">
       {/* Breadcrumb + Last Updated */}
-      <div className="flex justify-between text-xs text-gray-500 mb-3">
+      <div className="hidden lg:flex justify-between text-xs text-gray-500 px-6 mb-2">
         <p>Home / Chennai / Chennai South / Tambaram / {propertyData.title}</p>
         <p>Last updated: {propertyData.lastUpdated}</p>
       </div>
 
-      {/* Title + Pricing */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        {/* Left: Title & Info */}
+      {/* Desktop Top Header */}
+      <div className="hidden lg:flex justify-between items-start px-6 mb-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-black">
+          <h1 className="text-3xl font-bold text-black flex items-center gap-2">
             {propertyData.title}
-            <span className="ml-2 inline-flex items-center text-xs font-medium bg-green-100 text-green-700 px-2 py-1 rounded">
+            <span className="text-xs text-green-700 bg-green-100 px-2 py-1 rounded">
               ✅ RERA
             </span>
           </h1>
           <p className="text-sm mt-1">
-            By{" "}
-            <span className="text-purple-700 font-medium">
-              {propertyData.developer}
-            </span>
+            By <span className="text-purple-700 font-medium">{propertyData.developer}</span>
           </p>
           <p className="text-sm text-gray-600">{propertyData.location}</p>
           <div className="flex items-center gap-3 mt-3">
-            <span className="flex items-center bg-purple-600 text-white px-3 py-1 text-sm font-medium rounded">
-              ⭐ {propertyData.rating}
+            <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+              <FaStar className="text-xs" /> {propertyData.rating}
             </span>
-            <button className="text-sm font-medium px-3 py-1 bg-gradient-to-r from-purple-200 to-purple-100 text-purple-800 rounded">
+            <button className="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded font-medium">
               Write a Review
             </button>
           </div>
         </div>
 
-        {/* Right: Price Block */}
-        <div className="text-right">
-          <p className="text-2xl font-bold text-black">
-            {propertyData.priceRange}{" "}
-            <span className="text-base font-normal text-black">
-              | {propertyData.pricePerSqFt}
-            </span>
-          </p>
+        <div className="text-right space-y-1">
+          <p className="text-2xl font-bold">{propertyData.priceRange}</p>
+          <p className="text-sm text-gray-700">₹{propertyData.pricePerSqFt} K/sq.ft</p>
           <p className="text-sm text-purple-600">{propertyData.emi}</p>
-          <p className="text-xs text-gray-500 mt-0.5">Base Price</p>
-          <button className="mt-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded font-semibold text-sm flex items-center justify-center gap-1">
-            📞 Contact Sellers
+          <button className="mt-2 bg-purple-600 text-white font-medium py-2 px-6 rounded inline-flex items-center gap-2">
+            <FaPhoneAlt /> Contact Sellers
           </button>
         </div>
       </div>
 
-      {/* Banner + Video + Gallery */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-        {/* Banner */}
-        <div className="relative col-span-2">
-          <img
-            src={propertyData.bannerImage}
-            alt="Cover"
-            className="w-full h-[280px] md:h-[400px] object-cover rounded-lg"
-          />
-          <span className="absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded">
-            Cover Image
-          </span>
-          <div className="absolute top-2 right-2 flex gap-2">
-            <button className="bg-white px-3 py-1 text-sm rounded shadow">
-              🔗 Share
-            </button>
-            <button className="bg-white px-3 py-1 text-sm rounded shadow">
-              🤍 Save
-            </button>
-          </div>
-        </div>
-
-        {/* Video + Gallery */}
+      {/* Desktop Images */}
+      <div className="hidden lg:grid grid-cols-3 gap-4 px-6 mb-6">
+        <img
+          src={images[0]}
+          className="col-span-2 h-[400px] w-full object-cover rounded-lg cursor-pointer"
+          onClick={() => openModal(0)}
+        />
         <div className="flex flex-col gap-4">
-          {/* Video */}
-          <div
-            className="relative h-[140px] md:h-[190px] bg-black rounded-lg overflow-hidden cursor-pointer group"
-            onClick={() => setIsVideoOpen(true)}
-          >
+          <img
+            src={images[1]}
+            className="h-[190px] w-full object-cover rounded-lg cursor-pointer"
+            onClick={() => openModal(1)}
+          />
+          <div className="relative cursor-pointer" onClick={() => openModal(2)}>
             <img
-              src="https://img.icons8.com/ios-filled/100/ffffff/play--v1.png"
-              alt="play"
-              className="absolute w-10 h-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-80 group-hover:scale-110 transition duration-200"
+              src={images[2]}
+              className="h-[190px] w-full object-cover rounded-lg"
             />
-            <video
-              className="w-full h-full object-cover opacity-30 group-hover:opacity-40"
-              muted
-            />
-            <span className="absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded">
-              Project Video
-            </span>
-          </div>
-
-          {/* Gallery */}
-          <div className="relative h-[140px] md:h-[190px]">
-            <img
-              src={propertyData.galleryImage}
-              alt="Gallery"
-              className="w-full h-full object-cover rounded-lg"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-              <p className="text-white text-lg font-medium">
-                +{propertyData.galleryCount} more
-              </p>
+            <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 text-xs rounded">
+              +{propertyData.galleryCount} more
             </div>
           </div>
         </div>
       </div>
 
-      {/* Info Grid */}
-      <div className="p-4 grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-gray-300 border border-gray-200 rounded-lg overflow-hidden mt-8 text-center text-sm bg-white shadow-sm">
-        <div className="py-4 px-2">
-          <p className="text-base font-semibold text-black">
-            {propertyData.configuration}
-          </p>
-          <p className="text-gray-500 mt-1">Configuration</p>
+      {/* Desktop Details Row */}
+      <div className="hidden lg:grid grid-cols-4 divide-x px-6 border-x border-b border-gray-200 rounded-b-lg bg-white shadow-sm text-center text-sm mb-6">
+        <div className="py-4">
+          <p className="font-semibold">{propertyData.configuration}</p>
+          <p className="text-gray-500">Configuration</p>
         </div>
-        <div className="py-4 px-2">
-          <p className="text-base font-semibold text-black">
-            {propertyData.possession}
-          </p>
-          <p className="text-gray-500 mt-1">Possession Status</p>
+        <div className="py-4">
+          <p className="font-semibold">{propertyData.possession}</p>
+          <p className="text-gray-500">Possession</p>
         </div>
-        <div className="py-4 px-2">
-          <p className="text-base font-semibold text-black">
-            {propertyData.pricePerSqFt}
-          </p>
-          <p className="text-gray-500 mt-1">Avg. Price</p>
+        <div className="py-4">
+          <p className="font-semibold">₹{propertyData.pricePerSqFt} K/sq.ft</p>
+          <p className="text-gray-500">Avg. Price</p>
         </div>
-        <div className="py-4 px-2">
-          <p className="text-base font-semibold text-black">
-            {propertyData.area}
-          </p>
-          <p className="text-purple-600 text-xs leading-none mt-1 underline cursor-pointer">
-            convert unit
-          </p>
-          <p className="text-gray-500 mt-0.5">(Plot Area)</p>
-          <p className="text-gray-500 mt-0.5">Sizes</p>
+        <div className="py-4">
+          <p className="font-semibold">{propertyData.area}</p>
+          <p className="text-purple-600 underline text-xs">convert unit</p>
+          <p className="text-gray-500 text-xs">(Plot Area)</p>
         </div>
       </div>
 
-      {/* Modal: Video */}
-      {isVideoOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg overflow-hidden shadow-lg max-w-2xl w-full relative">
+      {/* Mobile/Tablet View */}
+      <div className="block lg:hidden w-full overflow-hidden px-4">
+        <img
+          src={images[currentIndex]}
+          alt="Mobile Hero"
+          className="w-full h-[220px] object-cover rounded-md cursor-pointer"
+          onClick={() => openModal(currentIndex)}
+        />
+
+        <div className="mt-3 space-y-1">
+          <p className="text-xl font-bold">{propertyData.priceRange}
+            <span className="ml-2 text-sm text-gray-700">| ₹{propertyData.pricePerSqFt} K/sq.ft</span>
+          </p>
+          <p className="text-sm text-purple-600">{propertyData.emi}</p>
+          <button className="w-full bg-purple-600 text-white py-2 rounded-md flex justify-center items-center gap-2 mt-2">
+            <FaPhoneAlt /> Contact Sellers
+          </button>
+
+          <h2 className="text-lg font-semibold mt-4 flex items-center gap-2">
+            {propertyData.title}
+            <span className="text-xs text-green-700 bg-green-100 px-2 py-1 rounded">✅ RERA</span>
+          </h2>
+          <p className="text-sm">By <span className="text-purple-700 font-medium">{propertyData.developer}</span></p>
+          <p className="text-sm text-gray-600">{propertyData.location}</p>
+
+          <div className="flex items-center gap-2 mt-2">
+            <span className="bg-purple-600 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
+              <FaStar /> {propertyData.rating}
+            </span>
+            <button className="text-sm text-purple-700 underline">Write a Review</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal Viewer */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center">
+          <button
+            onClick={closeModal}
+            className="absolute top-6 right-6 text-white text-3xl font-bold z-50"
+          >
+            ✕
+          </button>
+          <div className="relative w-full max-w-4xl px-4">
             <button
-              onClick={() => setIsVideoOpen(false)}
-              className="absolute top-2 right-2 text-white bg-black bg-opacity-50 rounded-full p-2 z-10"
+              onClick={prevImage}
+              className="absolute left-0 top-1/2 -translate-y-1/2 text-white text-5xl px-4 z-50"
             >
-              ❌
+              ‹
             </button>
-            <video
-              src={propertyData.videoUrl}
-              controls
-              autoPlay
-              className="w-full h-[400px] object-cover"
+            <img
+              src={images[modalImageIndex]}
+              alt={`Image ${modalImageIndex + 1}`}
+              className="max-h-[85vh] w-full object-contain rounded-lg mx-auto"
             />
+            <button
+              onClick={nextImage}
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-white text-5xl px-4 z-50"
+            >
+              ›
+            </button>
           </div>
         </div>
       )}
+
+      {/* Sticky Navigation Bar
+      <div className="w-full sticky top-0 z-30 bg-white shadow mt-6">
+        <NavigationBar />
+      </div> */}
     </section>
   );
 };
