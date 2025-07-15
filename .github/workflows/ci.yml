@@ -30,15 +30,15 @@ jobs:
 
   auto-merge:
     needs: frontend-checks
-    runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
     permissions:
-      pull-requests: write
       contents: write
+      pull-requests: write
 
     steps:
-      - name: Enable auto-merge for PR
+      - name: Enable auto-merge
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           merge-method: merge
-
