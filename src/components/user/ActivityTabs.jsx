@@ -1,38 +1,42 @@
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { FaEnvelope, FaEye, FaHeart, FaHistory } from 'react-icons/fa';
 
 const tabs = [
-  { key: 'contacted', label: 'Contacted Properties' },
-  { key: 'seen', label: 'Seen Properties' },
-  { key: 'saved', label: 'Saved Properties' },
-  { key: 'recent', label: 'Recent Searches' },
+  { key: 'contacted', label: 'Contacted Properties', icon: <FaEnvelope /> },
+  { key: 'seen', label: 'Seen Properties', icon: <FaEye /> },
+  { key: 'saved', label: 'Saved Properties', icon: <FaHeart /> },
+  { key: 'recent', label: 'Recent Properties', icon: <FaHistory /> },
 ];
 
-const ActivityTabs = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const type = searchParams.get('type') || 'contacted';
-
-  const handleTabClick = (key) => {
-    setSearchParams({ type: key });
-  };
-
+const ActivityTabs = ({ active, setActive }) => {
   return (
-    <div className="grid grid-cols-2 sm:flex flex-wrap gap-2 mb-4 animate-fadeIn">
-      {tabs.map(({ key, label }) => (
-        <button
-          key={key}
-          onClick={() => handleTabClick(key)}
-          className={`flex items-center justify-between px-4 py-2 rounded-full border w-full sm:w-auto min-w-[180px]
-            transition-all duration-300 transform hover:scale-105 ${
-              type === key
-                ? 'bg-purple-100 border-purple-600 text-purple-700 font-semibold shadow-sm'
-                : 'border-gray-300 text-gray-600 hover:bg-gray-100'
-            }`}
-        >
-          <span>{label}</span>
-          <span className="ml-2 font-bold text-sm">00</span>
-        </button>
-      ))}
+    <div className="overflow-x-auto">
+      <div className="flex gap-3 sm:gap-4 w-max min-w-full pb-2">
+        {tabs.map((tab) => {
+          const isActive = active === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActive(tab.key)}
+              className={`flex items-center gap-2 px-4 py-2 min-w-[200px] rounded-xl border transition-all whitespace-nowrap ${
+                isActive
+                  ? 'bg-purple-100 border-purple-500 text-purple-700'
+                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+              <span
+                className={`ml-auto text-xs font-bold rounded-full px-2 py-0.5 ${
+                  isActive ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                00
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };

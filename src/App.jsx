@@ -12,7 +12,7 @@ const App = () => {
   return (
     <MainLayout>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<BuyPage/>} />
         <Route path="/buy" element={<BuyPage />} />
         <Route path="/rent" element={<RentPage />} />
         

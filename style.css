@@ -2,18 +2,33 @@
 
 
 :root {
-  --background: #e5eaf5;
-  --foreground: #171717;
-  --primary: #131b32;
-  --primary-light: #ffffff;
-  --secondary: #00aba2;
-  --accent: #ff4f81; /* Pink button  c4c2bc */
-  --text-primary: #ffffff;
-  --text-secondary: #171717;
-  --muted: #00bbff;
-  --btn-secondary: 255, 39, 96; /* Pink glowing button for glow format */
-  --btn-gradient: linear-gradient(to right, #ff4f81, #ff2760);
-  --via-gradient: #1a2650;
+  /* Background & Foreground */
+  --background: #f8f9fb; /* Soft light blue-gray background (clean & modern) */
+  --foreground: #0d1b2a; /* Dark navy — easier on eyes than pure black */
+  
+  /* Primary Colors */
+   --primary: #1a2650; /* Main headings, buttons */
+  --primary-light: #4b2edd; /* Light text over dark backgrounds */
+  --secondary: #009896; /* Teal for secondary actions, hover effects */
+
+  /* Accent Color (CTA, Buttons) */
+ --accent: #ff4f81; /* Rich ocean blue — more professional than pink/red */
+  
+  /* Text Colors */
+  --text-primary: #ffffff; /* White text (used in footers, modals) */
+  --text-secondary: #333333; /* Stronger contrast than #98b8da for body text */
+  
+  /* Muted Text / Helper Text */
+  --muted: #6b8ba4; /* Calm muted gray-blue for subtext */
+  
+  /* Button Secondary (for borders, outlines) */
+  --btn-secondary: 0, 122, 167; /* RGB version of accent for glow or border use */
+  
+  /* Gradient for CTA buttons */
+  --btn-gradient: linear-gradient(to right, #007ea7, #005b7f); /* Blue gradient for buttons */
+  
+  /* Supporting Gradient Stop */
+  --via-gradient: #2e4060; /* Deep calm blue for subtle transitions */
 }
 
 .footer-theme {
@@ -45,6 +60,11 @@
   border-top: 1px solid var(--footer-divider);
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #131b32; /* dark theme or matching your layout */
+}
 
 @theme {
   --color-primary: var(--primary);
@@ -70,4 +90,13 @@
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+/* src/assets/css/global.css or index.css */
+.hide-arrow {
+  display: none;
+}
+
+.show-arrow {
+  display: block;
 }

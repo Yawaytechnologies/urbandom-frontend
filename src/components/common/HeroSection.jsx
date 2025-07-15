@@ -1,35 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { FaHome, FaBuilding, FaUsers } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const HeroSection = ({ tabType = 'buy' }) => {
+const HeroSection = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState(tabType);
+  const locationHook = useLocation();
+  const currentPath = locationHook.pathname;
+
+  // Determine tab from current path
+  const defaultTab = currentPath.includes('rent')
+    ? 'rent'
+    : currentPath.includes('pg')
+    ? 'pg'
+    : 'buy';
+
+  const [tab, setTab] = useState(defaultTab);
   const [location, setLocation] = useState('');
   const [query, setQuery] = useState('');
 
-  // Background images per tab
   const bgImages = {
     buy: '/buyCover.jpeg',
     rent: '/Rent.jpeg',
     pg: '/pgCover.jpg',
   };
 
-  // Accent colors per tab
   const accentColors = {
     buy: '#ff4f81',
     rent: '#00bbff',
     pg: '#ff8800',
   };
 
-  // Location options per tab
   const locationsByTab = {
     buy: ['Chennai', 'Bengaluru', 'Hyderabad', 'Mumbai'],
     rent: ['HSR Layout', 'Koramangala', 'Whitefield', 'JP Nagar'],
     pg: ['Indiranagar', 'BTM Layout', 'Marathahalli', 'Domlur'],
   };
 
-  // Navigation tabs
   const tabs = [
     { label: 'Buy', icon: <FaHome />, route: '/buy' },
     { label: 'Rent', icon: <FaBuilding />, route: '/rent' },
@@ -37,11 +43,9 @@ const HeroSection = ({ tabType = 'buy' }) => {
   ];
 
   useEffect(() => {
-    setTab(tabType);
-    setLocation(locationsByTab[tabType]?.[0] || '');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabType]);
-
+    setTab(defaultTab);
+    setLocation(locationsByTab[defaultTab]?.[0] || '');
+  }, [defaultTab]);
 
   const handleTabClick = (label, route) => {
     setTab(label.toLowerCase());
@@ -54,13 +58,14 @@ const HeroSection = ({ tabType = 'buy' }) => {
 
   return (
     <section
-      className="relative pt-32 pb-20 px-4 sm:px-6 min-h-[80vh] bg-no-repeat bg-center bg-cover select-none"
-      style={{
-        color: 'var(--text-primary)',
-        backgroundImage: `linear-gradient(rgba(19, 27, 50, 0.6), rgba(19, 27, 50, 0.6)), url('${bgImages[tab]}')`,
-      }}
-    >
-      <div className="max-w-6xl mx-auto text-center">
+  className="relative w-full pt-0 h-screen bg-no-repeat bg-center bg-cover select-none"
+  style={{
+    color: 'var(--text-primary)',
+    backgroundImage: `linear-gradient(rgba(12, 32, 92, 0.6), rgba(19, 27, 50, 0.6)), url('${bgImages[tab]}')`,
+  }}
+>
+
+      <div className="pt-[72px] pb-20 px-4 sm:px-6 flex flex-col items-center justify-center h-full text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-4">
           Properties to <span className="capitalize">{tab}</span> in{' '}
           <span style={{ color: accentColors[tab] }}>{location}</span>
@@ -70,7 +75,6 @@ const HeroSection = ({ tabType = 'buy' }) => {
           <span className="font-bold">67K+</span> total verified
         </p>
 
-        {/* Tabs */}
         <div className="rounded-2xl p-4 sm:p-6 shadow-2xl w-full max-w-4xl mx-auto space-y-6 bg-black bg-opacity-40 backdrop-blur-md">
           <div className="flex overflow-x-auto justify-start sm:justify-center gap-4 px-2 pb-1 sm:pb-0">
             {tabs.map(({ label, icon, route }) => (
@@ -89,7 +93,6 @@ const HeroSection = ({ tabType = 'buy' }) => {
             ))}
           </div>
 
-          {/* Search Box */}
           <div className="bg-white rounded-3xl px-4 py-5 shadow-lg flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-3 w-full sm:px-6 sm:py-3">
             <select
               value={location}

@@ -10,7 +10,7 @@ const ProminentProjects = () => {
       priceRange: '₹58.99 L - ₹69.0 L',
       type: '2, 3 BHK Apartments',
       location: 'Ottiyambakkam, Chennai South, Chennai',
-      image: '/images/dac-napa-valley.jpg',
+      image: '/property6.jpeg',
     },
     {
       id: 2,
@@ -19,7 +19,7 @@ const ProminentProjects = () => {
       priceRange: '₹1.02 Cr - ₹1.19 Cr',
       type: '3 BHK Apartment',
       location: 'Medavakkam, Chennai South, Chennai',
-      image: '/images/shirdi-whitefield-mudra-phase-b.jpg',
+      image: '/Property1.jpeg',
     },
     {
       id: 3,
@@ -28,7 +28,7 @@ const ProminentProjects = () => {
       priceRange: '₹1.20 Cr - ₹2.10 Cr',
       type: 'Luxury Villas',
       location: 'ECR, Chennai',
-      image: '/images/prestige-avalon-bay.jpg',
+      image: '/property5.jpeg',
     },
     {
       id: 4,
@@ -37,7 +37,7 @@ const ProminentProjects = () => {
       priceRange: '₹78.0 L - ₹1.05 Cr',
       type: '2, 3, 4 BHK Apartments',
       location: 'Porur, Chennai',
-      image: '/images/sobha-city.jpg',
+      image: '/property7.jpeg',
     },
     {
       id: 5,
@@ -46,7 +46,7 @@ const ProminentProjects = () => {
       priceRange: '₹45.0 L - ₹80.0 L',
       type: 'Independent Houses',
       location: 'Redhills, Chennai',
-      image: '/images/tvs-sundaram-hills.jpg',
+      image: '/property8.jpeg',
     },
     {
       id: 6,
@@ -55,58 +55,58 @@ const ProminentProjects = () => {
       priceRange: '₹1.10 Cr - ₹1.80 Cr',
       type: 'Luxury Apartments',
       location: 'Anna Nagar, Chennai',
-      image: '/images/ashoka-enclave.jpg',
+      image: '/property9.jpeg',
     },
   ];
 
   const containerRef = useRef(null);
 
   const handleScrollLeft = () => {
-    if (containerRef.current) {
-      containerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
-    }
+    containerRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
   };
 
   const handleScrollRight = () => {
-    if (containerRef.current) {
-      containerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
-    }
+    containerRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
   };
 
   return (
-    <section className="py-8 px-4 md:px-8 rounded-xl shadow-lg" style={{ backgroundColor: 'var(--color-background)' }}>
-      <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-extrabold" style={{ color: 'var(--color-foreground)' }}>
+    <section className="py-10 px-4 sm:px-6 md:px-8 bg-[var(--background)] rounded-xl shadow-lg">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--foreground)]">
           Prominent Projects to Explore
         </h2>
-        <p className="text-sm md:text-base mt-2" style={{ color: 'var(--color-text-secondary)' }}>
+        <p className="text-sm md:text-base mt-2 text-[var(--text-secondary)]">
           Best projects to look out for
         </p>
       </div>
 
-      <div className="relative overflow-x-hidden pb-6">
+      <div className="group relative overflow-x-hidden pb-6">
         {/* Left Arrow */}
         <button
           onClick={handleScrollLeft}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 text-white p-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 focus:outline-none"
-          aria-label="Previous"
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 
+                     w-10 h-10 hidden md:flex items-center justify-center rounded-full 
+                     backdrop-blur-md border border-white/20 shadow-lg transition-all duration-300
+                     text-white text-xl font-bold opacity-0 group-hover:opacity-100"
+          aria-label="Scroll Left"
           style={{
-            backgroundColor: 'var(--color-gradient)',
-            backgroundImage: 'var(--color-gradient)',
+            background: 'var(--color-gradient)',
+            color: 'var(--text-primary)',
           }}
         >
-          ←
+          ‹
         </button>
 
         {/* Scrollable Cards */}
         <div
           ref={containerRef}
-          className="flex gap-5 overflow-x-auto scroll-smooth px-4 md:px-12 py-2 scrollbar-hide"
+          className="flex gap-4 md:gap-5 overflow-x-auto scroll-smooth px-1 md:px-12 py-2 scrollbar-hide"
         >
           {properties.map((prop) => (
             <div
               key={prop.id}
-              className="transform transition duration-300 hover:scale-105 hover:shadow-xl min-w-[280px]"
+              className="w-[90vw] sm:w-[300px] md:w-[320px] flex-shrink-0"
             >
               <PropertyCard property={prop} />
             </div>
@@ -116,14 +116,17 @@ const ProminentProjects = () => {
         {/* Right Arrow */}
         <button
           onClick={handleScrollRight}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 text-white p-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 focus:outline-none"
-          aria-label="Next"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 
+                     w-10 h-10 hidden md:flex items-center justify-center rounded-full 
+                     backdrop-blur-md border border-white/20 shadow-lg transition-all duration-300
+                     text-white text-xl font-bold opacity-0 group-hover:opacity-100"
+          aria-label="Scroll Right"
           style={{
-            backgroundColor: 'var(--color-gradient)',
-            backgroundImage: 'var(--color-gradient)',
+            background: 'var(--color-gradient)',
+            color: 'var(--text-primary)',
           }}
         >
-          →
+          ›
         </button>
       </div>
     </section>
