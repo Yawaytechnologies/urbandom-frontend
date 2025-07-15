@@ -30,8 +30,8 @@ jobs:
 
   auto-merge:
     needs: frontend-checks
-    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     permissions:
       pull-requests: write
       contents: write
@@ -41,3 +41,4 @@ jobs:
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           merge-method: merge
+
