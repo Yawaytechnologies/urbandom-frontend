@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import {
   FaArrowLeft,
   FaArrowRight,
@@ -51,7 +51,9 @@ export default function AroundProject() {
   const scrollRef = useRef(null);
 
   const scroll = (dir) => {
-    const scrollAmount = 300;
+    // Adjust scrollAmount based on the width of one card
+    const scrollAmount = scrollRef.current ? scrollRef.current.children[0].offsetWidth : 0;
+
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
         left: dir === "left" ? -scrollAmount : scrollAmount,
@@ -88,7 +90,7 @@ export default function AroundProject() {
         {/* Card Slider without scrollbar */}
         <div
           ref={scrollRef}
-          className="flex gap-4 px-10 scroll-smooth"
+          className="flex gap-4 px-2 sm:px-4 scroll-smooth"
           style={{
             overflowX: "auto",
             scrollbarWidth: "none",
@@ -98,7 +100,7 @@ export default function AroundProject() {
           {data.map((item, i) => (
             <div
               key={i}
-              className="min-w-[250px] bg-white rounded-xl shadow hover:shadow-lg transition duration-300 p-4 flex flex-col justify-between"
+              className="w-full sm:min-w-[180px] md:min-w-[250px] lg:min-w-[300px] bg-white rounded-xl shadow hover:shadow-lg transition duration-300 p-4 flex flex-col justify-between"
             >
               <div className="flex items-center space-x-2 mb-1">
                 {item.icon}
@@ -118,7 +120,7 @@ export default function AroundProject() {
         </div>
       </div>
 
-      <p className="mt-5 text-center text-sm text-indigo-600 font-medium cursor-pointer  transition">
+      <p className="mt-5 text-center text-sm text-indigo-600 font-medium cursor-pointer transition">
         View more on Maps
       </p>
     </div>

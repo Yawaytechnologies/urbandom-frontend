@@ -13,60 +13,60 @@ import {
 
 export default function ProjectOverview() {
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-xl ">
+    <div className="bg-white p-4 sm:p-6 rounded-xl max-w-4xl mx-auto">
       {/* Title & Download */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
           JK New Vision Township Overview
         </h2>
         <a
           href="#"
-          className="text-sm text-purple-600 font-medium hover:underline mt-2 sm:mt-0"
+          className="text-xs sm:text-sm text-purple-600 font-medium hover:underline mt-2 sm:mt-0"
         >
           📄 Download Brochure
         </a>
       </div>
 
       <div className="border-t pt-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8 text-gray-700 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-gray-700 text-xs sm:text-sm">
           <OverviewItem
-            icon={<RiMapPinLine className="text-lg text-purple-700" />}
+            icon={<RiMapPinLine className="text-purple-700" />}
             label="Project Area"
             value="150 Acres"
           />
           <OverviewItem
-            icon={<RiRuler2Line className="text-lg text-purple-700" />}
+            icon={<RiRuler2Line className="text-purple-700" />}
             label="Sizes"
             value="600 - 4042 sq.ft."
           />
           <OverviewItem
-            icon={<RiBuilding2Line className="text-lg text-purple-700" />}
+            icon={<RiBuilding2Line className="text-purple-700" />}
             label="Project Size"
             value="1500 units"
           />
           <OverviewItem
-            icon={<RiCalendarCheckLine className="text-lg text-purple-700" />}
+            icon={<RiCalendarCheckLine className="text-purple-700" />}
             label="Launch Date"
             value="Jan, 2015"
           />
           <OverviewItem
-            icon={<RiMoneyRupeeCircleLine className="text-lg text-purple-700" />}
+            icon={<RiMoneyRupeeCircleLine className="text-purple-700" />}
             label="Avg. Price"
             value="₹5.5 K/sq.ft"
           />
           <OverviewItem
-            icon={<RiHomeSmileLine className="text-lg text-purple-700" />}
+            icon={<RiHomeSmileLine className="text-purple-700" />}
             label="Possession Status"
             value="Ready to Move"
             linkText="Home Construction Packages"
           />
           <OverviewItem
-            icon={<RiBuilding2Line className="text-lg text-purple-700" />}
+            icon={<RiBuilding2Line className="text-purple-700" />}
             label="Configuration"
             value="Residential Plots"
           />
           <OverviewItem
-            icon={<RiVerifiedBadgeLine className="text-lg text-purple-700" />}
+            icon={<RiVerifiedBadgeLine className="text-purple-700" />}
             label="RERA ID"
             value="TN/01/Layout/0416/2020"
             linkText="Check RERA Status"
@@ -74,15 +74,16 @@ export default function ProjectOverview() {
         </div>
       </div>
 
-      {/* Buttons */}
-      <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <button className="flex items-center gap-2 px-4 py-2 rounded-md bg-purple-100 text-purple-600 font-medium hover:bg-purple-200">
-          <RiShareForwardLine className="text-lg" /> Share
+      {/* Buttons Section */}
+      <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+        {/* Mobile: Vertical Stack, Desktop: Horizontal Row */}
+        <button className="flex items-center justify-center gap-1 px-3 py-1.5 bg-purple-100 text-purple-600 text-xs font-medium rounded-md hover:bg-purple-200 transition w-full sm:w-auto">
+          <RiShareForwardLine className="text-sm sm:text-base" /> Share
         </button>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-md bg-purple-100 text-purple-600 font-medium hover:bg-purple-200">
-          <RiHeart3Line className="text-lg" /> Save
+        <button className="flex items-center justify-center gap-1 px-3 py-1.5 bg-purple-100 text-purple-600 text-xs font-medium rounded-md hover:bg-purple-200 transition w-full sm:w-auto">
+          <RiHeart3Line className="text-sm sm:text-base" /> Save
         </button>
-        <button className="px-6 py-2 rounded-md bg-purple-600 text-white font-semibold hover:bg-purple-700">
+        <button className="px-4 py-1.5 bg-purple-600 text-white text-xs font-semibold rounded-md hover:bg-purple-700 transition w-full sm:w-auto">
           Ask For Details
         </button>
       </div>
@@ -92,16 +93,16 @@ export default function ProjectOverview() {
 
 const OverviewItem = ({ icon, label, value, linkText }) => (
   <div className="flex flex-col">
-    <div className="flex items-center gap-2 text-gray-500 font-medium">
+    <div className="flex items-center gap-1.5 text-gray-500 font-medium text-xs">
       {icon}
       <span>{label}</span>
     </div>
-    <div className="mt-1 font-semibold text-gray-800">
+    <div className="mt-1 font-semibold text-gray-800 text-xs sm:text-sm">
       {value}
       {linkText && (
         <a
           href="#"
-          className="ml-1 text-sm text-purple-600 hover:underline block"
+          className="ml-1 text-[10px] sm:text-xs text-purple-600 hover:underline block"
         >
           {linkText}
         </a>

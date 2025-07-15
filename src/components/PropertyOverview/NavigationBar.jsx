@@ -13,6 +13,7 @@ const tabs = [
 export default function NavigationBar() {
   const [activeTab, setActiveTab] = useState("");
   const observerRef = useRef(null);
+  const tabRefs = useRef({}); // Store refs to each button
 
   const handleScrollTo = (id) => {
     const section = document.getElementById(id);
@@ -31,7 +32,18 @@ export default function NavigationBar() {
     observerRef.current = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          setActiveTab(entry.target.id);
+          const id = entry.target.id;
+          setActiveTab(id);
+
+          // Scroll active tab into view (mobile/tab horizontal scroll)
+          const tabButton = tabRefs.current[id];
+          if (tabButton && window.innerWidth < 1024) {
+            tabButton.scrollIntoView({
+              behavior: "smooth",
+              inline: "center",
+              block: "nearest",
+            });
+          }
         }
       });
     }, observerOptions);
@@ -48,23 +60,26 @@ export default function NavigationBar() {
 
   return (
     <div className="w-full bg-white border-y border-gray-200 shadow-sm sticky top-0 z-50">
-      <div className="flex justify-between overflow-x-auto whitespace-nowrap scrollbar-hide text-sm sm:text-base font-medium">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => handleScrollTo(tab.id)}
-            className={`relative flex-1 min-w-[110px] text-center py-3 transition-all duration-200 ${
-              activeTab === tab.id
-                ? "text-purple-700 font-semibold"
-                : "text-gray-700 hover:text-purple-700"
-            }`}
-          >
-            {tab.label}
-            {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-0 right-0 mx-auto h-0.5 bg-purple-700 w-4/5 rounded transition-all duration-300"></span>
-            )}
-          </button>
-        ))}
+      <div className="max-w-[1440px] mx-auto px-2 sm:px-4 md:px-6 lg:px-10">
+        <div className="flex overflow-x-auto lg:overflow-x-visible scrollbar-hide space-x-4 md:space-x-6 py-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              ref={(el) => (tabRefs.current[tab.id] = el)}
+              onClick={() => handleScrollTo(tab.id)}
+              className={`relative shrink-0 px-3 md:px-4 py-2 text-sm md:text-base whitespace-nowrap transition-all duration-200 ${
+                activeTab === tab.id
+                  ? "text-purple-700 font-semibold"
+                  : "text-gray-700 hover:text-purple-700"
+              }`}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-purple-700 w-4/5 rounded transition-all duration-300"></span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
