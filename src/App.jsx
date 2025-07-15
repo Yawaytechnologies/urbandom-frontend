@@ -1,40 +1,26 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-import Header from './components/Header';
-import HeroSection from './components/HeroSection';
-import Sidebar from './components/Sidebar';
-import Footer from './components/Footer';
-
-import Login from './pages/auth/login';
-import Signup from './pages/auth/signup';
-import SignUpPage from './pages/auth/signup';
+// src/App.jsx
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import MainLayout from './Layout/MainLayout';
+import LandingPage from './pages/LandingPage';
+import UserActivity from './pages/UserActivity';
+import RentPage from './pages/RentPage';
+import BuyPage from './pages/BuyPage';
+import PropertyTypeSelector from './components/PropertyForm/PropertyType'; 
+// import SearchResults from './pages/SearchResults';
 
 const App = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
-    <Router>
-      {/* Layout shown on all routes except /login and /signup */}
+    <MainLayout>
       <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUpPage />} />
-
-        {/* Main app layout */}
-        <Route
-          path="/"
-          element={
-            <>
-              <Header onToggleSidebar={() => setSidebarOpen(true)} />
-              <HeroSection />
-              <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-              <Footer />
-            </>
-          }
-        />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/buy" element={<BuyPage />} />
+        <Route path="/rent" element={<RentPage />} />
+        <Route path="/propertyform" element={<PropertyTypeSelector />} />
+        {/* <Route path="/search" element={<SearchResults />} /> */}
+        <Route path="/activity" element={<UserActivity />} />
       </Routes>
-    </Router>
+    </MainLayout>
   );
 };
 
