@@ -6,6 +6,8 @@ import LandingPage from './pages/LandingPage';
 import UserActivity from './pages/UserActivity';
 import RentPage from './pages/RentPage';
 import BuyPage from './pages/BuyPage';
+import PropertyForm from './components/PropertyForm/PropertyForm';
+import PropertyTypeSelector from './components/PropertyForm/PropertyType';
 // import SearchResults from './pages/SearchResults';
 
 const App = () => {
@@ -15,7 +17,7 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/buy" element={<BuyPage />} />
         <Route path="/rent" element={<RentPage />} />
-        
+        <Route path="/propertyform" element={<PropertyTypeSelector />} />
         {/* <Route path="/search" element={<SearchResults />} /> */}
         <Route path="/activity" element={<UserActivity />} />
       </Routes>

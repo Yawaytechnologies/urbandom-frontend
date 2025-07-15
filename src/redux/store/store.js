@@ -1,12 +1,12 @@
-// src/redux/store.js
+// store.js
 
 import { configureStore } from '@reduxjs/toolkit';
+import propertyReducer from '../reducer/propertySlice';
 
-
-
-export const store = configureStore({
+const store = configureStore({
   reducer: {
-    
-   
+    property: propertyReducer,
   },
 });
+
+export default store;
