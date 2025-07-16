@@ -30,7 +30,7 @@ jobs:
 
   auto-merge:
     needs: frontend-checks
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'develop'
     runs-on: ubuntu-latest
 
     permissions:
@@ -38,7 +38,8 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Enable auto-merge
+      - name: Enable auto-merge for PR
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           merge-method: merge
+          github-token: ${{ secrets.AUTO_MERGE_TOKEN }}  # Use the PAT here for auto-merge
