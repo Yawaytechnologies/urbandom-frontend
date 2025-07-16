@@ -17,13 +17,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'  # It's generally more stable to use LTS versions like 16
+          node-version: '16'  # Use LTS versions like 16 for stability
 
       - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -33,6 +33,8 @@ jobs:
       - name: Run linter (ESLint)
         run: npm run lint
 
+      - name: Run npm audit (security check)
+        run: npm audit --audit-level=moderate
+
       - name: Build frontend (Vite)
         run: npm run build
-        
