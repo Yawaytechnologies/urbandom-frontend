@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [develop]
+
 jobs:
   frontend-checks:
     runs-on: ubuntu-latest
