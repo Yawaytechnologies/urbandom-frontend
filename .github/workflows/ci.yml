@@ -35,3 +35,4 @@ jobs:
 
       - name: Build frontend (Vite)
         run: npm run build
+        
