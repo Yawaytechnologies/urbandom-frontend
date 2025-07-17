@@ -1,122 +1,113 @@
-// src/components/BuyPage/FeaturedProperties.jsx
-import React, { useRef } from 'react';
-import PropertyCard from './PropertyCard';
+import React, { useRef, useState, useEffect } from 'react';
+import { FaPause, FaPlay } from 'react-icons/fa';
 
-const FeaturedProperties = () => {
-  const properties = [
-    {
-      id: 1,
-      developer: 'DAC Developers',
-      name: 'DAC Napa Valley',
-      location: 'Ottiyambakkam, Chennai South',
-      priceRange: '58.99 L - 69.0 L',
-      type: '2, 3 BHK Apartments',
-    },
-    {
-      id: 2,
-      developer: 'Sameera Group',
-      name: 'Sameera New Vision',
-      location: 'Taramani, Chennai South',
-      priceRange: '33.0 L - 2.22 Cr',
-      type: 'Residential Plots',
-    },
-    {
-      id: 3,
-      developer: 'Prestige Estates',
-      name: 'Prestige Avalon Bay',
-      location: 'ECR, Chennai',
-      priceRange: '1.20 Cr - 2.10 Cr',
-      type: 'Luxury Villas',
-    },
-    {
-      id: 4,
-      developer: 'Sobha Developers',
-      name: 'Sobha City',
-      location: 'Porur, Chennai',
-      priceRange: '78.0 L - 1.05 Cr',
-      type: '2, 3, 4 BHK Apartments',
-    },
-    {
-      id: 5,
-      developer: 'TVS Sundaram Home Finance',
-      name: 'Sundaram Hills Estate',
-      location: 'Redhills, Chennai',
-      priceRange: '45.0 L - 80.0 L',
-      type: 'Independent Houses',
-    },
-    {
-      id: 6,
-      developer: 'Ashoka Builders',
-      name: 'Ashoka Enclave',
-      location: 'Anna Nagar, Chennai',
-      priceRange: '1.10 Cr - 1.80 Cr',
-      type: 'Luxury Apartments',
-    },
-  ];
-
+const FeaturedProperties = ({ properties }) => {
   const containerRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const handleScrollLeft = () => {
-    if (containerRef.current) {
-      console.log('Scrolling Left'); // Debugging log
-      containerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+  const scrollToIndex = (index) => {
+    const container = containerRef.current;
+    if (container) {
+      const cardWidth = container.children[0]?.offsetWidth || 300;
+      container.scrollTo({
+        left: index * (cardWidth + 20),
+        behavior: 'smooth',
+      });
     }
   };
 
-  const handleScrollRight = () => {
-    if (containerRef.current) {
-      console.log('Scrolling Right'); // Debugging log
-      containerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isPaused) {
+        setActiveIndex((prev) => (prev + 1) % properties.length);
+      }
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isPaused, properties.length]); // Add properties.length to the dependency array
+
+  useEffect(() => {
+    if (properties.length > 0) {
+      scrollToIndex(activeIndex);
     }
-  };
+  }, [activeIndex, properties.length]); // Add properties.length to the dependency array
 
   return (
-    <section className="py-6 px-4 md:px-8" style={{ backgroundColor: 'var(--color-background)' }}>
-      <div className="text-center mb-6">
-        <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--color-foreground)' }}>
-          Housing's Top Picks
-        </h2>
-        <p className="text-sm md:text-base mt-2" style={{ color: 'var(--color-text-secondary)' }}>
-          Explore top living options with us
-        </p>
+    <section className="py-6 px-4 md:px-8 bg-[var(--background)]">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-[var(--foreground)]">Housing's top picks</h2>
+        <p className="text-sm text-[var(--text-secondary)]">Explore top living options with us</p>
       </div>
 
-      <div className="relative overflow-x-hidden pb-6">
-        {/* Left Arrow */}
+      {/* Tabs for Property Names */}
+      <div className="flex space-x-3 overflow-x-auto scrollbar-hide mb-4 -mx-2 px-2">
+        {properties && properties.map((property, idx) => (
+          <button
+            key={property._id || idx}
+            className={`text-sm whitespace-nowrap px-3 py-1 rounded-full border transition-all duration-300 shrink-0 ${
+              idx === activeIndex
+                ? 'bg-white border-purple-600 text-purple-600 font-semibold shadow'
+                : 'bg-gray-100 text-gray-600 border-transparent'
+            }`}
+            onClick={() => setActiveIndex(idx)}
+          >
+            {property.title || 'Unnamed Property'}  {/* Display property title */}
+          </button>
+        ))}
+      </div>
+
+      {/* Cards Section */}
+      <div className="group relative overflow-hidden">
         <button
-          onClick={handleScrollLeft}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 text-white p-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 focus:outline-none"
-          aria-label="Previous"
-          style={{
-            background: 'var(--color-gradient)',
-          }}
+          onClick={() => setIsPaused((prev) => !prev)}
+          className="absolute right-4 top-4 z-20 p-2 bg-white rounded-full shadow-md md:block hidden"
         >
-          ←
+          {isPaused ? <FaPlay className="text-gray-700" /> : <FaPause className="text-gray-700" />}
         </button>
 
-        {/* Scrollable Cards */}
-        <div
-          ref={containerRef}
-          className="flex gap-5 overflow-x-auto scroll-smooth px-4 md:px-12 py-2 scrollbar-hide"
-        >
-          {properties.map((prop) => (
-            <div key={prop.id} className="transform transition duration-300 hover:scale-105 hover:shadow-xl min-w-[280px]">
-              <PropertyCard property={prop} />
+        <div ref={containerRef} className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide px-1 py-2">
+          {properties && properties.map((property, idx) => (
+            <div
+              key={property._id || idx}
+              className={`w-[85vw] sm:w-[280px] md:w-[320px] lg:w-[340px] flex-shrink-0 transition-transform duration-300 ease-in-out rounded-xl shadow-md overflow-hidden ${
+                idx === activeIndex ? 'border-4 border-purple-600 shadow-2xl scale-[1.02]' : 'border border-gray-200'
+              }`}
+            >
+              {/* Property Card Content */}
+              <div className="flex flex-col justify-between bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm h-full min-h-[420px]">
+                {/* Image Background */}
+                <div
+                  className="h-40 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${property.media.images[0]})` }}  // Make sure property.media.images[0] is a valid URL
+                />
+
+                {/* Details */}
+                <div className="flex flex-col flex-grow px-4 py-3">
+                  {/* Render property name */}
+                  <h3 className="text-lg font-semibold text-gray-800 truncate">{property.title}</h3>
+
+                  <div className="mt-3 text-sm text-gray-600">
+                    {/* Render property details like type and location */}
+                    <p className="flex items-center gap-1 mb-1">🛏️ {property.subProperty}</p>
+                    <p className="flex items-center gap-1">📍 {property.location?.name || 'Location Not Available'}</p>
+                  </div>
+
+                  {/* Property Price Range */}
+                  <p className="mt-3 font-bold text-[var(--accent)]">
+                    {property.priceDetails?.monthlyRent ? `₹${property.priceDetails.monthlyRent}` : 'Price Not Available'}
+                  </p>
+                </div>
+
+                {/* CTA Button */}
+                <div className="px-4 pb-4">
+                  <button className="w-full bg-[var(--accent)] text-white rounded-md py-2 text-sm hover:brightness-110 transition">
+                    View Details
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
-
-        {/* Right Arrow */}
-        <button
-          onClick={handleScrollRight}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 text-white p-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 focus:outline-none"
-          aria-label="Next"
-          style={{
-            background: 'var(--color-gradient)',
-          }}
-        >
-          →
-        </button>
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
-// src/components/BuyPage/CarouselGallery.jsx
+// src/components/BuyPage/TrustedDevelopers.jsx
 import React, { useRef } from 'react';
 
-const CarouselGallery = () => {
+const TrustedDevelopers = () => {
   const containerRef = useRef(null);
 
   const handleScrollLeft = () => {
@@ -16,52 +16,57 @@ const CarouselGallery = () => {
     }
   };
 
-  const images = [
+  const developers = [
     {
       id: 1,
-      src: '/images/image1.jpg',
-      title: 'Image 1',
-      timestamp: '1 hour ago',
+      name: 'DAC Developers',
+      projects: '25+ Projects',
+      rating: '4.8',
+      logo: '/logos/dac-developers.png', // Replace with actual paths
     },
     {
       id: 2,
-      src: '/images/image2.jpg',
-      title: 'Image 2',
-      timestamp: '2 hours ago',
+      name: 'Prestige Estates',
+      projects: '18+ Projects',
+      rating: '4.7',
+      logo: '/logos/prestige-estates.png',
     },
     {
       id: 3,
-      src: '/images/image3.jpg',
-      title: 'Image 3',
-      timestamp: '3 hours ago',
+      name: 'Sobha Developers',
+      projects: '30+ Projects',
+      rating: '4.9',
+      logo: '/logos/sobha-developers.png',
     },
     {
       id: 4,
-      src: '/images/image4.jpg',
-      title: 'Image 4',
-      timestamp: '4 hours ago',
+      name: 'TVS Sundaram Home Finance',
+      projects: '12+ Projects',
+      rating: '4.6',
+      logo: '/logos/tvs-developers.png',
     },
     {
       id: 5,
-      src: '/images/image5.jpg',
-      title: 'Image 5',
-      timestamp: '5 hours ago',
+      name: 'Ashoka Builders',
+      projects: '20+ Projects',
+      rating: '4.5',
+      logo: '/logos/ashoka-builders.png',
     },
   ];
 
   return (
     <section className="py-6 px-4 md:px-8" style={{ backgroundColor: 'var(--color-background)' }}>
-      {/* Heading Section */}
-      <div className="text-center mb-6">
+      {/* Heading */}
+      <div className=" mb-6">
         <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--color-foreground)' }}>
-          Top Highlighted Projects
+          Trusted Developers
         </h2>
         <p className="text-sm md:text-base mt-2" style={{ color: 'var(--color-text-secondary)' }}>
-          Noteworthy projects to watch
+          Reliable partners in real estate development
         </p>
       </div>
 
-      {/* Scrollable Images */}
+      {/* Scrollable Container */}
       <div className="relative overflow-x-hidden pb-6">
         {/* Left Arrow */}
         <button
@@ -75,25 +80,26 @@ const CarouselGallery = () => {
           ←
         </button>
 
-        {/* Scrollable Cards */}
+        {/* Developer Cards */}
         <div
           ref={containerRef}
           className="flex gap-5 overflow-x-auto scroll-smooth px-4 py-2 scrollbar-hide"
         >
-          {images.map((image) => (
-            <div key={image.id} className="min-w-[280px]">
-              <div className="relative bg-black h-64 overflow-hidden">
-                <img
-                  src={image.src}
-                  alt={image.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                  <div className="text-center text-white">
-                    <h3 className="text-xl font-bold">{image.title}</h3>
-                    <p className="text-sm mt-2">{image.timestamp}</p>
-                  </div>
-                </div>
+          {developers.map((dev) => (
+            <div
+              key={dev.id}
+              className="min-w-[200px] bg-white rounded-lg shadow-md p-4 flex-shrink-0 text-center"
+            >
+              <img
+                src={dev.logo}
+                alt={dev.name}
+                className="w-16 h-16 mx-auto object-contain mb-3"
+              />
+              <h3 className="font-semibold text-lg">{dev.name}</h3>
+              <p className="text-sm text-gray-600 mt-1">{dev.projects}</p>
+              <div className="mt-2 flex items-center justify-center gap-1">
+                <span className="text-yellow-500">★</span>
+                <span className="text-sm">{dev.rating}</span>
               </div>
             </div>
           ))}
@@ -115,4 +121,4 @@ const CarouselGallery = () => {
   );
 };
 
-export default CarouselGallery;
+export default TrustedDevelopers;

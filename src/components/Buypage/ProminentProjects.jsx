@@ -1,131 +1,131 @@
-import React, { useRef } from 'react';
-import PropertyCard from './PropertyCard';
+import React, { useRef, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+// import { fetchProminentProperties } from '../../redux/actions/buyPageActions';
+import { FaPause, FaPlay } from 'react-icons/fa';
 
 const ProminentProjects = () => {
-  const properties = [
-    {
-      id: 1,
-      name: 'DAC Napa Valley',
-      developer: 'DAC Developers',
-      priceRange: '₹58.99 L - ₹69.0 L',
-      type: '2, 3 BHK Apartments',
-      location: 'Ottiyambakkam, Chennai South, Chennai',
-      image: '/images/dac-napa-valley.jpg',
-    },
-    {
-      id: 2,
-      name: 'Shirdi Whitefield Mudra Phase B',
-      developer: 'Shirdi Shelters',
-      priceRange: '₹1.02 Cr - ₹1.19 Cr',
-      type: '3 BHK Apartment',
-      location: 'Medavakkam, Chennai South, Chennai',
-      image: '/images/shirdi-whitefield-mudra-phase-b.jpg',
-    },
-    {
-      id: 3,
-      name: 'Prestige Avalon Bay',
-      developer: 'Prestige Estates',
-      priceRange: '₹1.20 Cr - ₹2.10 Cr',
-      type: 'Luxury Villas',
-      location: 'ECR, Chennai',
-      image: '/images/prestige-avalon-bay.jpg',
-    },
-    {
-      id: 4,
-      name: 'Sobha City',
-      developer: 'Sobha Developers',
-      priceRange: '₹78.0 L - ₹1.05 Cr',
-      type: '2, 3, 4 BHK Apartments',
-      location: 'Porur, Chennai',
-      image: '/images/sobha-city.jpg',
-    },
-    {
-      id: 5,
-      name: 'TVS Sundaram Hills Estate',
-      developer: 'TVS Sundaram Home Finance',
-      priceRange: '₹45.0 L - ₹80.0 L',
-      type: 'Independent Houses',
-      location: 'Redhills, Chennai',
-      image: '/images/tvs-sundaram-hills.jpg',
-    },
-    {
-      id: 6,
-      name: 'Ashoka Enclave',
-      developer: 'Ashoka Builders',
-      priceRange: '₹1.10 Cr - ₹1.80 Cr',
-      type: 'Luxury Apartments',
-      location: 'Anna Nagar, Chennai',
-      image: '/images/ashoka-enclave.jpg',
-    },
-  ];
+  // const dispatch = useDispatch();
+  // Correct the state selector
+  const { prominentProperties, isLoading, error } = useSelector(
+    (state) => state.buyPage // Correct reference to buyPage
+  );
 
   const containerRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const handleScrollLeft = () => {
-    if (containerRef.current) {
-      containerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+  const scrollToIndex = (index) => {
+    const container = containerRef.current;
+    if (container) {
+      const cardWidth = container.children[0]?.offsetWidth || 300;
+      container.scrollTo({
+        left: index * (cardWidth + 20),
+        behavior: 'smooth',
+      });
     }
   };
 
-  const handleScrollRight = () => {
-    if (containerRef.current) {
-      containerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isPaused) {
+        setActiveIndex((prev) => (prev + 1) % prominentProperties.length);
+      }
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isPaused, prominentProperties]);
+
+  useEffect(() => {
+    if (prominentProperties.length > 0) {
+      scrollToIndex(activeIndex);
     }
-  };
+  }, [activeIndex, prominentProperties.length]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <section className="py-8 px-4 md:px-8 rounded-xl shadow-lg" style={{ backgroundColor: 'var(--color-background)' }}>
-      <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-extrabold" style={{ color: 'var(--color-foreground)' }}>
+    <section className="py-10 px-4 sm:px-6 md:px-8 bg-[var(--background)] rounded-xl shadow-lg">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--foreground)]">
           Prominent Projects to Explore
         </h2>
-        <p className="text-sm md:text-base mt-2" style={{ color: 'var(--color-text-secondary)' }}>
+        <p className="text-sm md:text-base mt-2 text-[var(--text-secondary)]">
           Best projects to look out for
         </p>
       </div>
 
-      <div className="relative overflow-x-hidden pb-6">
+      <div className="group relative overflow-x-hidden pb-6">
         {/* Left Arrow */}
         <button
-          onClick={handleScrollLeft}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 text-white p-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 focus:outline-none"
-          aria-label="Previous"
-          style={{
-            backgroundColor: 'var(--color-gradient)',
-            backgroundImage: 'var(--color-gradient)',
-          }}
+          onClick={() => scrollToIndex(activeIndex - 1)}
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 hidden md:flex items-center justify-center rounded-full backdrop-blur-md border border-white/20 shadow-lg transition-all duration-300 text-white text-xl font-bold opacity-0 group-hover:opacity-100"
+          aria-label="Scroll Left"
+          style={{ background: 'var(--color-gradient)', color: 'var(--text-primary)' }}
         >
-          ←
+          ‹
         </button>
 
         {/* Scrollable Cards */}
         <div
           ref={containerRef}
-          className="flex gap-5 overflow-x-auto scroll-smooth px-4 md:px-12 py-2 scrollbar-hide"
+          className="flex gap-4 md:gap-5 overflow-x-auto scroll-smooth px-1 md:px-12 py-2 scrollbar-hide"
         >
-          {properties.map((prop) => (
+          {prominentProperties.map((prop, idx) => (
             <div
-              key={prop.id}
-              className="transform transition duration-300 hover:scale-105 hover:shadow-xl min-w-[280px]"
+              key={prop.id || prop._id} // Ensure a unique key is provided
+              className={`w-[90vw] sm:w-[300px] md:w-[320px] flex-shrink-0 transition-transform duration-300 ease-in-out rounded-xl shadow-md overflow-hidden ${
+                idx === activeIndex ? 'border-4 border-purple-600 shadow-2xl scale-[1.02]' : 'border border-gray-200'
+              }`}
             >
-              <PropertyCard property={prop} />
+              {/* Property Card Content */}
+              <div className="flex flex-col justify-between bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm h-full min-h-[420px]">
+               
+                <div className="flex flex-col flex-grow px-4 py-3">
+                  <h3 className="text-lg font-semibold text-gray-800 truncate">
+                    {prop.title || 'Unnamed Property'} {/* Fallback to title */}
+                  </h3>
+                  <p className="text-sm text-gray-500 truncate">
+                    {prop.developer || 'Unknown Developer'}
+                  </p>
+                  <div className="mt-3 text-sm text-gray-600">
+                    <p className="flex items-center gap-1 mb-1">🛏️ {prop.subProperty || 'Unknown Type'}</p>
+                    <p className="flex items-center gap-1">📍 {prop.location?.name || 'Unknown Location'}</p> {/* Handle location */}
+                  </div>
+                  <p className="mt-3 font-bold text-[var(--accent)]">
+                    {prop.priceDetails?.monthlyRent ? `$${prop.priceDetails.monthlyRent}` : 'Price Not Available'}
+                  </p>
+                </div>
+                <div className="px-4 pb-4">
+                  <button className="w-full bg-[var(--accent)] text-white rounded-md py-2 text-sm hover:brightness-110 transition">
+                    View Details
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
         {/* Right Arrow */}
         <button
-          onClick={handleScrollRight}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 text-white p-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 focus:outline-none"
-          aria-label="Next"
-          style={{
-            backgroundColor: 'var(--color-gradient)',
-            backgroundImage: 'var(--color-gradient)',
-          }}
+          onClick={() => scrollToIndex(activeIndex + 1)}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 hidden md:flex items-center justify-center rounded-full backdrop-blur-md border border-white/20 shadow-lg transition-all duration-300 text-white text-xl font-bold opacity-0 group-hover:opacity-100"
+          aria-label="Scroll Right"
+          style={{ background: 'var(--color-gradient)', color: 'var(--text-primary)' }}
         >
-          →
+          ›
         </button>
       </div>
+
+      {/* Pause/Play Button */}
+      <button
+        onClick={() => setIsPaused((prev) => !prev)}
+        className="absolute right-4 top-4 z-20 p-2 bg-white rounded-full shadow-md md:block hidden"
+      >
+        {isPaused ? <FaPlay className="text-gray-700" /> : <FaPause className="text-gray-700" />}
+      </button>
     </section>
   );
 };

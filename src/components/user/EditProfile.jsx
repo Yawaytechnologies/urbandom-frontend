@@ -1,74 +1,118 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { FaCamera } from 'react-icons/fa';
 
 const EditProfile = () => {
   const [name, setName] = useState('Sathish');
   const [email, setEmail] = useState('gpraveenganesh2000@gmail.com');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
+  const fileInputRef = useRef(null);
 
   const isValidPhone = phone.length === 10 && /^\d+$/.test(phone);
 
-  const handlePhoneSave = () => {
-    if (isValidPhone) {
-      alert('Phone number saved!');
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setProfileImage(reader.result);
+      reader.readAsDataURL(file);
     }
+  };
+
+  const handlePhoneSave = () => {
+    if (isValidPhone) alert('📱 Phone number saved!');
   };
 
   const handlePasswordSave = () => {
     if (password.length < 6) {
-      alert('Password must be at least 6 characters');
-      return;
+      alert('🔐 Password must be at least 6 characters');
+    } else {
+      alert('🔒 Password saved!');
     }
-    alert('Password saved!');
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
-      {/* Profile Image */}
-      <div className="flex justify-center mb-6">
-        <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center text-3xl">
-          👤
+    <div className="w-full px-4 sm:px-6 py-6 max-w-3xl mx-auto bg-white rounded-3xl shadow-lg mt-4">
+      {/* Profile Avatar */}
+      <div className="flex flex-col items-center mb-8">
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleImageChange}
+        />
+        <div
+          className="w-24 h-24 rounded-full border-4 border-purple-200 bg-purple-50 overflow-hidden relative cursor-pointer hover:scale-105 transition"
+          onClick={() => fileInputRef.current.click()}
+        >
+          {profileImage ? (
+            <img src={profileImage} alt="Avatar" className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-4xl flex items-center justify-center h-full text-purple-600">👤</span>
+          )}
+          <div className="absolute bottom-1 right-1 bg-purple-600 p-1 rounded-full">
+            <FaCamera className="text-white text-xs" />
+          </div>
+        </div>
+        <p className="text-lg font-semibold mt-3 break-words text-center">{name}</p>
+        <p className="text-sm text-gray-500 text-center break-words">{email}</p>
+      </div>
+
+      {/* Name & Email */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div className="relative">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder=" "
+            className="peer w-full border border-gray-300 rounded-lg px-4 pt-4 pb-2 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm"
+          />
+          <label className="absolute left-4 top-2 text-gray-400 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs">
+            Full Name
+          </label>
+        </div>
+        <div className="relative">
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder=" "
+            className="peer w-full border border-gray-300 rounded-lg px-4 pt-4 pb-2 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm"
+          />
+          <label className="absolute left-4 top-2 text-gray-400 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs">
+            Email Address
+          </label>
         </div>
       </div>
 
-      {/* Name and Email */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <input
-          className="border rounded px-4 py-2 text-sm w-full"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Name"
-        />
-        <input
-          className="border rounded px-4 py-2 text-sm w-full"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-        />
-      </div>
-      <button className="mb-6 bg-purple-600 text-white text-sm px-5 py-2 rounded hover:bg-purple-700">
-        Save Changes
+      <button className="w-full mb-8 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-2 rounded-lg shadow hover:opacity-90 transition text-sm sm:text-base">
+        💾 Save Profile
       </button>
 
-      {/* Phone Number */}
+      <hr className="mb-6" />
+
+      {/* Phone Update */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Change Phone Number</label>
-        <div className="flex gap-4">
+        <label className="text-sm font-semibold text-gray-700 mb-2 block">
+          📱 Update Phone Number
+        </label>
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
-            className="border rounded px-4 py-2 text-sm w-full"
-            placeholder="New Phone Number"
+            placeholder="10-digit phone"
+            maxLength={10}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            maxLength={10}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-purple-400 focus:outline-none"
           />
           <button
             onClick={handlePhoneSave}
             disabled={!isValidPhone}
-            className={`text-sm px-5 py-2 rounded transition ${
+            className={`px-4 py-2 text-sm rounded-lg shadow transition ${
               isValidPhone
                 ? 'bg-purple-600 text-white hover:bg-purple-700'
-                : 'bg-gray-400 text-white cursor-not-allowed'
+                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
             }`}
           >
             Save
@@ -76,20 +120,22 @@ const EditProfile = () => {
         </div>
       </div>
 
-      {/* Password */}
+      {/* Password Update */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Change Password</label>
-        <div className="flex gap-4">
+        <label className="text-sm font-semibold text-gray-700 mb-2 block">
+          🔐 Change Password
+        </label>
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="password"
-            className="border rounded px-4 py-2 text-sm w-full"
-            placeholder="New Password"
+            placeholder="Min 6 characters"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-purple-400 focus:outline-none"
           />
           <button
             onClick={handlePasswordSave}
-            className="text-sm bg-purple-600 text-white px-5 py-2 rounded hover:bg-purple-700"
+            className="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition"
           >
             Save
           </button>

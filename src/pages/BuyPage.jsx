@@ -1,23 +1,34 @@
-// src/pages/BuyPage.jsx
-import React from 'react';
+// BuyPage.jsx
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import HeroSection from '../components/common/HeroSection';
-import FeaturedProperties from '../components/BuyPage/FeaturedProperties';
-import ProminentProjects from '../components/BuyPage/ProminentProjects'; // New import
-import CarouselGallery from '../components/Buypage/CarouselGallery';
+import { fetchAllProperties, fetchProminentProperties } from '../redux/actions/buyPageActions';
+import FeaturedProperties from '../components/Buypage/FeaturedProperties';
+import ProminentProjects from '../components/Buypage/ProminentProjects';
 
 const BuyPage = () => {
+  const dispatch = useDispatch();
+
+  const { properties, isLoading, error } = useSelector((state) => state.buyPage);
+
+  useEffect(() => {
+    dispatch(fetchAllProperties());
+    dispatch(fetchProminentProperties());
+  }, [dispatch]);
+
   return (
     <>
-      {/* Hero Section with buy tab */}
       <HeroSection tabType="buy" />
-
-      {/* Featured Properties Section */}
-      <FeaturedProperties />
-
-      {/* Prominent Projects Section */}
-      <ProminentProjects />
-
-      <CarouselGallery/>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : (
+        <>
+          <FeaturedProperties properties={properties} />
+          <ProminentProjects /> 
+        </>
+      )}
     </>
   );
 };
