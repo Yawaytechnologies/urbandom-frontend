@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProminentProperties } from '../../redux/actions/buyPageActions';
+import { useSelector } from 'react-redux';
+// import { fetchProminentProperties } from '../../redux/actions/buyPageActions';
 import { FaPause, FaPlay } from 'react-icons/fa';
 
 const ProminentProjects = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   // Correct the state selector
   const { prominentProperties, isLoading, error } = useSelector(
     (state) => state.buyPage // Correct reference to buyPage
@@ -25,9 +25,7 @@ const ProminentProjects = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(fetchProminentProperties()); // Fetch prominent properties
-  }, [dispatch]);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -84,12 +82,7 @@ const ProminentProjects = () => {
             >
               {/* Property Card Content */}
               <div className="flex flex-col justify-between bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm h-full min-h-[420px]">
-                <div
-                  className="h-40 bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url(${prop.media?.images?.[0] || ''})`, // Handle missing images
-                  }}
-                />
+               
                 <div className="flex flex-col flex-grow px-4 py-3">
                   <h3 className="text-lg font-semibold text-gray-800 truncate">
                     {prop.title || 'Unnamed Property'} {/* Fallback to title */}

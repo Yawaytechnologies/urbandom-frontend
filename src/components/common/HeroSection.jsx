@@ -42,9 +42,16 @@ const HeroSection = () => {
   ];
 
   useEffect(() => {
-    setTab(defaultTab);
-    setLocation(locationsByTab[defaultTab]?.[0] || '');
-  }, [defaultTab, locationsByTab]); // Added locationsByTab to dependencies
+    // Prevent setting state if already correctly initialized
+    if (tab !== defaultTab) {
+      setTab(defaultTab);
+    }
+
+    // Only set location if it's not already set
+    if (!location && locationsByTab[defaultTab]?.[0]) {
+      setLocation(locationsByTab[defaultTab][0]);
+    }
+  }, [defaultTab, location]);  // Only re-run when defaultTab or location changes
 
   const handleTabClick = (label, route) => {
     setTab(label.toLowerCase());
