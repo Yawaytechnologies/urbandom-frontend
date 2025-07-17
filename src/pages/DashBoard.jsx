@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import DashboardHeader from "../components/Dashboard/DashboardHeader";
 import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
-// import EnquiryMain from "../components/Dashboard/EnquiryMain.jsx";
-// import ListingMain from "../components/Dashboard/ListingMain";
-// import DashboardProfile from "../components/Dashboard/DashboardProfile"; 
+import EnquiryMain from "../components/Dashboard/EnquiryMain.jsx";
+import ListingMain from "../components/Dashboard/ListingMain";
+import DashboardProfile from "../components/Dashboard/DashboardProfile"; 
 
 
 const DashBoard = () => {
@@ -62,7 +62,7 @@ const DashBoard = () => {
         )}
 
         <main className="flex-1 px-4 py-6">
-          {/* {activeSection === "enquiries" && (
+          {activeSection === "enquiries" && (
             <EnquiryMain
               activePromo={activePromo}
               handlePrev={handlePrev}
@@ -71,14 +71,14 @@ const DashBoard = () => {
               sampleEnquiries={sampleEnquiries}
               activeSubmenu={activeSubmenu}
             />
-          )} */}
+          )}
 
-          {/* {activeSection === "listings" && (
+          {activeSection === "listings" && (
             <ListingMain
               activeSubmenu={activeSubmenu}
               promoCards={promoCards}
             />
-          )} */}
+          )}
 
           {activeSection === "profile" && <DashboardProfile />}
         </main>
