@@ -9,6 +9,7 @@ import BuyPage from './pages/BuyPage';
 import PropertyTypeSelector from './components/PropertyForm/PropertyType'; 
 // import SearchResults from './pages/SearchResults';
 
+
 const App = () => {
   return (
     <MainLayout>

@@ -5,7 +5,7 @@ import propertyReducer from '../reducer/propertySlice';
 
 const store = configureStore({
   reducer: {
-    property: propertyReducer,
+      properties: propertyReducer,
   },
 });
 
