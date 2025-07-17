@@ -1,50 +1,31 @@
 // src/pages/BuyPage.jsx
-import React from 'react';
-import HeroSection from '../components/common/HeroSection';
-import FeaturedProperties from '../components/BuyPage/FeaturedProperties';
-import ProminentProjects from '../components/BuyPage/ProminentProjects'; 
-import TopHighlighted from '../components/Buypage/TopHighlighted';
-import FeaturedDevelopers from '../components/Buypage/FeaturedDevelopers';
-// import TrustedDevelopers from '../components/Buypage/TrustedDevelopers';
-// import HighDemandProjects from '../components/Buypage/HighDemandProjects';
-import RecommendedSellers from '../components/Buypage/RecommendedSellers';
-import NewlyAddedProperties from '../components/Buypage/NewlyAddedProperties';
-import SellPropertySection from '../components/Buypage/SellPropertySection';
-import NewsAndArticles from '../components/Buypage/NewsAndArticles';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import HeroSection from '../components/common/HeroSection';  // Correct import
+import { fetchAllProperties } from '../redux/actions/buyPageActions';  // Correct import
+
+import FeaturedProperties from '../components/Buypage/FeaturedProperties';  // Correct import
 
 const BuyPage = () => {
+  const dispatch = useDispatch();
+
+  const { properties, isLoading, error } = useSelector((state) => state.buyPage);
+
+  useEffect(() => {
+    // Dispatch action to fetch all properties
+    dispatch(fetchAllProperties());
+  }, [dispatch]);  // Re-run effect when the component mounts
+
   return (
     <>
-      {/* Hero Section with buy tab */}
       <HeroSection tabType="buy" />
-
-      {/* Featured Properties Section */}
-      <FeaturedProperties />
-
-      {/* Prominent Projects Section */}
-      <ProminentProjects />
-
-      <TopHighlighted/>
-
-      {/* featured developer section */}
-      <FeaturedDevelopers/>
-
-      {/* truested developer */}
-
-      {/* <TrustedDevelopers/> */}
-
-      {/* High demand */}
-      {/* <HighDemandProjects/> */}
-
-      <RecommendedSellers/>
-
-      <NewlyAddedProperties/>
-
-      <SellPropertySection/>
-
-      <NewsAndArticles/>
-
-
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>  // Display error message
+      ) : (
+        <FeaturedProperties properties={properties} /> 
+      )}
     </>
   );
 };

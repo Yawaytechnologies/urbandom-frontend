@@ -28,9 +28,9 @@ function Header({ onToggleSidebar }) {
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-1 text-white font-bold text-base"
+          className="flex items-center gap-1 text-white font-bold text-xs"
         >
-          <span className="text-yellow-400 text-lg">▴</span>
+          <span className="text-yellow-400 text-sm">▴</span>
           <span>Urbandom</span>
           <span className="text-purple-200">.com</span>
         </Link>
@@ -39,7 +39,7 @@ function Header({ onToggleSidebar }) {
         <div className="flex items-center gap-1">
           <motion.button
             whileTap={{ scale: 0.95 }}
-            className="bg-white text-[#ff4f81] font-semibold text-[10px] px-2 py-[3px] rounded-full shadow whitespace-nowrap"
+            className="bg-white text-[#ff4f81] font-semibold text-[9px] px-[6px] py-[2px] rounded-full shadow whitespace-nowrap"
           >
             Post Property
           </motion.button>

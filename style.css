@@ -60,11 +60,7 @@
   border-top: 1px solid var(--footer-divider);
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  background-color: #131b32; /* dark theme or matching your layout */
-}
+
 
 @theme {
   --color-primary: var(--primary);

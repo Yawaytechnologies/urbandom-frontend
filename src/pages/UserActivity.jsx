@@ -63,9 +63,9 @@ const UserActivity = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-[56px] sm:pt-[72px] px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col sm:flex-row gap-6">
+    <div className="min-h-screen bg-gray-50 pt-[56px] sm:pt-[72px] px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6">
       {/* Sidebar */}
-      <aside className="w-full sm:w-1/3 md:w-1/4">
+      <aside className="w-full lg:w-1/4">
         <SidebarPanel onSelectMenu={setActiveView} selected={activeView} />
       </aside>
 
@@ -73,23 +73,30 @@ const UserActivity = () => {
       <main className="flex-1 w-full">
         {activeView === 'activity' && (
           <>
-            <h2 className="text-xl font-bold mb-4 text-gray-800">My Activity</h2>
-            <ActivityTabs active={activityType} setActive={handleTabChange} />
-            <SearchTypeFilter type={searchType} setType={handleSearchTypeChange} />
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-gray-800">My Activity</h2>
 
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <ActivityTabs active={activityType} setActive={handleTabChange} />
+              <SearchTypeFilter type={searchType} setType={handleSearchTypeChange} />
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredProperties.length > 0 ? (
                 filteredProperties.map((property) => (
                   <PropertyCard key={property.id} data={property} />
                 ))
               ) : (
-                <p className="text-sm text-gray-600">No matching properties found.</p>
+                <p className="text-sm text-gray-600 col-span-full">No matching properties found.</p>
               )}
             </div>
           </>
         )}
 
-        {activeView === 'editProfile' && <EditProfile />}
+        {activeView === 'editProfile' && (
+          <div className="max-w-2xl w-full mx-auto">
+            <EditProfile />
+          </div>
+        )}
       </main>
     </div>
   );

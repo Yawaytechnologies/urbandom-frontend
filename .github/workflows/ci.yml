@@ -2,7 +2,7 @@ name: Frontend CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [develop]
   pull_request:
     branches: [develop]
 
@@ -17,28 +17,24 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: '16'  # Use LTS versions like 16 for stability
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci  # Use `npm ci` for consistent and clean installations
 
       - name: Run linter (ESLint)
         run: npm run lint
 
+      - name: Run npm audit (security check)
+        run: npm audit --audit-level=moderate
+
       - name: Build frontend (Vite)
         run: npm run build
-
-  auto-merge:
-    needs: frontend-checks
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-      pull-requests: write
-
-    steps:
-      - name: Enable auto-merge
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          merge-method: merge
