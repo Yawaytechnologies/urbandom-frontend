@@ -7,6 +7,7 @@ import UserActivity from './pages/UserActivity';
 import RentPage from './pages/RentPage';
 import BuyPage from './pages/BuyPage';
 import PropertyTypeSelector from './components/PropertyForm/PropertyType'; 
+import PGCoLivingForm from './components/';
 // import SearchResults from './pages/SearchResults';
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/propertyform" element={<PropertyTypeSelector />} />
         {/* <Route path="/search" element={<SearchResults />} /> */}
         <Route path="/activity" element={<UserActivity />} />
+        <Route path="/pg-coliving-form" element={<PGCoLivingForm />} />
       </Routes>
     </MainLayout>
   );

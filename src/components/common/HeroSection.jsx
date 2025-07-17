@@ -9,8 +9,8 @@ const HeroSection = () => {
 
   const defaultTab = currentPath.includes('rent')
     ? 'rent'
-    : currentPath.includes('pg')
-    ? 'pg'
+    : currentPath.includes('/pg-coliving-form')
+    ? '/pg-coliving-form'
     : 'buy';
 
   const [tab, setTab] = useState(defaultTab);
@@ -38,7 +38,7 @@ const HeroSection = () => {
   const tabs = [
     { label: 'Buy', icon: <FaHome />, route: '/buy' },
     { label: 'Rent', icon: <FaBuilding />, route: '/rent' },
-    { label: 'PG/Co-Living', icon: <FaUsers />, route: '/pg' },
+    { label: 'PG/Co-Living', icon: <FaUsers />, route: '/pg-coliving-form' },
   ];
 
   useEffect(() => {
