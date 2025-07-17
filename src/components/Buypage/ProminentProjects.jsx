@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProminentProperties } from '../../redux/slices/prominentProjectsSlice';
+import { fetchProminentProperties } from '../../redux/reducer/buyPageSlice';
+import { FaPause, FaPlay } from 'react-icons/fa';
 
 const ProminentProjects = () => {
   const dispatch = useDispatch();
@@ -120,7 +121,7 @@ const ProminentProjects = () => {
         </button>
       </div>
 
-      {/* Pause/Play Button */}
+      Pause/Play Button
       <button
         onClick={() => setIsPaused((prev) => !prev)}
         className="absolute right-4 top-4 z-20 p-2 bg-white rounded-full shadow-md md:block hidden"
