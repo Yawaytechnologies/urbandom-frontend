@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProminentProperties } from '../../redux/reducer/buyPageSlice';
+import { fetchProminentProperties } from '../../redux/actions/buyPageActions';
 import { FaPause, FaPlay } from 'react-icons/fa';
 
 const ProminentProjects = () => {
