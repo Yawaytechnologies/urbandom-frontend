@@ -12,7 +12,7 @@ const MainLayout = ({ children }) => {
       <Header onToggleSidebar={() => setSidebarOpen(true)} />
 
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <main className='pt-9' >{children}</main> 
+      <main className='pt-0' >{children}</main> 
       <Footer />
     </>
   );
