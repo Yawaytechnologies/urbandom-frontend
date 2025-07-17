@@ -24,13 +24,13 @@ const FeaturedProperties = ({ properties }) => {
       }
     }, 4000);
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, properties.length]); // Add properties.length to the dependency array
 
   useEffect(() => {
     if (properties.length > 0) {
       scrollToIndex(activeIndex);
     }
-  }, [activeIndex, properties.length]);
+  }, [activeIndex, properties.length]); // Add properties.length to the dependency array
 
   return (
     <section className="py-6 px-4 md:px-8 bg-[var(--background)]">

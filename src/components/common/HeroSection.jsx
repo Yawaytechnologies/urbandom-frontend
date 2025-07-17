@@ -44,7 +44,7 @@ const HeroSection = () => {
   useEffect(() => {
     setTab(defaultTab);
     setLocation(locationsByTab[defaultTab]?.[0] || '');
-  }, [defaultTab]);
+  }, [defaultTab, locationsByTab]); // Added locationsByTab to dependencies
 
   const handleTabClick = (label, route) => {
     setTab(label.toLowerCase());
@@ -80,7 +80,7 @@ const HeroSection = () => {
               <button
                 key={label}
                 onClick={() => handleTabClick(label, route)}
-                className={`flex items-center gap-2 px-4 py-2 text-sm sm:text-base font-medium whitespace-nowrap border-b-2 transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 text-sm sm:text-base font-medium whitespace-nowrap border-b-2 transition-all duration-300 ${
                   tab === label.toLowerCase()
                     ? 'text-white border-white'
                     : 'text-gray-300 border-transparent hover:text-white'
