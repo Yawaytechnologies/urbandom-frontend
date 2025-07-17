@@ -1,18 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../../redux/actions/userAuthAction';
+import { useNavigate } from 'react-router-dom';
 
 const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
-  if (!isOpen) return null;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+   const { user, loading, error } = useSelector((state) => state.userAuth);
+
+   useEffect(() => {
+    if (user) 
+      {
+      navigate('/BuyPage'); // Redirect to BuyPage after login
+    }
+  }, [user, navigate]);
+
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const mobileNumber = form.mobileNumber.value;
-    const password = form.password.value;
+  e.preventDefault();
+  const form = e.target;
+  const mobileNumber = form.mobileNumber.value;
+  const password = form.password.value;
 
-    console.log('Login attempt:', { mobileNumber, password });
+  console.log("Login attempt:", { mobileNumber, password });
 
-    onClose();
-  };
+  // Dispatch login action
+  dispatch(loginUser({ phone: mobileNumber, password }));
+
+  // Optionally close modal (if login succeeds, you can close it in useEffect instead)
+  onClose();
+};
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -25,11 +43,15 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           &times;
         </button>
 
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Log In</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
+          Log In
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block font-medium mb-1 text-gray-700">Mobile Number</label>
+            <label className="block font-medium mb-1 text-gray-700">
+              Mobile Number
+            </label>
             <input
               type="tel"
               name="mobileNumber"
@@ -41,7 +63,9 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           </div>
 
           <div>
-            <label className="block font-medium mb-1 text-gray-700">Password</label>
+            <label className="block font-medium mb-1 text-gray-700">
+              Password
+            </label>
             <input
               type="password"
               name="password"
@@ -59,13 +83,12 @@ const LoginModal = ({ isOpen, onClose, onSignupClick }) => {
           </button>
 
           <p className="text-center text-sm md:text-base mt-4 text-gray-600">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <span
               onClick={() => {
                 onClose();
-                onSignupClick();
+                onSignupClick(); // Must match prop name
               }}
-              className="text-purple-600 hover:underline font-semibold cursor-pointer"
             >
               Sign Up
             </span>

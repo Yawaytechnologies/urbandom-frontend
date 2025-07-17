@@ -7,12 +7,17 @@ import UserActivity from './pages/UserActivity';
 import RentPage from './pages/RentPage';
 import BuyPage from './pages/BuyPage';
 import PropertyTypeSelector from './components/PropertyForm/PropertyType'; 
+import Login from './pages/auth/login';
+import SignUpPage from './pages/auth/signup'; 
+
 // import SearchResults from './pages/SearchResults';
 
 const App = () => {
   return (
     <MainLayout>
       <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUpPage />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/buy" element={<BuyPage />} />
         <Route path="/rent" element={<RentPage />} />

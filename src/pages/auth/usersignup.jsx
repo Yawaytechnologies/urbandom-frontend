@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../../redux/actions/userAuthAction';
 
 const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
+  const dispatch = useDispatch();
+  const { loading, error, justRegistered } = useSelector((state) => state.userAuth);
+  
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    password: '',
-    userImage: null, // <-- added
+    name: "",
+    phone: "",
+    email: "",
+    password: "",
+    userImage: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -16,21 +21,20 @@ const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-    if (name === 'userImage') {
-      setFormData(prev => ({ ...prev, userImage: files[0] }));
+    if (name === "userImage") {
+      setFormData((prev) => ({ ...prev, userImage: files[0] }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const validate = () => {
     const newErrors = {};
-    const { name, phone, email, password } = formData;
+    const { name, phone, email } = formData;
 
-    if (!name.trim()) newErrors.name = 'Name is required';
-    if (!/^\d{10}$/.test(phone)) newErrors.phone = 'Phone must be 10 digits';
-    if (!/^\S+@\S+\.\S+$/.test(email)) newErrors.email = 'Invalid email';
-    if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    if (!name.trim()) newErrors.name = "Name is required";
+    if (!/^\d{10}$/.test(phone)) newErrors.phone = "Phone must be 10 digits";
+    if (!/^\S+@\S+\.\S+$/.test(email)) newErrors.email = "Invalid email";
 
     return newErrors;
   };
@@ -41,14 +45,14 @@ const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
 
     if (Object.keys(validationErrors).length === 0) {
       setErrors({});
-      console.log('Signup successful:', formData);
-      alert('Signup successful!');
+      dispatch(registerUser(formData));
+      alert("Signup successful!");
       setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        password: '',
-        userImage: null, // reset
+        name: "",
+        phone: "",
+        email: "",
+        password: "",
+        userImage: null,
       });
       onClose();
     } else {
@@ -58,9 +62,7 @@ const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div
-        className="bg-white rounded-lg shadow-xl w-full max-w-md relative mx-auto max-h-[90vh] overflow-auto p-6 md:p-8"
-      >
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md relative mx-auto max-h-[90vh] overflow-auto p-6 md:p-8">
         <button
           className="absolute top-3 right-4 text-gray-500 hover:text-black text-3xl md:text-2xl font-bold"
           onClick={onClose}
@@ -69,7 +71,10 @@ const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
           &times;
         </button>
 
-        <h2 className="text-xl md:text-3xl font-bold mb-6 text-center">Sign Up</h2>
+        <h2 className="text-xl md:text-3xl font-bold mb-6 text-center">
+          Sign Up
+        </h2>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}
           <div>
@@ -81,7 +86,7 @@ const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
               onChange={handleChange}
               placeholder="Your full name"
               className={`w-full border px-3 py-3 md:py-2 rounded focus:outline-none focus:ring-2 transition ${
-                errors.name ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-purple-500'
+                errors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
               }`}
             />
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
@@ -98,7 +103,7 @@ const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
               pattern="\d{10}"
               placeholder="10-digit phone number"
               className={`w-full border px-3 py-3 md:py-2 rounded focus:outline-none focus:ring-2 transition ${
-                errors.phone ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-purple-500'
+                errors.phone ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
               }`}
             />
             {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
@@ -114,13 +119,13 @@ const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
               onChange={handleChange}
               placeholder="you@example.com"
               className={`w-full border px-3 py-3 md:py-2 rounded focus:outline-none focus:ring-2 transition ${
-                errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-purple-500'
+                errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
               }`}
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
-          {/* Password */}
+          {/* Password (no validation, just input) */}
           <div>
             <label className="block font-medium mb-1 text-gray-700">Password</label>
             <input
@@ -128,15 +133,12 @@ const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="At least 6 characters"
-              className={`w-full border px-3 py-3 md:py-2 rounded focus:outline-none focus:ring-2 transition ${
-                errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-purple-500'
-              }`}
+              placeholder="Enter your password"
+              className="w-full border px-3 py-3 md:py-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-300"
             />
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 
-          {/* Add user image */}
+          {/* User Image */}
           <div>
             <label className="block font-medium mb-1 text-gray-700">Add User Image</label>
             <input
@@ -163,13 +165,13 @@ const SignupModal = ({ isOpen, onClose, onLoginClick }) => {
           </button>
 
           <p className="text-center text-sm md:text-base mt-4 text-gray-600">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <span
               onClick={() => {
                 onClose();
                 onLoginClick();
               }}
-              className="text-purple-600 hover:underline font-semibold cursor-pointer"
+              className="text-purple-700 cursor-pointer font-semibold hover:underline"
             >
               Log In
             </span>
