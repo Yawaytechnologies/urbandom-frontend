@@ -54,8 +54,7 @@ const PGCoLivingForm = () => {
           <option value="No">No</option>
         </select>
       </div>
-
-      {/* Notice Period */}
+ {/* Notice Period */}
       <div className="mb-4">
         <label className="block text-sm font-semibold mb-2">Notice Period</label>
         <input
@@ -111,8 +110,7 @@ const PGCoLivingForm = () => {
           </div>
         ))}
       </div>
-
-      {/* Submit Button */}
+{/* Submit Button */}
       <div className="flex justify-end">
         <button
           className="bg-purple-500 text-white px-6 py-2 rounded-md"
@@ -124,5 +122,4 @@ const PGCoLivingForm = () => {
     </div>
   );
 };
-
 export default PGCoLivingForm;
