@@ -1,4 +1,5 @@
 import React from "react";
+import { useParams } from "react-router-dom"; // 👈 Import useParams
 import Overview from "../components/PropertyOverview/Home.jsx";
 import ContactForm from "../components/PropertyOverview/ContactForm.jsx";
 import HighlightsSection from "../components/PropertyOverview/HighlightsSection.jsx";
@@ -10,11 +11,13 @@ import AboutProject from "../components/PropertyOverview/AboutProject.jsx";
 import PropertyMap from "../components/PropertyOverview/PropertyMap.jsx";
 
 const PropertyOverviewPage = () => {
+  const { id } = useParams(); // ✅ Get :id from route
+
   return (
-    <div className="w-full min-h-screen bg-[#f7f7f7] pt-[20px]">
+    <div className="w-full min-h-screen bg-[#f7f7f7] pt-[65px]">
       {/* Overview Section */}
       <div id="overview-home" className="scroll-mt-[140px]">
-        <Overview />
+        <Overview propertyId={id} /> {/* ✅ Pass it to Overview */}
       </div>
 
       {/* Sticky Navigation Tabs */}
@@ -63,10 +66,7 @@ const PropertyOverviewPage = () => {
             <AboutProject />
           </div>
 
-          <div
-            id="property-map"
-            // className="bg-white p-6 rounded-xl shadow-md scroll-mt-[180px] min-h-[60vh]"
-          >
+          <div id="property-map">
             <h3 className="text-lg font-semibold mb-2">Property Map</h3>
             <PropertyMap />
           </div>

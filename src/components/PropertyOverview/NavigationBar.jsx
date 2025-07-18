@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useNavContext } from "./NavContext"; // Make sure the path is correct
 
 const tabs = [
   { label: "Overview/Home", id: "overview-home" },
@@ -13,7 +14,9 @@ const tabs = [
 export default function NavigationBar() {
   const [activeTab, setActiveTab] = useState("");
   const observerRef = useRef(null);
-  const tabRefs = useRef({}); // Store refs to each button
+  const tabRefs = useRef({});
+
+  const { hideNavbar } = useNavContext(); // ← Get the hideNavbar flag from context
 
   const handleScrollTo = (id) => {
     const section = document.getElementById(id);
@@ -35,7 +38,6 @@ export default function NavigationBar() {
           const id = entry.target.id;
           setActiveTab(id);
 
-          // Scroll active tab into view (mobile/tab horizontal scroll)
           const tabButton = tabRefs.current[id];
           if (tabButton && window.innerWidth < 1024) {
             tabButton.scrollIntoView({
@@ -57,6 +59,8 @@ export default function NavigationBar() {
       if (observerRef.current) observerRef.current.disconnect();
     };
   }, []);
+
+  if (hideNavbar) return null; // ← Hide if flag is true
 
   return (
     <div className="w-full bg-white border-y border-gray-200 shadow-sm sticky top-0 z-50">

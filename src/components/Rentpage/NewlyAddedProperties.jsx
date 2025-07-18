@@ -1,10 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaBed } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 
 const NewlyAddedProperties = ({ properties }) => {
   const containerRef = useRef(null);
   const [scrollPercent, setScrollPercent] = useState(0);
   let scrollInterval;
+
+  const navigate = useNavigate();  // Initialize navigate function
 
   // Scroll left functionality
   const handleScrollLeft = () => {
@@ -42,6 +45,11 @@ const NewlyAddedProperties = ({ properties }) => {
   };
 
   const stopAutoScroll = () => clearInterval(scrollInterval);
+
+  // Handle the "View Details" button click, navigating to PropertyOverviewPage
+  const handleViewDetails = (propertyId) => {
+    navigate(`/property-overview/${propertyId}`);  // Navigate to PropertyOverviewPage with propertyId
+  };
 
   return (
     <section className="relative py-10 px-4 md:px-8 bg-[var(--background)] overflow-hidden">
@@ -112,6 +120,7 @@ const NewlyAddedProperties = ({ properties }) => {
                   </p>
 
                   <button
+                    onClick={() => handleViewDetails(property._id)}  // Trigger the navigation with property ID
                     className="w-full bg-[var(--accent)] text-white py-2 rounded-md 
                       hover:bg-opacity-90 transition font-medium text-sm"
                   >

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchOverviewHomeData } from '../actions/overviewHomeActions';  // Import from actions
+import { fetchOverviewHomeData } from '../actions/overviewHomeActions';
 
 const overviewHomeSlice = createSlice({
   name: 'overviewHome',
@@ -13,14 +13,15 @@ const overviewHomeSlice = createSlice({
     builder
       .addCase(fetchOverviewHomeData.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchOverviewHomeData.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;  // Store the fetched property data
+        state.data = action.payload;
       })
       .addCase(fetchOverviewHomeData.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;  // Store the error if the API call fails
+        state.error = action.payload;
       });
   },
 });
