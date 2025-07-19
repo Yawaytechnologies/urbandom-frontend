@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCountries } from "../../redux/actions/countryactions";
+import { fetchStatesByCountry } from "../../redux/actions/stateActions";
+import { fetchDistrictsByState } from "../../redux/actions/districtActions";
+import { createPropertyAsync } from "../../redux/actions/propertyAction";
 import { MdBusiness, MdStoreMallDirectory, MdHomeWork } from "react-icons/md";
 
-// Extended amenities for demo (expand as needed)
+// Amenities
 const amenitiesList = [
   { name: "Wi-Fi", icon: "📶" },
   { name: "AC", icon: "❄️" },
@@ -31,13 +36,13 @@ const commercialTypes = [
   { value: "showroom", label: "Showroom", icon: <MdHomeWork size={18} /> },
 ];
 
-const SellForm = () => {
+const SellForm = (lookingTo) => {
   const [form, setForm] = useState({
     title: "",
     propertyType: "residential",
     commercialSubType: "",
-    location: "",
     country: "",
+    lookingTo:"sell",
     state: "",
     district: "",
     locality: "",
@@ -46,6 +51,7 @@ const SellForm = () => {
     areaUnit: "sqft",
     amenities: [],
     cost: "",
+    priceDetails: { amount: 123456 },
     images: [],
     videos: [],
     // Commercial only:
@@ -57,6 +63,34 @@ const SellForm = () => {
     expectedPrice: "",
   });
 
+  // REDUX: Dynamic location state
+  const dispatch = useDispatch();
+  const { countries, loading: loadingCountries } = useSelector(state => state.countries);
+  const { states, loading: loadingStates } = useSelector(state => state.states);
+  const { districts, loading: loadingDistricts } = useSelector(state => state.districts);
+
+  // Fetch countries when form loads
+  useEffect(() => {
+    dispatch(fetchCountries());
+  }, [dispatch]);
+
+  // Fetch states when country changes
+  useEffect(() => {
+    if (form.country) {
+      dispatch(fetchStatesByCountry(form.country));
+      setForm(f => ({ ...f, state: "", district: "" })); // reset state & district
+    }
+  }, [form.country, dispatch]);
+
+  // Fetch districts when state changes
+  useEffect(() => {
+    if (form.state) {
+      dispatch(fetchDistrictsByState(form.state));
+      setForm(f => ({ ...f, district: "" })); // reset district
+    }
+  }, [form.state, dispatch]);
+
+  // Amenities
   const handleSelectAmenities = (amenity) => {
     setForm((prevForm) => {
       const updatedAmenities = prevForm.amenities.includes(amenity)
@@ -71,8 +105,31 @@ const SellForm = () => {
     setForm({ ...form, [type]: files });
   };
 
+  // Submit handler (dispatches createPropertyAsync)
+const handleSubmit = (e) => {
+  e.preventDefault();
+  // Prepare data (convert cost/price fields to number if needed)
+  const formData = {
+    ...form,
+    cost: form.cost ? Number(form.cost) : undefined,
+    expectedPrice: form.expectedPrice ? Number(form.expectedPrice) : undefined,
+    builtUpArea: form.builtUpArea ? Number(form.builtUpArea) : undefined,
+    floorsAvailable: form.floorsAvailable ? Number(form.floorsAvailable) : undefined,
+  };
+
+  // Remove any fields with an empty string (including ownership)
+  Object.keys(formData).forEach((key) => {
+    if (formData[key] === "") delete formData[key];
+  });
+
+  console.log("Dispatching createPropertyAsync", formData);
+  dispatch(createPropertyAsync(formData));
+};
+
+
+
   return (
-    <form className="w-full  px-6 ">
+    <form className="w-full px-6" onSubmit={handleSubmit}>
       <h2 className="text-3xl font-semibold text-center mb-8 text-gray-800">Sell Your Property</h2>
 
       {/* Title */}
@@ -127,7 +184,7 @@ const SellForm = () => {
         </div>
       )}
 
-      {/* Location section (shared) */}
+      {/* Location section with Redux */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-700">Country</label>
@@ -135,10 +192,12 @@ const SellForm = () => {
             className="w-full border rounded-lg px-4 py-2"
             value={form.country}
             onChange={(e) => setForm({ ...form, country: e.target.value })}
+            disabled={loadingCountries}
           >
             <option value="">Select Country</option>
-            <option value="India">India</option>
-            <option value="USA">USA</option>
+            {countries.map((c) => (
+              <option key={c._id} value={c._id}>{c.name}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -147,10 +206,12 @@ const SellForm = () => {
             className="w-full border rounded-lg px-4 py-2"
             value={form.state}
             onChange={(e) => setForm({ ...form, state: e.target.value })}
+            disabled={!form.country || loadingStates}
           >
             <option value="">Select State</option>
-            <option value="Tamil Nadu">Tamil Nadu</option>
-            <option value="California">California</option>
+            {states.map((s) => (
+              <option key={s._id} value={s._id}>{s.name}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -159,10 +220,12 @@ const SellForm = () => {
             className="w-full border rounded-lg px-4 py-2"
             value={form.district}
             onChange={(e) => setForm({ ...form, district: e.target.value })}
+            disabled={!form.state || loadingDistricts}
           >
             <option value="">Select District</option>
-            <option value="Chennai">Chennai</option>
-            <option value="Coimbatore">Coimbatore</option>
+            {districts.map((d) => (
+              <option key={d._id} value={d._id}>{d.name}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -196,7 +259,6 @@ const SellForm = () => {
               ))}
             </div>
           </div>
-
           {/* Built-up Area, Cost */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
@@ -231,7 +293,6 @@ const SellForm = () => {
               />
             </div>
           </div>
-
           {/* Construction Status */}
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-700">Construction Status</label>
@@ -252,6 +313,21 @@ const SellForm = () => {
               </button>
             </div>
           </div>
+          <div className="mb-6">
+  <label className="block mb-2 text-sm font-semibold text-gray-700">Ownership</label>
+  <select
+    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+    value={form.ownership}
+    onChange={(e) => setForm({ ...form, ownership: e.target.value })}
+  >
+    <option value="">Select Ownership</option>
+    <option value="freehold">Freehold</option>
+    <option value="leasehold">Leasehold</option>
+    <option value="cooperative society">Cooperative Society</option>
+    <option value="power of attorney">Power of Attorney</option>
+  </select>
+</div>
+
         </>
       )}
 
@@ -290,7 +366,6 @@ const SellForm = () => {
               </div>
             )}
           </div>
-
           {/* About Property */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
@@ -348,7 +423,6 @@ const SellForm = () => {
               />
             </div>
           </div>
-
           {/* Price Details */}
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-700">Expected Price (Financials)</label>

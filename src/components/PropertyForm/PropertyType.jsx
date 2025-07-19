@@ -37,33 +37,38 @@ const PropertyTypeSelector = () => {
   const [lookingTo, setLookingTo] = useState(""); // State to store 'lookingTo'
 
   // This function will set the 'lookingTo' state based on the selected property type
-const handleSelectForm = (form, idx) => {
-  setPulseIndex(idx); // trigger pulse effect
+  const handleSelectForm = (form, idx) => {
+    setPulseIndex(idx); // trigger pulse effect
 
-  setTimeout(() => {
-    setSelectedForm(form);
+    setTimeout(() => {
+      setSelectedForm(form);
 
-    // Set lookingTo based on selected form type
-    let lookingToValue = "";
-    if (form === "Rent") {
-      lookingToValue = "rent";
-    } else if (form === "Sell") {
-      lookingToValue = "sell";
-    } else if (form === "PG/Co-living") {
-      lookingToValue = "pg-co/living";
-    }
+      // Set lookingTo based on selected form type
+      let lookingToValue = "";
+      if (form === "Rent") {
+        lookingToValue = "rent";
+      } else if (form === "Sell") {
+        lookingToValue = "sell";
+      } else if (form === "PG/Co-living") {
+        lookingToValue = "pg-co/living";
+      }
 
-    setLookingTo(lookingToValue); // Set lookingTo in state here
-    setPulseIndex(null);
-  }, 200); // Pulse duration before showing form
-};
+      setLookingTo(lookingToValue); // Set lookingTo in state here
+      setPulseIndex(null);
+    }, 200); // Pulse duration before showing form
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 py-12 relative transition-colors duration-700">
+    <div className="min-h-screen flex flex-col items-center justify-center mt-10 bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 py-12 relative transition-colors duration-700">
       {/* Decorative blurred blobs for background */}
-      <div className="absolute top-10 left-10 w-80 h-80 bg-blue-300/30 rounded-full filter blur-3xl opacity-60 -z-10"></div>
-      <div className="absolute bottom-24 right-10 w-96 h-72 bg-purple-300/40 rounded-full filter blur-3xl opacity-70 -z-10"></div>
-
+      <div
+        className="absolute inset-0 w-full h-full z-[-20] bg-center bg-cover blur-2xl"
+        style={{
+          backgroundImage: `url(${bgProperty})`,
+          filter: "blur(30px) brightness(1.08)",
+          opacity: 0.64,
+        }}
+      ></div>
       {/* Animated Back Button */}
       {selectedForm && (
         <button
@@ -101,7 +106,9 @@ const handleSelectForm = (form, idx) => {
                 <div className="text-6xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-active:scale-95 drop-shadow-lg">
                   {opt.icon}
                 </div>
-                <h3 className="text-2xl font-extrabold mb-1 drop-shadow">{opt.label}</h3>
+                <h3 className="text-2xl font-extrabold mb-1 drop-shadow">
+                  {opt.label}
+                </h3>
                 <p className="text-base font-medium opacity-90">{opt.desc}</p>
                 <span
                   className="pointer-events-none absolute top-0 left-0 w-full h-full
@@ -130,8 +137,10 @@ const handleSelectForm = (form, idx) => {
           {/* Show the form based on the selected property type */}
           {selectedForm === "Rent" && <RentForm lookingTo={lookingTo} />}
           {selectedForm === "Sell" && <SellForm lookingTo={lookingTo} />}
-          {selectedForm === "PG/Co-living" && <PGCoLivingForm lookingTo={lookingTo} />}
-        </div>  
+          {selectedForm === "PG/Co-living" && (
+            <PGCoLivingForm lookingTo={lookingTo} />
+          )}
+        </div>
       )}
     </div>
   );
