@@ -1,43 +1,30 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchPropertyTypes, fetchListingTypes } from '../actions/propertyAction';  // Import the actions
+import { createPropertyAsync } from '../actions/propertyAction';
 
+// Initial state for property slice
 const initialState = {
-  propertyTypes: [],
-  listingTypes: [],
-  loading: false,
+  property: null,
+  status: 'idle', // 'idle', 'loading', 'succeeded', 'failed'
   error: null,
 };
 
+// Property slice
 const propertySlice = createSlice({
   name: 'property',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Handle Property Types Fetching
-      .addCase(fetchPropertyTypes.pending, (state) => {
-        state.loading = true;   
+      .addCase(createPropertyAsync.pending, (state) => {
+        state.status = 'loading';
       })
-      .addCase(fetchPropertyTypes.fulfilled, (state, action) => {
-        state.loading = false;
-        state.propertyTypes = action.payload; // Store the fetched property types
+      .addCase(createPropertyAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.property = action.payload; // Store the created property
       })
-      .addCase(fetchPropertyTypes.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || 'Failed to fetch property types'; // Handle error
-      })
-
-      // Handle Listing Types Fetching
-      .addCase(fetchListingTypes.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchListingTypes.fulfilled, (state, action) => {
-        state.loading = false;
-        state.listingTypes = action.payload;  // Store the fetched listing types
-      })
-      .addCase(fetchListingTypes.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || 'Failed to fetch listing types'; // Handle error
+      .addCase(createPropertyAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload; // Store the error message
       });
   },
 });

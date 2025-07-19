@@ -10,6 +10,7 @@ import PGPage from './pages/PGPage';
 
 import PropertyTypeSelector from './components/PropertyForm/PropertyType'; 
 // import SearchResults from './pages/SearchResults';
+import Location from "../src/components/PropertyForm/Location"
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/propertyform" element={<PropertyTypeSelector />} />
         {/* <Route path="/search" element={<SearchResults />} /> */}
         <Route path="/activity" element={<UserActivity />} />
+        <Route path="/location" element={<Location />} />
       </Routes>
     </MainLayout>
   );

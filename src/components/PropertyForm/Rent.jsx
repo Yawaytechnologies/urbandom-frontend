@@ -1,135 +1,599 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createPropertyAsync } from '../../redux/actions/propertyAction'; // Import action
+import { fetchCountries } from "../../redux/actions/countryactions";
+import { fetchStatesByCountry } from "../../redux/actions/stateActions";
+import { fetchDistrictsByState } from "../../redux/actions/districtActions";
+import { MdBusiness, MdStoreMallDirectory, MdHomeWork } from "react-icons/md";
 
-// const areaUnits = ["sqft", "sqmt", "acre", "gaj", "cent", "hectare"];
-// const constructionStatuses = ["ready-to-move", "under-construction"];
+// 20 Amenities for demo
+const amenitiesList = [
+  { name: "Wi-Fi", icon: "📶" },
+  { name: "AC", icon: "❄️" },
+  { name: "TV", icon: "📺" },
+  { name: "Fridge", icon: "🧊" },
+  { name: "Washing Machine", icon: "🧺" },
+  { name: "Lift", icon: "🛗" },
+  { name: "Power Backup", icon: "⚡" },
+  { name: "Parking", icon: "🅿️" },
+  { name: "Security", icon: "🔒" },
+  { name: "CCTV", icon: "🎥" },
+  { name: "Fire Safety", icon: "🔥" },
+  { name: "Water Supply", icon: "💧" },
+  { name: "Intercom", icon: "📞" },
+  { name: "Gym", icon: "🏋️" },
+  { name: "Swimming Pool", icon: "🏊" },
+  { name: "Garden", icon: "🌳" },
+  { name: "Visitor Parking", icon: "🚗" },
+  { name: "Rainwater Harvest", icon: "🌦️" },
+  { name: "Solar Power", icon: "🌞" },
+];
 
-const RentForm = () => {
-  const [form, setForm] = useState({
-    title: "",
-    propertyType: "",
-    lookingTo: "rent",
-    subProperty: "",
-    location: "",
-    builtUpArea: "",
-    areaUnit: "",
-    amenities: [],
-    monthlyRent: "",
-    availableDate: "",
-    securityDeposit: "",
-    constructionStatus: "",
-    totalFloors: "",
-    yourFloor: "",
-    // Media fields:
-    images: [],
-    videos: [],
-    documents: [],
-  });
+const commercialTypes = [
+  { value: "office", label: "Office", icon: <MdBusiness size={18} /> },
+  { value: "retailshop", label: "Retail Shop", icon: <MdStoreMallDirectory size={18} /> },
+  { value: "showroom", label: "Showroom", icon: <MdHomeWork size={18} /> },
+];
 
-  // Add input handlers and field components here (not shown for brevity)
+const RentForm = ({ lookingTo }) => {
+const [form, setForm] = useState({
+  title: "",
+  propertyType: "residential",
+  lookingTo: "rent", 
+  commercialSubType: "",
+  country: "",
+  state: "",
+  district: "",
+  location: {
+  _id: "66b5f3de5349ac522e309f2d",
+  country: "6879d601db874e1c5703d40c",
+  state: "6879d6f0dbbb294ecc29e8e7",
+  district: "6879d74edbbb294ecc29e8eb",
+  name: "Medavakkam"
+},
+  bhk: "",
+  builtUpArea: "",
+  areaUnit: "sqft",
+  amenities: [],
+  priceDetails: {
+    monthlyRent: "100",  // Numeric value
+    securityDeposit: "100",  // Numeric value
+  },
+  availableDate: "",
+  images: [],
+  videos: [],
+  possessionStatus: "",
+  commercialAvailableDate: "",
+  locationHub: "",
+  ownership: "",
+  floorsAvailable: "",
+  expectedRent: "",
+});
+
+
+  const dispatch = useDispatch();
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const { countries, loading: loadingCountries } = useSelector(state => state.countries);
+const { states, loading: loadingStates } = useSelector(state => state.states);
+const { districts, loading: loadingDistricts } = useSelector(state => state.districts);
+  const handleSelectAmenities = (amenity) => {
+    setForm((prevForm) => {
+      const updatedAmenities = prevForm.amenities.includes(amenity)
+        ? prevForm.amenities.filter((a) => a !== amenity)
+        : [...prevForm.amenities, amenity];
+      return { ...prevForm, amenities: updatedAmenities };
+    });
+  };
+
+  const handleFileChange = (e, type) => {
+    const files = e.target.files;
+    setForm({ ...form, [type]: files });
+  };
+
+  // Handle Property Type Change
+  const handlePropertyTypeChange = (type) => {
+    setForm((prevForm) => {
+      let lookingTo = 'rent'; // Default to 'rent'
+      if (type === "sell") lookingTo = "sell";
+      if (type === "pg-co/living") lookingTo = "pg-co/living";
+      return {
+        ...prevForm,
+        propertyType: type,
+        lookingTo, // Update the lookingTo field based on property type
+        commercialSubType: type === "commercial" ? "" : prevForm.commercialSubType,
+        bhk: type === "residential" ? "" : prevForm.bhk, // Clear BHK if switching to commercial
+      };
+    });
+  };
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+
+  if (name.startsWith('priceDetails')) {
+    const fieldName = name.split('.')[1]; // Extract the property name from priceDetails
+    setForm((prevForm) => ({
+      ...prevForm,
+      priceDetails: {
+        ...prevForm.priceDetails,
+        [fieldName]: value,  // Update the specific field in priceDetails
+      },
+    }));
+  } else {
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  }
+};
+
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  // Ensure priceDetails fields are numeric before submitting
+  const priceDetails = {
+    monthlyRent: Number(form.priceDetails.monthlyRent), // Ensure it's a number
+    securityDeposit: Number(form.priceDetails.securityDeposit), // Ensure it's a number
+  };
+
+  const formData = {
+    ...form,
+    priceDetails, // Send the properly formatted priceDetails object
+  };
+
+  // Log the form data for debugging
+  console.log("Form Data being submitted:", formData);
+
+  // Dispatch the form data (Make sure you have the action implemented in your Redux)
+  dispatch(createPropertyAsync(formData));
+
+  // Optionally, open the upload modal if needed
+  setShowUploadModal(true);
+};
+
+// Fetch countries when form loads
+useEffect(() => {
+  dispatch(fetchCountries());
+}, [dispatch]);
+
+// Fetch states when country changes
+useEffect(() => {
+  if (form.country) {
+    dispatch(fetchStatesByCountry(form.country));
+    // Reset state and district selection
+    setForm(f => ({ ...f, state: "", district: "" }));
+  }
+}, [form.country, dispatch]);
+
+// Fetch districts when state changes
+useEffect(() => {
+  if (form.state) {
+    dispatch(fetchDistrictsByState(form.state));
+    // Reset district selection
+    setForm(f => ({ ...f, district: "" }));
+  }
+}, [form.state, dispatch]);
+
 
   return (
-    <form className="w-full">
-  <h2 className="text-3xl font-bold mb-8">Rent Property</h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    {/* Title */}
-    <div className="flex flex-col">
-      <label className="mb-1 font-medium">Title</label>
-      <input
-        className="border rounded px-4 py-2"
-        placeholder="Property Title"
-        value={form.title}
-        onChange={e => setForm({ ...form, title: e.target.value })}
-      />
-    </div>
-    {/* Property Type */}
-    <div className="flex flex-col">
-      <label className="mb-1 font-medium">Property Type</label>
-      <select
-        className="border rounded px-4 py-2"
-        value={form.propertyType}
-        onChange={e => setForm({ ...form, propertyType: e.target.value })}
-      >
-        <option value="">Select Property Type</option>
-        <option value="residential">Residential</option>
-        <option value="commercial">Commercial</option>
-      </select>
-    </div>
-    {/* Monthly Rent */}
-    <div className="flex flex-col">
-      <label className="mb-1 font-medium">Monthly Rent</label>
-      <input
-        type="number"
-        className="border rounded px-4 py-2"
-        placeholder="Monthly Rent"
-        value={form.monthlyRent}
-        onChange={e => setForm({ ...form, monthlyRent: e.target.value })}
-      />
-    </div>
-    {/* Available Date */}
-    <div className="flex flex-col">
-      <label className="mb-1 font-medium">Available Date</label>
-      <input
-        type="date"
-        className="border rounded px-4 py-2"
-        value={form.availableDate}
-        onChange={e => setForm({ ...form, availableDate: e.target.value })}
-      />
-    </div>
-    {/* Security Deposit */}
-    <div className="flex flex-col">
-      <label className="mb-1 font-medium">Security Deposit</label>
-      <input
-        type="number"
-        className="border rounded px-4 py-2"
-        placeholder="Security Deposit"
-        value={form.securityDeposit}
-        onChange={e => setForm({ ...form, securityDeposit: e.target.value })}
-      />
-    </div>
-    {/* Construction Status */}
-    <div className="flex flex-col">
-      <label className="mb-1 font-medium">Construction Status</label>
-      <select
-        className="border rounded px-4 py-2"
-        value={form.constructionStatus}
-        onChange={e => setForm({ ...form, constructionStatus: e.target.value })}
-      >
-        <option value="">Select</option>
-        <option value="ready-to-move">Ready to Move</option>
-        <option value="under-construction">Under Construction</option>
-      </select>
-    </div>
-    {/* Total Floors */}
-    <div className="flex flex-col">
-      <label className="mb-1 font-medium">Total Floors</label>
-      <input
-        type="number"
-        className="border rounded px-4 py-2"
-        placeholder="Total Floors"
-        value={form.totalFloors}
-        onChange={e => setForm({ ...form, totalFloors: e.target.value })}
-      />
-    </div>
-    {/* Your Floor */}
-    <div className="flex flex-col">
-      <label className="mb-1 font-medium">Your Floor</label>
-      <input
-        type="number"
-        className="border rounded px-4 py-2"
-        placeholder="Your Floor"
-        value={form.yourFloor}
-        onChange={e => setForm({ ...form, yourFloor: e.target.value })}
-      />
-    </div>
-  </div>
-  <button
-    type="submit"
-    className="mt-8 px-8 py-3 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
-  >
-    Submit
-  </button>
-</form>
+    <form className="w-full px-8" onSubmit={handleSubmit}>
+      <h2 className="text-3xl font-bold text-center mb-10 text-gray-800 tracking-tight">
+        Rent Your Property
+      </h2>
 
+      {/* Property Title */}
+      <div className="mb-6">
+        <label className="block mb-2 text-sm font-semibold text-gray-700">Property Title</label>
+        <input
+          type="text"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition"
+          placeholder="Enter Property Title"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
+      </div>
+
+      {/* Property Type Buttons */}
+      <div className="mb-6">
+        <label className="block mb-2 text-sm font-semibold text-gray-700">Property Type</label>
+        <div className="flex gap-4">
+          <button
+            type="button"
+            className={`flex-1 rounded-lg px-4 py-2 border transition font-medium text-base ${
+              form.propertyType === "residential"
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-gray-50 text-gray-800 border-gray-200"
+            }`}
+            onClick={() => setForm({ ...form, propertyType: "residential", commercialSubType: "" })}
+          >
+            Residential
+          </button>
+          <button
+            type="button"
+            className={`flex-1 rounded-lg px-4 py-2 border transition font-medium text-base ${
+              form.propertyType === "commercial"
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-gray-50 text-gray-800 border-gray-200"
+            }`}
+            onClick={() => setForm({ ...form, propertyType: "commercial", bhk: "" })}
+          >
+            Commercial
+          </button>
+        </div>
+      </div>
+
+      {/* Commercial Subtype (with icons) */}
+      {form.propertyType === "commercial" && (
+        <div className="mb-6">
+          <label className="block mb-2 text-sm font-semibold text-gray-700">Commercial Type</label>
+          <div className="flex gap-4">
+            {commercialTypes.map((ct) => (
+              <button
+                key={ct.value}
+                type="button"
+                className={`flex items-center justify-center gap-2 flex-1 rounded-lg px-4 py-2 border transition font-medium text-base ${
+                  form.commercialSubType === ct.value
+                    ? "bg-blue-500 text-white border-blue-600"
+                    : "bg-gray-50 text-gray-800 border-gray-200"
+                }`}
+                onClick={() => setForm({ ...form, commercialSubType: ct.value })}
+              >
+                {ct.icon} {ct.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Location Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+       <div>
+  <label className="block mb-2 text-sm font-semibold text-gray-700">Country</label>
+  <select
+    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+    value={form.country}
+    onChange={(e) => setForm({ ...form, country: e.target.value })}
+    disabled={loadingCountries}
+  >
+    <option value="">Select Country</option>
+    {countries.map((c) => (
+      <option key={c._id} value={c._id}>{c.name}</option>
+    ))}
+  </select>
+</div>
+<div>
+  <label className="block mb-2 text-sm font-semibold text-gray-700">State</label>
+  <select
+    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+    value={form.state}
+    onChange={(e) => setForm({ ...form, state: e.target.value })}
+    disabled={!form.country || loadingStates}
+  >
+    <option value="">Select State</option>
+    {states.map((s) => (
+      <option key={s._id} value={s._id}>{s.name}</option>
+    ))}
+  </select>
+</div>
+<div>
+  <label className="block mb-2 text-sm font-semibold text-gray-700">District</label>
+  <select
+    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+    value={form.district}
+    onChange={(e) => setForm({ ...form, district: e.target.value })}
+    disabled={!form.state || loadingDistricts}
+  >
+    <option value="">Select District</option>
+    {districts.map((d) => (
+      <option key={d._id} value={d._id}>{d.name}</option>
+    ))}
+  </select>
+</div>
+<div>
+          <label className="block mb-2 text-sm font-medium text-gray-700">Locality</label>
+          <input
+            type="text"
+            className="w-full border rounded-lg px-4 py-2"
+            placeholder="Enter Locality"
+            value={form.locality}
+            onChange={(e) => setForm({ ...form, locality: e.target.value })}
+          />
+        </div>
+      </div>
+
+      {/* RESIDENTIAL */}
+      {form.propertyType === "residential" && (
+        <>
+          {/* BHK */}
+          <div className="mb-6">
+            <label className="block mb-2 text-sm font-semibold text-gray-700">BHK</label>
+            <div className="flex gap-4">
+              {["1bhk", "2bhk", "3bhk", "4bhk+"].map((bhk) => (
+                <button
+                  key={bhk}
+                  type="button"
+                  className={`flex-1 rounded-lg px-4 py-2 border transition font-medium text-base ${
+                    form.bhk === bhk
+                      ? "bg-blue-500 text-white border-blue-600"
+                      : "bg-gray-50 text-gray-800 border-gray-200"
+                  }`}
+                  onClick={() => setForm({ ...form, bhk })}
+                >
+                  {bhk.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Built-Up, Rent, Deposit, Available */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Built-Up Area</label>
+              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                <input
+                  type="number"
+                  className="flex-1 px-4 py-2 outline-none border-0 focus:ring-0"
+                  placeholder="Area"
+                  value={form.builtUpArea}
+                  onChange={(e) => setForm({ ...form, builtUpArea: e.target.value })}
+                />
+                <select
+                  className="h-full border-0 bg-transparent px-3 py-2 outline-none focus:ring-0"
+                  value={form.areaUnit}
+                  onChange={(e) => setForm({ ...form, areaUnit: e.target.value })}
+                >
+                  <option value="sqft">Sqft</option>
+                  <option value="sqyd">Sq Yd</option>
+                  <option value="sqmt">Sq Mt</option>
+                </select>
+              </div>
+            </div>
+     {/* Monthly Rent */}
+<div className="mb-6">
+  <label className="block mb-2 text-sm font-semibold text-gray-700">Monthly Rent</label>
+  <input
+    type="number"
+    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition"
+    placeholder="Enter Monthly Rent"
+    value={form.priceDetails.monthlyRent}
+    onChange={handleInputChange}
+    name="priceDetails.monthlyRent"
+  />
+</div>
+
+{/* Security Deposit */}
+<div className="mb-6">
+  <label className="block mb-2 text-sm font-semibold text-gray-700">Security Deposit</label>
+  <input
+    type="number"
+    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition"
+    placeholder="Enter Security Deposit"
+    value={form.priceDetails.securityDeposit}
+    onChange={handleInputChange}
+    name="priceDetails.securityDeposit"
+  />
+</div>
+
+      <div className="mb-6">
+  <label className="block mb-2 text-sm font-semibold text-gray-700">Ownership</label>
+  <select
+    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+    value={form.ownership}
+    onChange={(e) => setForm({ ...form, ownership: e.target.value })}
+  >
+    <option value="">Select Ownership</option>
+    <option value="freehold">Freehold</option>
+    <option value="leasehold">Leasehold</option>
+    <option value="cooperative society">Cooperative Society</option>
+    <option value="power of attorney">Power of Attorney</option>
+  </select>
+</div>
+
+
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Available Date</label>
+              <input
+                type="date"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                value={form.availableDate}
+                onChange={(e) => setForm({ ...form, availableDate: e.target.value })}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* COMMERCIAL */}
+      {form.propertyType === "commercial" && (
+        <>
+          {/* Possession Status */}
+          <div className="mb-6">
+            <label className="block mb-2 text-sm font-semibold text-gray-700">Possession Status</label>
+            <div className="flex gap-4">
+              <button
+                type="button"
+                className={`flex-1 rounded-lg px-4 py-2 border transition font-medium text-base ${
+                  form.possessionStatus === "ready"
+                    ? "bg-blue-500 text-white border-blue-600"
+                    : "bg-gray-50 text-gray-800 border-gray-200"
+                }`}
+                onClick={() => setForm({ ...form, possessionStatus: "ready" })}
+              >
+                Ready to Move
+              </button>
+              <button
+                type="button"
+                className={`flex-1 rounded-lg px-4 py-2 border transition font-medium text-base ${
+                  form.possessionStatus === "under"
+                    ? "bg-blue-500 text-white border-blue-600"
+                    : "bg-gray-50 text-gray-800 border-gray-200"
+                }`}
+                onClick={() => setForm({ ...form, possessionStatus: "under" })}
+              >
+                Under Construction
+              </button>
+            </div>
+            {form.possessionStatus === "under" && (
+              <div className="mt-4">
+                <label className="block mb-1 text-sm font-semibold text-gray-700">Available Date</label>
+                <input
+                  type="date"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                  value={form.commercialAvailableDate}
+                  onChange={(e) => setForm({ ...form, commercialAvailableDate: e.target.value })}
+                />
+              </div>
+            )}
+          </div>
+          {/* About the property */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Location Hub</label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                placeholder="IT Park, Business Park, Others"
+                value={form.locationHub}
+                onChange={(e) => setForm({ ...form, locationHub: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Built-Up Area</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  className="flex-1 border border-gray-300 rounded-lg px-4 py-2"
+                  placeholder="Area"
+                  value={form.builtUpArea}
+                  onChange={(e) => setForm({ ...form, builtUpArea: e.target.value })}
+                />
+                <select
+                  className="w-24 border border-gray-300 rounded-lg px-2"
+                  value={form.areaUnit}
+                  onChange={(e) => setForm({ ...form, areaUnit: e.target.value })}
+                >
+                  <option value="sqft">Sqft</option>
+                  <option value="sqyd">Sq Yd</option>
+                  <option value="sqmt">Sq Mt</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Ownership</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                value={form.ownership}
+                onChange={(e) => setForm({ ...form, ownership: e.target.value })}
+              >
+                <option value="">Select Ownership</option>
+                <option value="freehold">Freehold</option>
+                <option value="leasehold">Leasehold</option>
+                <option value="cooperative">Cooperative Society</option>
+              </select>
+            </div>
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Total Floors</label>
+              <input
+                type="number"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                placeholder="No. of Floors"
+                value={form.floorsAvailable}
+                onChange={(e) => setForm({ ...form, floorsAvailable: e.target.value })}
+              />
+            </div>
+          </div>
+          {/* Price */}
+          <div className="mb-6">
+            <label className="block mb-2 text-sm font-semibold text-gray-700">Expected Rent (Financials)</label>
+            <input
+              type="number"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              placeholder="₹ / month"
+              value={form.expectedRent}
+              onChange={(e) => setForm({ ...form, expectedRent: e.target.value })}
+            />
+          </div>
+        </>
+      )}
+
+      {/* Amenities */}
+      <div className="mb-10">
+        <label className="block mb-2 text-sm font-semibold text-gray-700">Amenities</label>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {amenitiesList.map((amenity) => (
+            <button
+              key={amenity.name}
+              type="button"
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition font-medium ${
+                form.amenities.includes(amenity.name)
+                  ? "bg-blue-500 text-white border-blue-600"
+                  : "bg-gray-50 text-gray-800 border-gray-300"
+              }`}
+              onClick={() => handleSelectAmenities(amenity.name)}
+            >
+              <span>{amenity.icon}</span>
+              <span>{amenity.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Submit */}
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          className="w-full md:w-1/2 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition text-lg"
+        >
+          Submit Property
+        </button>
+      </div>
+
+      {/* File Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
+          <div className="bg-white p-8 rounded-lg max-w-lg w-full">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6">Upload Property Images & Videos</h3>
+
+            {/* Image Upload */}
+            <div className="mb-6">
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Upload Photos</label>
+              <input
+                type="file"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                multiple
+                onChange={(e) => handleFileChange(e, "images")}
+              />
+            </div>
+
+            {/* Video Upload */}
+            <div className="mb-6">
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Upload Videos</label>
+              <input
+                type="file"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                multiple
+                onChange={(e) => handleFileChange(e, "videos")}
+              />
+            </div>
+
+            <div className="flex justify-between">
+              <button
+                type="button"
+                className="py-2 px-4 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                onClick={() => setShowUploadModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                onClick={() => setShowUploadModal(false)}
+              >
+                Confirm Uploads
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </form>
   );
 };
 

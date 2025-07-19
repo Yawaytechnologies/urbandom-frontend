@@ -34,21 +34,41 @@ const CARD_OPTIONS = [
 const PropertyTypeSelector = () => {
   const [selectedForm, setSelectedForm] = useState(null);
   const [pulseIndex, setPulseIndex] = useState(null);
+  const [lookingTo, setLookingTo] = useState(""); // State to store 'lookingTo'
 
+  // This function will set the 'lookingTo' state based on the selected property type
   const handleSelectForm = (form, idx) => {
     setPulseIndex(idx); // trigger pulse effect
+
     setTimeout(() => {
       setSelectedForm(form);
+
+      // Set lookingTo based on selected form type
+      let lookingToValue = "";
+      if (form === "Rent") {
+        lookingToValue = "rent";
+      } else if (form === "Sell") {
+        lookingToValue = "sell";
+      } else if (form === "PG/Co-living") {
+        lookingToValue = "pg-co/living";
+      }
+
+      setLookingTo(lookingToValue); // Set lookingTo in state here
       setPulseIndex(null);
     }, 200); // Pulse duration before showing form
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 py-12 relative transition-colors duration-700">
+    <div className="min-h-screen flex flex-col items-center justify-center mt-10 bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 py-12 relative transition-colors duration-700">
       {/* Decorative blurred blobs for background */}
-      <div className="absolute top-10 left-10 w-80 h-80 bg-blue-300/30 rounded-full filter blur-3xl opacity-60 -z-10"></div>
-      <div className="absolute bottom-24 right-10 w-96 h-72 bg-purple-300/40 rounded-full filter blur-3xl opacity-70 -z-10"></div>
-      
+      <div
+        className="absolute inset-0 w-full h-full z-[-20] bg-center bg-cover blur-2xl"
+        style={{
+          backgroundImage: `url(${bgProperty})`,
+          filter: "blur(30px) brightness(1.08)",
+          opacity: 0.64,
+        }}
+      ></div>
       {/* Animated Back Button */}
       {selectedForm && (
         <button
@@ -62,70 +82,64 @@ const PropertyTypeSelector = () => {
       {!selectedForm ? (
         <>
           <h2 className="text-5xl font-black mb-12 text-gray-800 drop-shadow-lg tracking-tight">
-            Select Property Type
+            Looking To
           </h2>
           <div className="flex flex-wrap gap-12 justify-center items-center">
             {CARD_OPTIONS.map((opt, idx) => (
               <div
                 key={opt.key}
-                className={`
-                  group relative w-72 h-72 rounded-3xl flex flex-col items-center justify-center
-                  bg-gradient-to-br ${opt.gradient} ${opt.shadow}
-                  text-white cursor-pointer select-none
-                  transition-all duration-300
-                  hover:scale-105 hover:shadow-2xl
-                  active:scale-100
-                  overflow-hidden
-                  ${pulseIndex === idx ? "animate-pulse-fast" : ""}
-                `}
+                className={`group relative w-72 h-72 rounded-3xl flex flex-col items-center justify-center
+                bg-gradient-to-br ${opt.gradient} ${opt.shadow}
+                text-white cursor-pointer select-none
+                transition-all duration-300
+                hover:scale-105 hover:shadow-2xl
+                active:scale-100
+                overflow-hidden
+                ${pulseIndex === idx ? "animate-pulse-fast" : ""}`}
                 style={{
-                  // glass effect + border
                   backdropFilter: "blur(12px)",
                   border: "1.5px solid rgba(255,255,255,0.15)",
                   boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
                 }}
                 onClick={() => handleSelectForm(opt.key, idx)}
               >
-                {/* Icon */}
                 <div className="text-6xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-active:scale-95 drop-shadow-lg">
                   {opt.icon}
                 </div>
-                {/* Heading */}
                 <h3 className="text-2xl font-extrabold mb-1 drop-shadow">
                   {opt.label}
                 </h3>
-                {/* Description */}
                 <p className="text-base font-medium opacity-90">{opt.desc}</p>
-                {/* Shine overlay effect */}
-                <span className="
-                  pointer-events-none absolute top-0 left-0 w-full h-full
+                <span
+                  className="pointer-events-none absolute top-0 left-0 w-full h-full
                   bg-gradient-to-tr from-white/20 via-white/10 to-transparent
                   opacity-0 group-hover:opacity-100 transition-all duration-500 blur-lg
-                  rounded-3xl
-                "></span>
+                  rounded-3xl"
+                ></span>
               </div>
             ))}
           </div>
-          {/* Pulse animation custom class */}
           <style>{`
             .animate-pulse-fast {
               animation: pulse-fast 0.18s;
             }
             @keyframes pulse-fast {
-              0% { transform: scale(1);}
-              50% { transform: scale(1.06);}
-              100% { transform: scale(1);}
+              0% { transform: scale(1); }
+              50% { transform: scale(1.06); }
+              100% { transform: scale(1); }
             }
             .fade-in { animation: fadeIn 0.35s; }
-            @keyframes fadeIn { from {opacity:0; transform: translateY(-20px);} to {opacity:1; transform: none;} }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
           `}</style>
         </>
       ) : (
         <div className="w-full max-w-2xl bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl p-8 fade-in">
           {/* Show the form based on the selected property type */}
-          {selectedForm === "Rent" && <RentForm />}
-          {selectedForm === "Sell" && <SellForm />}
-          {selectedForm === "PG/Co-living" && <PGCoLivingForm />}
+          {selectedForm === "Rent" && <RentForm lookingTo={lookingTo} />}
+          {selectedForm === "Sell" && <SellForm lookingTo={lookingTo} />}
+          {selectedForm === "PG/Co-living" && (
+            <PGCoLivingForm lookingTo={lookingTo} />
+          )}
         </div>
       )}
     </div>

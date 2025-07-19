@@ -1,14 +1,20 @@
-// src/services/propertyService.js
-const API_URL = 'http://localhost:5001/api/';
+import axios from 'axios';
 
-const propertyService = {
-  getPropertyTypes: async () => {
-    const response = await fetch(`${API_URL}property`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch property types');
-    }
-    return response.json();
-  },
+const API_URL = `${import.meta.env.VITE_API_URL}property`;
+
+export const createProperty = async (propertyData) => {
+  if (!propertyData.lookingTo) {
+    throw new Error('Please specify the property type: rent, sell, or PG/co-living.');
+  }
+
+  try {
+    const response = await axios.post(API_URL, propertyData, {
+      headers: {
+        'Content-Type': 'application/json', // Correct for JSON
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || error.message || 'Error creating property');
+  }
 };
-
-export default propertyService;
