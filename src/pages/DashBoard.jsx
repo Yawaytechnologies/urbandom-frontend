@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import DashboardHeader from "../components/Dashboard/DashboardHeader";
 import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
-import EnquiryMain from "../components/Dashboard/EnquiryMain.jsx";
+import EnquiryMain from "../components/Dashboard/EnquiryMain";
 import ListingMain from "../components/Dashboard/ListingMain";
-import DashboardProfile from "../components/Dashboard/DashboardProfile"; 
-
+import DashboardProfile from "../components/Dashboard/DashboardProfile";
 
 const DashBoard = () => {
   const [activeSection, setActiveSection] = useState("enquiries");
@@ -53,7 +52,8 @@ const DashBoard = () => {
     <>
       <DashboardHeader onMenuClick={setActiveSection} />
 
-      <div className="flex bg-[#f3f4f6] min-h-screen pt-10 pl-10">
+      <div className="flex flex-col lg:flex-row w-full min-h-screen bg-[#f7f7ff] pb-[65px]">
+        {/* Sidebar: visible on desktop, floating button for mobile/tablet */}
         {activeSection !== "profile" && (
           <DashboardSidebar
             activeSection={activeSection}
@@ -61,7 +61,18 @@ const DashBoard = () => {
           />
         )}
 
-        <main className="flex-1 px-4 py-6">
+        {/* Main content area */}
+        <main
+          className="
+            flex-1 w-full 
+            px-0 pt-4 pb-8
+            sm:px-3 sm:pt-6
+            md:px-5 md:pt-8
+            lg:pt-10 lg:pb-12
+            max-w-full
+            transition-all
+          "
+        >
           {activeSection === "enquiries" && (
             <EnquiryMain
               activePromo={activePromo}

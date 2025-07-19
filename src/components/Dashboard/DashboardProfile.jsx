@@ -1,8 +1,30 @@
-import { useState, useEffect } from "react";
-import { FiEdit } from "react-icons/fi";
+import { useState, useEffect, useRef } from "react";
+import { FiEdit, FiMenu } from "react-icons/fi";
+import { IoMdClose } from "react-icons/io";
+import { motion } from "framer-motion";
+import { HiMenuAlt2 } from "react-icons/hi";
+
+const SIDEBAR_ITEMS = [
+  { key: "basicProfile", label: "Basic Profile" },
+  { key: "contacted", label: "Users You Contacted" },
+  { key: "properties", label: "Your Properties" },
+];
+
+const PROPERTY_TYPES = [
+  "All",
+  "Rent",
+  "Sale",
+  "Commercial-Rent",
+  "PG/Hostel",
+  "Flatmates",
+  "Land/Plot",
+];
 
 const DashboardProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarRef = useRef(null);
+
   const [profile, setProfile] = useState({
     name: "jana",
     phone: "9087410210",
@@ -14,27 +36,22 @@ const DashboardProfile = () => {
 
   // State to hold the contacted properties data
   const [contactedProperties, setContactedProperties] = useState([]);
-  const [filter, setFilter] = useState("All"); // This state will track the selected filter for "Users You Contacted"
+  const [filter, setFilter] = useState("All");
 
   // State for Your Properties section
-  const [properties, setProperties] = useState([]); // State to hold the user's properties
-  const [contactedData, setContactedData] = useState([]); // State for the "Users You Contacted" section
+  const [properties, setProperties] = useState([]);
+  const [contactedData, setContactedData] = useState([]);
 
   // Load profile from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("dashboardProfile");
-    if (stored) {
-      setProfile(JSON.parse(stored));
-    }
-
-    // Load image from localStorage if available
+    if (stored) setProfile(JSON.parse(stored));
     const savedImage = localStorage.getItem("profileImage");
-    if (savedImage) {
+    if (savedImage)
       setProfile((prevState) => ({ ...prevState, image: savedImage }));
-    }
 
-    // Fetch properties (You can replace this with an API call to get actual data)
-    const fetchedProperties = [
+    // Dummy property data
+    setProperties([
       {
         id: 1,
         title: "3 BHK Apartment",
@@ -49,11 +66,9 @@ const DashboardProfile = () => {
         price: "₹25,000/month",
         status: "Inactive",
       },
-    ];
-    setProperties(fetchedProperties);
-
-    // Dummy data for contacted users
-    const fetchedContactedData = [
+    ]);
+    // Dummy contacted data
+    setContactedData([
       {
         id: 1,
         name: "John Doe",
@@ -64,7 +79,7 @@ const DashboardProfile = () => {
       {
         id: 2,
         name: "Alice Smith",
-        propertyType: "PG",
+        propertyType: "PG/Hostel",
         location: "Chennai",
         status: "Contacted",
       },
@@ -82,8 +97,7 @@ const DashboardProfile = () => {
         location: "Chennai",
         status: "Contacted",
       },
-    ];
-    setContactedData(fetchedContactedData);
+    ]);
   }, []);
 
   // Update profile image
@@ -92,18 +106,14 @@ const DashboardProfile = () => {
     if (file) {
       const url = URL.createObjectURL(file);
       setProfile({ ...profile, image: url });
-
-      // Save image to localStorage
       localStorage.setItem("profileImage", url);
     }
   };
 
-  // Handle profile changes
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  // Handle saving the profile
   const handleSave = () => {
     if (!profile.email.trim()) {
       alert("❌ Please enter a valid email.");
@@ -114,75 +124,123 @@ const DashboardProfile = () => {
     setIsModalOpen(false);
   };
 
-  // Change the active section and set the contacted properties when "Users You Contacted" is selected
+  // Handle outside click for mobile sidebar
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const handleClick = (e) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target))
+        setSidebarOpen(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [sidebarOpen]);
+
   const handleSectionChange = (section) => {
     setActiveSection(section);
-    if (section === "contacted") {
-      setContactedProperties([]); // Leave empty if no properties are available
-    }
+    setSidebarOpen(false); // Close sidebar on mobile when navigating
+    if (section === "contacted") setContactedProperties([]);
   };
 
-  // Handle filter change for contacted users
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
-  };
+  const handleFilterChange = (newFilter) => setFilter(newFilter);
 
-  // Filter the contacted users based on the selected category
   const filteredContactedData = contactedData.filter((user) => {
     if (filter === "All") return true;
     return user.propertyType === filter;
   });
 
-  return (
-    <div className="flex max-w-6xl mx-auto mt-6 px-4 md:px-">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md rounded-lg p-4 mr-6 h-screen hidden md:block">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+  // --- SIDEBAR (used both mobile & desktop) ---
+  const Sidebar = (
+    <aside
+      ref={sidebarRef}
+      className={`
+        flex flex-col bg-white shadow-lg rounded-t-3xl rounded-b-3xl py-6 px-5
+        md:rounded-lg md:h-screen md:py-8 md:px-4 md:shadow-md
+        w-[85vw] max-w-xs h-full fixed z-40 top-0 left-0
+        transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0 md:static md:block md:w-64
+      `}
+      style={{
+        minHeight: 300,
+        maxHeight: 520,
+      }}
+    >
+      <div className="flex justify-between items-center mb-6 md:mb-4">
+        <h2 className="text-base md:text-lg font-semibold text-gray-800">
           Manage your Account
         </h2>
-        <ul className="space-y-3 text-sm">
+        {/* Mobile close button */}
+        <button
+          className="md:hidden p-1 text-gray-700"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Close menu"
+        >
+          <IoMdClose size={26} />
+        </button>
+      </div>
+      <ul className="space-y-3 text-sm">
+        {SIDEBAR_ITEMS.map((item) => (
           <li
-            className={`cursor-pointer ${
-              activeSection === "basicProfile"
-                ? "text-[#7D4AEA]"
-                : "text-gray-700"
-            } font-semibold`}
-            onClick={() => handleSectionChange("basicProfile")}
-          >
-            Basic Profile
-          </li>
-          <li
-            className={`cursor-pointer ${
-              activeSection === "contacted" ? "text-[#7D4AEA]" : "text-gray-700"
+            key={item.key}
+            className={`cursor-pointer px-2 py-2 rounded-lg transition ${
+              activeSection === item.key
+                ? "bg-[#f2eaff] text-[#7D4AEA] font-bold scale-105 shadow"
+                : "text-gray-700 hover:bg-gray-50"
             }`}
-            onClick={() => handleSectionChange("contacted")}
+            onClick={() => handleSectionChange(item.key)}
           >
-            Users You Contacted
+            {item.label}
           </li>
-          <li
-            className={`cursor-pointer ${
-              activeSection === "properties"
-                ? "text-[#7D4AEA]"
-                : "text-gray-700"
-            }`}
-            onClick={() => handleSectionChange("properties")}
-          >
-            Your Properties
-          </li>
-        </ul>
-      </aside>
+        ))}
+      </ul>
+    </aside>
+  );
 
-      {/* Main Content */}
-      <div className="flex-1 space-y-6">
-        {/* Render Basic Profile Section */}
+  return (
+    <div className="flex max-w-6xl mx-auto mt-6 px-2 md:px-4 relative">
+      {/* --- MOBILE BOTTOM-LEFT HAMBURGER --- */}
+      {/* --- MOBILE BOTTOM-LEFT HAMBURGER (Bounce style) --- */}
+      <motion.button
+        className="md:hidden fixed bottom-20 left-5 z-50 bg-[#5f36ff] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-xl transition"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open menu"
+        animate={{ y: [0, -11, 0] }}
+        transition={{
+          repeat: Infinity,
+          repeatType: "loop",
+          duration: 2,
+          ease: "easeInOut",
+        }}
+        whileTap={{ scale: 0.85 }}
+      >
+        <HiMenuAlt2 size={24} /> 
+      </motion.button>
+
+      {/* --- MOBILE SIDEBAR DRAWER + OVERLAY --- */}
+      <div
+        className={`
+          fixed inset-0 z-40 bg-black/30 transition-opacity duration-300
+          ${
+            sidebarOpen
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+          }
+          md:hidden
+        `}
+        aria-hidden={!sidebarOpen}
+      />
+      {/* Sidebar (mobile: slide, desktop: static) */}
+      {Sidebar}
+
+      {/* --- MAIN CONTENT --- */}
+      <div className="flex-1 space-y-6 md:pl-6 pt-3 md:pt-0 w-full">
+        {/* --- Basic Profile Section --- */}
         {activeSection === "basicProfile" && (
           <>
             <h2 className="font-semibold text-black mb-2">My Profile</h2>
-
-            {/* Profile Card */}
             <div className="bg-white shadow rounded-lg p-4 flex justify-between items-start flex-wrap gap-4">
               <div className="flex gap-3">
-                <div className="w-24 h-24 bg-[#7D4AEA]/90 rounded-full flex items-center justify-center overflow-hidden">
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-[#7D4AEA]/90 rounded-full flex items-center justify-center overflow-hidden">
                   {profile.image ? (
                     <img
                       src={profile.image}
@@ -200,7 +258,7 @@ const DashboardProfile = () => {
                     </svg>
                   )}
                 </div>
-                <div className="text-sm ml-2 mt-3">
+                <div className="text-sm ml-2 mt-2 md:mt-3">
                   <p className="font-semibold">{profile.name}</p>
                   <p className="text-gray-700">+91 {profile.phone}</p>
                   <p className="text-gray-800 mt-1">{profile.email}</p>
@@ -219,18 +277,16 @@ const DashboardProfile = () => {
             {/* Modal */}
             {isModalOpen && (
               <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-                <div className="bg-white w-[420px] rounded-lg py-4 px-6 relative shadow-lg">
+                <div className="bg-white w-[95vw] max-w-[420px] rounded-lg py-4 px-6 relative shadow-lg">
                   <button
                     onClick={() => setIsModalOpen(false)}
                     className="absolute top-3 right-4 text-2xl text-gray-500 hover:text-black"
                   >
                     ×
                   </button>
-
                   <h2 className="text-lg font-semibold text-center mb-3">
                     Edit Your Information
                   </h2>
-
                   <div className="flex flex-col items-center mb-4">
                     <div className="w-24 h-24 rounded-full border border-gray-300 bg-gray-100 overflow-hidden flex items-center justify-center">
                       {profile.image ? (
@@ -268,8 +324,6 @@ const DashboardProfile = () => {
                       />
                     </label>
                   </div>
-
-                  {/* Form */}
                   <div className="space-y-4 text-sm">
                     <div>
                       <label className="block text-gray-600 font-semibold mb-1">
@@ -282,7 +336,6 @@ const DashboardProfile = () => {
                         className="w-full border-b border-gray-300 py-1 focus:outline-none"
                       />
                     </div>
-
                     <div>
                       <label className="block text-gray-600 font-semibold mb-1">
                         EMAIL
@@ -295,7 +348,6 @@ const DashboardProfile = () => {
                         className="w-full border-b border-gray-300 py-1 focus:outline-none"
                       />
                     </div>
-
                     <div>
                       <label className="block text-gray-600 font-semibold mb-1">
                         PHONE NUMBER
@@ -312,14 +364,12 @@ const DashboardProfile = () => {
                         />
                       </div>
                     </div>
-
                     <div>
                       <span className="inline-block bg-[#7D4AEA] text-white px-4 py-1.5 rounded-full font-medium text-sm">
                         {profile.city}
                       </span>
                     </div>
                   </div>
-
                   <div className="flex justify-end mt-6 gap-3">
                     <button
                       onClick={() => setIsModalOpen(false)}
@@ -351,33 +401,21 @@ const DashboardProfile = () => {
             <h2 className="font-semibold text-black mb-2">
               Users You Contacted
             </h2>
-
-            {/* Filter Section */}
-            <div className="flex gap-4 mb-4">
-              {[
-                "All",
-                "Rent",
-                "Sale",
-                "Commercial-Rent",
-                "PG/Hostel",
-                "Flatmates",
-                "Land/Plot",
-              ].map((type) => (
+            <div className="flex gap-2 mb-4 flex-wrap">
+              {PROPERTY_TYPES.map((type) => (
                 <button
                   key={type}
                   onClick={() => handleFilterChange(type)}
                   className={`px-4 py-2 rounded-md font-medium text-sm ${
                     filter === type
                       ? "bg-[#7D4AEA] text-white"
-                      : "bg-white text-gray-700"
+                      : "bg-white text-gray-700 border border-gray-200"
                   }`}
                 >
                   {type}
                 </button>
               ))}
             </div>
-
-            {/* Contacted Properties List */}
             {filteredContactedData.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredContactedData.map((user) => (
@@ -407,33 +445,21 @@ const DashboardProfile = () => {
         {activeSection === "properties" && (
           <>
             <h2 className="font-semibold text-black mb-2">Your Properties</h2>
-
-            {/* Filter Section */}
-            <div className="flex gap-4 mb-4">
-              {[
-                "All",
-                "Rent",
-                "Sale",
-                "Commercial-Rent",
-                "PG/Hostel",
-                "Flatmates",
-                "Land/Plot",
-              ].map((type) => (
+            <div className="flex gap-2 mb-4 flex-wrap">
+              {PROPERTY_TYPES.map((type) => (
                 <button
                   key={type}
                   onClick={() => handleFilterChange(type)}
                   className={`px-4 py-2 rounded-md font-medium text-sm ${
                     filter === type
                       ? "bg-[#7D4AEA] text-white"
-                      : "bg-white text-gray-700"
+                      : "bg-white text-gray-700 border border-gray-200"
                   }`}
                 >
                   {type}
                 </button>
               ))}
             </div>
-
-            {/* Properties List */}
             {properties.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {properties.map((property) => (
@@ -458,8 +484,6 @@ const DashboardProfile = () => {
             ) : (
               <p>No properties found. Want to post a property?</p>
             )}
-
-            {/* Post Property Button */}
             <button
               className="mt-4 px-6 py-2 rounded-md bg-[#7D4AEA] text-white font-semibold"
               onClick={() => console.log("Post Property clicked")}

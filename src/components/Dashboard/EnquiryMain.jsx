@@ -8,11 +8,10 @@ const EnquiryMain = ({
   handleNext = () => {},
   promoCards = [],
   sampleEnquiries = [],
-  activeTab = "All",
-  setActiveTab = () => {},
+  activeEnquiryId = null,
+  onSelectEnquiry = () => {},
 }) => {
   const activeCard = promoCards[activePromo] || {};
-  const tabs = ["All", "Contacted", "Matching Tenants"];
 
   return (
     <main className="flex-1 pr-3 overflow-y-auto max-h-screen">
@@ -23,40 +22,21 @@ const EnquiryMain = ({
         </h2>
         <div className="flex space-x-3 overflow-x-auto scrollbar-none mb-4">
           {sampleEnquiries?.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center gap-2 bg-white border border-purple-400 px-3 py-1.5 rounded-lg min-w-max whitespace-nowrap"
-            >
-              <FaBuilding className="text-gray-500" />
-              <span className="text-sm text-purple-700 font-medium">
-                {item.text}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Mobile Tab Selector */}
-        <div className="flex gap-2 w-full overflow-x-auto scrollbar-none pb-2">
-          {tabs.map((tab) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-sm border font-medium whitespace-nowrap flex items-center gap-2 transition-all ${
-                activeTab === tab
-                  ? "bg-[#e6deff] border-[#5f36ff] text-[#5f36ff] font-semibold"
-                  : "bg-white border-gray-300 text-gray-700"
-              }`}
+              key={item.id}
+              onClick={() => onSelectEnquiry(item)}
+              className={`flex items-center gap-2 border px-3 py-1.5 rounded-lg min-w-max whitespace-nowrap transition
+                ${
+                  activeEnquiryId === item.id
+                    ? "bg-purple-600 border-purple-700 text-white"
+                    : "bg-white border-purple-400 text-purple-700"
+                }
+                ${activeEnquiryId === item.id ? "font-semibold" : ""}
+              `}
+              type="button"
             >
-              {tab}
-              <span
-                className={`ml-1 text-xs px-2 py-1 rounded-full ${
-                  activeTab === tab
-                    ? "bg-white text-[#5f36ff]"
-                    : "bg-[#f2f2ff] text-purple-700"
-                }`}
-              >
-                0
-              </span>
+              <FaBuilding className={activeEnquiryId === item.id ? "text-white" : "text-gray-500"} />
+              <span className="text-sm">{item.text}</span>
             </button>
           ))}
         </div>
@@ -69,15 +49,22 @@ const EnquiryMain = ({
         </h2>
         <div className="flex space-x-3 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 pb-1">
           {sampleEnquiries?.map((item) => (
-            <div
+            <button
               key={item.id}
-              className="flex items-center gap-2 bg-white border border-purple-400 px-3 py-1.5 rounded-lg min-w-max whitespace-nowrap"
+              onClick={() => onSelectEnquiry(item)}
+              className={`flex items-center gap-2 border px-3 py-1.5 rounded-lg min-w-max whitespace-nowrap transition
+                ${
+                  activeEnquiryId === item.id
+                    ? "bg-purple-600 border-purple-700 text-white"
+                    : "bg-white border-purple-400 text-purple-700"
+                }
+                ${activeEnquiryId === item.id ? "font-semibold" : ""}
+              `}
+              type="button"
             >
-              <FaBuilding className="text-gray-500" />
-              <span className="text-sm text-purple-700 font-medium">
-                {item.text}
-              </span>
-            </div>
+              <FaBuilding className={activeEnquiryId === item.id ? "text-white" : "text-gray-500"} />
+              <span className="text-sm">{item.text}</span>
+            </button>
           ))}
         </div>
       </div>
@@ -144,7 +131,7 @@ const EnquiryMain = ({
             </AnimatePresence>
           </div>
 
-          {/* ✅ Mobile/Tablet version (carousel with scroll snap) */}
+          {/* Mobile/Tablet version (carousel with scroll snap) */}
           <div className="md:hidden px-4 mt-2 overflow-hidden">
             <div className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none">
               {promoCards.map((card, idx) => (
