@@ -42,9 +42,16 @@ const HeroSection = () => {
   ];
 
   useEffect(() => {
-    setTab(defaultTab);
-    setLocation(locationsByTab[defaultTab]?.[0] || '');
-  }, [defaultTab, locationsByTab]); // Added locationsByTab to dependencies
+    // Prevent setting state if already correctly initialized
+    if (tab !== defaultTab) {
+      setTab(defaultTab);
+    }
+
+    // Only set location if it's not already set
+    if (!location && locationsByTab[defaultTab]?.[0]) {
+      setLocation(locationsByTab[defaultTab][0]);
+    }
+  }, [defaultTab, location]);  // Only re-run when defaultTab or location changes
 
   const handleTabClick = (label, route) => {
     setTab(label.toLowerCase());
@@ -65,9 +72,23 @@ const HeroSection = () => {
     >
       <div className="pt-[72px] pb-20 px-4 sm:px-6 flex flex-col items-center justify-center h-full text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-4">
-          Properties to <span className="capitalize">{tab}</span> in{' '}
-          <span style={{ color: accentColors[tab] }}>{location}</span>
-        </h1>
+  
+
+  {tab === "pg" && (
+    <>
+      Best PGs & Hostels Available in{' '}
+      <span style={{ color: accentColors[tab] }}>{location}</span>
+    </>
+  )}
+
+  {!["pg"].includes(tab) && (
+    <>
+      Properties to <span className="capitalize">{tab}</span> in{' '}
+      <span style={{ color: accentColors[tab] }}>{location}</span>
+    </>
+  )}
+</h1>
+
         <p className="text-base sm:text-lg md:text-xl mb-10 text-white">
           <span className="font-bold">8K+</span> listings added daily and{' '}
           <span className="font-bold">67K+</span> total verified

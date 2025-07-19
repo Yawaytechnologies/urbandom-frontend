@@ -6,6 +6,8 @@ import buyPageReducer from '../reducer/buyPageSlice'; // Import the buyPage slic
 import countryReducer from '../reducer/countrySlice';
 import stateReducer from '../reducer/stateSlice';
 import districtReducer from '../reducer/districtSlice';
+import rentPageReducer from '../reducer/rentPageSlice';
+
 const store = configureStore({
   reducer: {
     property: propertyReducer, // Your property slice
@@ -13,6 +15,7 @@ const store = configureStore({
      countries: countryReducer,
     states: stateReducer,
     districts: districtReducer,
+    rentPage: rentPageReducer,
   },
 });
 
