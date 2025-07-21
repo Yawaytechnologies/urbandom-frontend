@@ -9,7 +9,7 @@ import BuyPage from './pages/BuyPage';
 import PGPage from './pages/PGPage';
 
 import PropertyTypeSelector from './components/PropertyForm/PropertyType'; 
-import PGCoLivingForm from './components/';
+import PGCoLivingForm from './components/PropertyForm/PG-Coliving';
 // import SearchResults from './pages/SearchResults';
 
 const App = () => {
