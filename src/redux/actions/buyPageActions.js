@@ -28,3 +28,45 @@ export const fetchProminentProperties = createAsyncThunk(
     }
   }
 );
+
+// Fetch Developers from the API
+export const fetchFeaturedDevelopers = createAsyncThunk(
+  'buyPage/fetchFeaturedDevelopers',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await buyPageService.getFeaturedDevelopers(); 
+      return response;  // Return the fetched properties
+    } catch (error) {
+      console.error("Error in action:", error.message);
+      return rejectWithValue(error.message);  // Pass the error to Redux
+    }
+  }
+);
+
+// Fetch newly added properties for Rent page
+export const fetchNewlyAddedPropertiesAction = createAsyncThunk(
+  'buyPage/fetchNewlyAddedProperties',
+  async (_, { rejectWithValue }) => {
+    try {
+      const properties = await buyPageService.getNewlyAddedProperties(); // Call the method from rentPageService
+      return properties;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Fetch News and Articles section
+export const fetchNewsAndArticles = createAsyncThunk(
+  'buyPage/fetchNewsAndArticles',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await buyPageService.getNewsAndArticles(); // Call the method from newsAndArticleService
+      return response;
+    } catch (error) {
+      console.error("Error in action:", error.message);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+

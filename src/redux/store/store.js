@@ -7,6 +7,7 @@ import rentPageReducer from '../reducer/rentPageSlice';
 import buyPageReducer from '../reducer/buyPageSlice';  // Import the buyPage slice
 
 
+import userLoginReducer from '../reducer/userLoginSlice'
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     overviewHome: overviewHomeReducer, // OverviewHome reducer for managing overview property data
     rentPage: rentPageReducer,
     buyPage: buyPageReducer,
+    userLogin: userLoginReducer
   },
 });
 
