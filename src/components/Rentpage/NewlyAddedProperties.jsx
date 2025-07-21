@@ -4,7 +4,6 @@ import { FaMapMarkerAlt, FaBed } from 'react-icons/fa';
 const NewlyAddedProperties = ({ properties }) => {
   const containerRef = useRef(null);
   const [scrollPercent, setScrollPercent] = useState(0);
-  let scrollInterval;
 
   // Scroll left functionality
   const handleScrollLeft = () => {
@@ -34,15 +33,6 @@ const NewlyAddedProperties = ({ properties }) => {
     return () => container.removeEventListener('scroll', updateScrollProgress);
   }, []);
 
-  // Auto-scroll behavior
-  const startAutoScroll = (direction) => {
-    scrollInterval = setInterval(() => {
-      containerRef.current?.scrollBy({ left: direction === 'left' ? -10 : 10 });
-    }, 16);
-  };
-
-  const stopAutoScroll = () => clearInterval(scrollInterval);
-
   return (
     <section className="relative py-10 px-4 md:px-8 bg-[var(--background)] overflow-hidden">
       <div className="mb-6">
@@ -60,9 +50,6 @@ const NewlyAddedProperties = ({ properties }) => {
         {/* Arrows for scrolling */}
         <button
           onClick={handleScrollLeft}
-          onMouseDown={() => startAutoScroll('left')}
-          onMouseUp={stopAutoScroll}
-          onMouseLeave={stopAutoScroll}
           className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
             shadow hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
           aria-label="Scroll Left"
@@ -128,9 +115,6 @@ const NewlyAddedProperties = ({ properties }) => {
         {/* Right Arrow for scrolling */}
         <button
           onClick={handleScrollRight}
-          onMouseDown={() => startAutoScroll('right')}
-          onMouseUp={stopAutoScroll}
-          onMouseLeave={stopAutoScroll}
           className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
             shadow hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
           aria-label="Scroll Right"
