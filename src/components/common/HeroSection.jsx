@@ -9,8 +9,8 @@ const HeroSection = () => {
 
   const defaultTab = currentPath.includes('rent')
     ? 'rent'
-    : currentPath.includes('pg')
-    ? 'pg'
+    : currentPath.includes('/pg-coliving-form')
+    ? '/pg-coliving-form'
     : 'buy';
 
   const [tab, setTab] = useState(defaultTab);
@@ -38,7 +38,7 @@ const HeroSection = () => {
   const tabs = [
     { label: 'Buy', icon: <FaHome />, route: '/buy' },
     { label: 'Rent', icon: <FaBuilding />, route: '/rent' },
-    { label: 'PG/Co-Living', icon: <FaUsers />, route: '/pg' },
+    { label: 'PG/Co-Living', icon: <FaUsers />, route: '/pg-coliving-form' },
   ];
 
   // Reset location when tab changes, always pick the first city for the tab
@@ -74,9 +74,23 @@ const HeroSection = () => {
     >
       <div className="pt-[72px] pb-20 px-4 sm:px-6 flex flex-col items-center justify-center h-full text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-4">
-          Properties to <span className="capitalize">{tab}</span> in{' '}
-          <span style={{ color: accentColors[tab] }}>{location}</span>
-        </h1>
+  
+
+  {tab === "pg" && (
+    <>
+      Best PGs & Hostels Available in{' '}
+      <span style={{ color: accentColors[tab] }}>{location}</span>
+    </>
+  )}
+
+  {!["pg"].includes(tab) && (
+    <>
+      Properties to <span className="capitalize">{tab}</span> in{' '}
+      <span style={{ color: accentColors[tab] }}>{location}</span>
+    </>
+  )}
+</h1>
+
         <p className="text-base sm:text-lg md:text-xl mb-10 text-white">
           <span className="font-bold">8K+</span> listings added daily and{' '}
           <span className="font-bold">67K+</span> total verified
