@@ -41,17 +41,19 @@ const HeroSection = () => {
     { label: 'PG/Co-Living', icon: <FaUsers />, route: '/pg' },
   ];
 
+  // Reset location when tab changes, always pick the first city for the tab
   useEffect(() => {
-    // Prevent setting state if already correctly initialized
-    if (tab !== defaultTab) {
-      setTab(defaultTab);
-    }
+    setTab(defaultTab); // Always sync tab with route
+  }, [defaultTab]);
 
-    // Only set location if it's not already set
-    if (!location && locationsByTab[defaultTab]?.[0]) {
-      setLocation(locationsByTab[defaultTab][0]);
+  useEffect(() => {
+    // When tab changes, always select first location for the tab
+    if (locationsByTab[tab]?.length > 0) {
+      setLocation(locationsByTab[tab][0]);
+    } else {
+      setLocation('');
     }
-  }, [defaultTab, location]);  // Only re-run when defaultTab or location changes
+  }, [tab, locationsByTab]);
 
   const handleTabClick = (label, route) => {
     setTab(label.toLowerCase());
