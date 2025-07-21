@@ -48,9 +48,10 @@ export const fetchNewlyAddedPropertiesAction = createAsyncThunk(
   'buyPage/fetchNewlyAddedProperties',
   async (_, { rejectWithValue }) => {
     try {
-      const properties = await buyPageService.getNewlyAddedProperties(); // Call the method from rentPageService
-      return properties;
+      const response = await buyPageService.getNewlyAddedProperties(); // Call the method from rentPageService
+      return response;
     } catch (error) {
+      console.error("Error in action:", error.message);
       return rejectWithValue(error.message);
     }
   }
