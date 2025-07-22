@@ -26,6 +26,7 @@ const App = () => {
         {/* <Route path="/search" element={<SearchResults />} /> */}
         <Route path="/activity" element={<UserActivity />} />
         <Route path="/pg-coliving-form" element={<PGCoLivingForm />} />
+        <Route path="/property-overview/:propertyId" element={<PropertyOverviewPage />} />
       </Routes>
     </MainLayout>
   );

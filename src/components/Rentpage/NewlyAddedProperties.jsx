@@ -133,6 +133,7 @@ const NewlyAddedProperties = ({ properties }) => {
         {/* Right Arrow for scrolling */}
         <button
           onClick={handleScrollRight}
+          
           className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
             shadow hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
           aria-label="Scroll Right"
