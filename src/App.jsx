@@ -7,7 +7,10 @@ import UserActivity from "./pages/UserActivity";
 import RentPage from "./pages/RentPage";
 import BuyPage from "./pages/BuyPage";
 import PropertyOverviewPage from "./pages/PropertyOverviewPage"; // Static Property Overview Page
+import PGPage from './pages/PGPage';
+
 import PropertyTypeSelector from "./components/PropertyForm/PropertyType";
+import PGCoLivingForm from './components/PropertyForm/PG-Coliving';
 // import SearchResults from './pages/SearchResults';
 
 const App = () => {
@@ -17,10 +20,12 @@ const App = () => {
         <Route path="/" element={<BuyPage />} />
         <Route path="/buy" element={<BuyPage />} />
         <Route path="/rent" element={<RentPage />} />
+        <Route path="/pg" element={<PGPage />} />
         <Route path="/property-overview/:id" element={<PropertyOverviewPage />} />
         <Route path="/propertyform" element={<PropertyTypeSelector />} />
         {/* <Route path="/search" element={<SearchResults />} /> */}
         <Route path="/activity" element={<UserActivity />} />
+        <Route path="/pg-coliving-form" element={<PGCoLivingForm />} />
       </Routes>
     </MainLayout>
   );
