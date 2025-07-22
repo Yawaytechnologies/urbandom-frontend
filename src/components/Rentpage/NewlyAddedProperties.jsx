@@ -36,15 +36,6 @@ const NewlyAddedProperties = ({ properties }) => {
     return () => container.removeEventListener('scroll', updateScrollProgress);
   }, []);
 
-  // Auto-scroll behavior
-  const startAutoScroll = (direction) => {
-    scrollInterval = setInterval(() => {
-      containerRef.current?.scrollBy({ left: direction === 'left' ? -10 : 10 });
-    }, 16);
-  };
-
-  const stopAutoScroll = () => clearInterval(scrollInterval);
-
   // Handle the "View Details" button click, navigating to PropertyOverviewPage
   const handleViewDetails = (propertyId) => {
     navigate(`/property-overview/${propertyId}`);  // Navigate to PropertyOverviewPage with propertyId

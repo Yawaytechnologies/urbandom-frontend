@@ -7,16 +7,18 @@ const FeaturedProperties = ({ properties }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  const scrollToIndex = (index) => {
-    const container = containerRef.current;
-    if (container && safeProperties.length > 0) {
-      const cardWidth = container.children[0]?.offsetWidth || 300;
-      container.scrollTo({
-        left: index * (cardWidth + 20),
-        behavior: 'smooth',
-      });
+  useEffect(() => {
+    if (safeProperties.length > 0) {
+      const container = containerRef.current;
+      if (container) {
+        const cardWidth = container.children[0]?.offsetWidth || 300;
+        container.scrollTo({
+          left: activeIndex * (cardWidth + 20),
+          behavior: 'smooth',
+        });
+      }
     }
-  };
+  }, [activeIndex, safeProperties.length]);
 
   useEffect(() => {
     if (safeProperties.length === 0) return;
@@ -27,12 +29,6 @@ const FeaturedProperties = ({ properties }) => {
     }, 4000);
     return () => clearInterval(interval);
   }, [isPaused, safeProperties.length]);
-
-  useEffect(() => {
-    if (safeProperties.length > 0) {
-      scrollToIndex(activeIndex);
-    }
-  }, [activeIndex, safeProperties.length]);
 
   return (
     <section className="py-6 px-4 md:px-8 bg-[var(--background)]">

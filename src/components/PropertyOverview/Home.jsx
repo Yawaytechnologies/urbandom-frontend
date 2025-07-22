@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { FaPhoneAlt, FaHeart, FaShareAlt } from "react-icons/fa";
 import { fetchOverviewHomeData } from "../../redux/actions/overviewHomeActions";
-import { useNavContext } from "/src/components/PropertyOverview/NavContext";
+import { useNavContext } from "/src/components/PropertyOverview/useNavContext";
 
 const fallbackImages = [
   "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=800&q=80",
@@ -96,7 +96,7 @@ const Overview = () => {
           </p>
         </div>
 
-        {/* Desktop Header */}
+        {/* Desktop & Tablet Header */}
         <div className="hidden md:flex justify-between items-start gap-4 mb-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold text-black">
@@ -129,8 +129,8 @@ const Overview = () => {
           </div>
         </div>
 
-        {/* Desktop Images */}
-        <div className="hidden lg:grid grid-cols-3 gap-4 mb-6">
+        {/* Desktop & Tablet Images (CHANGED lg:grid to md:grid below) */}
+        <div className="hidden md:grid grid-cols-3 gap-4 mb-6">
           <img
             src={images[0]}
             className="col-span-2 h-[400px] w-full object-cover rounded-lg cursor-pointer"

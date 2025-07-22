@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavContext } from "./NavContext"; // Make sure the path is correct
+import { useNavContext } from "./useNavContext"; // Make sure the path is correct
 
 const tabs = [
   { label: "Overview/Home", id: "overview-home" },
