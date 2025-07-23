@@ -1,81 +1,56 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 const FeaturedDevelopers = () => {
   const containerRef = useRef(null);
-  const scrollInterval = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const developers = [
-    {
-      id: 1,
-      name: 'DAC Developers',
-      projects: '25+ Projects',
-      rating: '4.8',
-      logo: '/logo1.jpeg',
-    },
-    {
-      id: 2,
-      name: 'Prestige Estates',
-      projects: '18+ Projects',
-      rating: '4.7',
-      logo: '/logo2.png',
-    },
-    {
-      id: 3,
-      name: 'Sobha Developers',
-      projects: '30+ Projects',
-      rating: '4.9',
-      logo: '/logo3.png',
-    },
-    {
-      id: 4,
-      name: 'TVS Sundaram Home Finance',
-      projects: '12+ Projects',
-      rating: '4.6',
-      logo: '/logo4.jpeg',
-    },
-    {
-      id: 5,
-      name: 'Ashoka Builders',
-      projects: '20+ Projects',
-      rating: '4.5',
-      logo: '/logo1.jpeg',
-    },
-  ];
+  const { featuredDevelopers = [], loading, error } = useSelector((state) => state.buyPage);
 
+  // Scroll left functionality
+  const handleScrollLeft = () => {
+    containerRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
+  };
+
+  // Scroll right functionality
+  const handleScrollRight = () => {
+    containerRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
+  };
+
+  // Function to calculate scroll progress
   const updateScrollProgress = () => {
     const container = containerRef.current;
     if (container) {
       const scrollWidth = container.scrollWidth - container.clientWidth;
-      const progress = (container.scrollLeft / scrollWidth) * 100;
+      const scrollLeft = container.scrollLeft;
+      const progress = (scrollLeft / scrollWidth) * 100;
       setScrollProgress(progress);
     }
   };
 
+  // Add event listener for scroll progress
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
       container.addEventListener('scroll', updateScrollProgress);
-      updateScrollProgress();
-      return () => container.removeEventListener('scroll', updateScrollProgress);
     }
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', updateScrollProgress);
+      }
+    };
   }, []);
 
-  const startAutoScroll = (direction) => {
-    scrollInterval.current = setInterval(() => {
-      if (containerRef.current) {
-        containerRef.current.scrollBy({ left: direction * 20, behavior: 'smooth' });
-      }
-    }, 50);
-  };
+  // Display loading state
+  if (loading) return <div>Loading...</div>;
 
-  const stopAutoScroll = () => {
-    clearInterval(scrollInterval.current);
-  };
+  // Display error state
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <section className="py-8 px-4 md:px-12" style={{ backgroundColor: 'var(--color-background)' }}>
-      {/* Heading */}
       <div className="mb-6">
         <h2 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
           Featured Developers
@@ -85,7 +60,6 @@ const FeaturedDevelopers = () => {
         </p>
       </div>
 
-      {/* Scrollable Container */}
       <div className="group relative overflow-x-hidden pb-6">
         {/* Gradient Fade Edges */}
         <div className="absolute left-0 top-0 h-full w-10 z-10 pointer-events-none hidden md:block"
@@ -95,11 +69,7 @@ const FeaturedDevelopers = () => {
 
         {/* Left Arrow */}
         <button
-          onMouseDown={() => startAutoScroll(-1)}
-          onMouseUp={stopAutoScroll}
-          onMouseLeave={stopAutoScroll}
-          onTouchStart={() => startAutoScroll(-1)}
-          onTouchEnd={stopAutoScroll}
+          onClick={handleScrollLeft}
           className="absolute left-2 top-1/2 transform -translate-y-1/2 z-20 
                      w-10 h-10 items-center justify-center rounded-full 
                      backdrop-blur-md shadow-md border border-white/20 
@@ -119,34 +89,34 @@ const FeaturedDevelopers = () => {
           ref={containerRef}
           className="flex gap-5 overflow-x-auto scroll-smooth px-2 md:px-4 py-2 scrollbar-hide"
         >
-          {developers.map((dev) => (
-            <div
-              key={dev.id}
-              className="min-w-[220px] bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-[var(--accent)] transition-all duration-300 p-4 text-center transform hover:-translate-y-1"
-            >
-              <img
-                src={dev.logo}
-                alt={dev.name}
-                className="w-16 h-16 mx-auto object-contain mb-3"
-              />
-              <h3 className="font-semibold text-base text-gray-800">{dev.name}</h3>
-              <p className="text-sm text-gray-500 mt-1">{dev.projects}</p>
-              <div className="mt-3 flex justify-center items-center gap-1">
-                <span className="bg-yellow-400 text-black text-xs font-semibold rounded-full px-2 py-0.5">
-                  ★ {dev.rating}
-                </span>
+          {featuredDevelopers.length === 0 ? (
+            <div>No featured developers available.</div>
+          ) : (
+            featuredDevelopers.map((dev) => (
+              <div
+                key={dev._id}  // Ensure you use the unique property (e.g., _id)
+                className="min-w-[220px] bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-[var(--accent)] transition-all duration-300 p-4 text-center transform hover:-translate-y-1"
+              >
+                <img
+                  src={dev.media?.images[0] || '/default-image.jpg'}  // Display a default image if no image exists
+                  alt={dev.title}
+                  className="w-16 h-16 mx-auto object-contain mb-3"
+                />
+                <h3 className="font-semibold text-base text-gray-800">{dev.title}</h3>
+                <p className="text-sm text-gray-500 mt-1">{dev.priceDetails?.monthlyRent} / month</p>
+                <div className="mt-3 flex justify-center items-center gap-1">
+                  <span className="bg-yellow-400 text-black text-xs font-semibold rounded-full px-2 py-0.5">
+                    ★ {dev.rating || 'N/A'}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Right Arrow */}
         <button
-          onMouseDown={() => startAutoScroll(1)}
-          onMouseUp={stopAutoScroll}
-          onMouseLeave={stopAutoScroll}
-          onTouchStart={() => startAutoScroll(1)}
-          onTouchEnd={stopAutoScroll}
+          onClick={handleScrollRight}
           className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 
                      w-10 h-10 items-center justify-center rounded-full 
                      backdrop-blur-md shadow-md border border-white/20 

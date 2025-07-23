@@ -1,10 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaBed } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 
 const NewlyAddedProperties = ({ properties }) => {
   const containerRef = useRef(null);
   const [scrollPercent, setScrollPercent] = useState(0);
-  let scrollInterval;
+
+  const navigate = useNavigate();  // Initialize navigate function
 
   // Scroll left functionality
   const handleScrollLeft = () => {
@@ -34,14 +36,10 @@ const NewlyAddedProperties = ({ properties }) => {
     return () => container.removeEventListener('scroll', updateScrollProgress);
   }, []);
 
-  // Auto-scroll behavior
-  const startAutoScroll = (direction) => {
-    scrollInterval = setInterval(() => {
-      containerRef.current?.scrollBy({ left: direction === 'left' ? -10 : 10 });
-    }, 16);
+  // Handle the "View Details" button click, navigating to PropertyOverviewPage
+  const handleViewDetails = (propertyId) => {
+    navigate(`/property-overview/${propertyId}`);  // Navigate to PropertyOverviewPage with propertyId
   };
-
-  const stopAutoScroll = () => clearInterval(scrollInterval);
 
   return (
     <section className="relative py-10 px-4 md:px-8 bg-[var(--background)] overflow-hidden">
@@ -60,9 +58,6 @@ const NewlyAddedProperties = ({ properties }) => {
         {/* Arrows for scrolling */}
         <button
           onClick={handleScrollLeft}
-          onMouseDown={() => startAutoScroll('left')}
-          onMouseUp={stopAutoScroll}
-          onMouseLeave={stopAutoScroll}
           className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
             shadow hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
           aria-label="Scroll Left"
@@ -112,6 +107,7 @@ const NewlyAddedProperties = ({ properties }) => {
                   </p>
 
                   <button
+                    onClick={() => handleViewDetails(property._id)}  // Trigger the navigation with property ID
                     className="w-full bg-[var(--accent)] text-white py-2 rounded-md 
                       hover:bg-opacity-90 transition font-medium text-sm"
                   >
@@ -128,9 +124,7 @@ const NewlyAddedProperties = ({ properties }) => {
         {/* Right Arrow for scrolling */}
         <button
           onClick={handleScrollRight}
-          onMouseDown={() => startAutoScroll('right')}
-          onMouseUp={stopAutoScroll}
-          onMouseLeave={stopAutoScroll}
+          
           className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
             shadow hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
           aria-label="Scroll Right"

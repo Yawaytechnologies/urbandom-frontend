@@ -17,18 +17,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'  # It's generally more stable to use LTS versions like 16
+          node-version: '20'  # Use LTS for best support
 
-      - name: Cache Node.js modules
+      - name: Cache NPM cache
         uses: actions/cache@v3
         with:
-          path: node_modules
+          path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: npm ci  # Use `npm ci` for consistent and clean installations
+        run: npm ci
 
       - name: Run linter (ESLint)
         run: npm run lint
@@ -52,7 +52,7 @@ jobs:
       - name: Enable auto-merge for PR
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
-          token: ${{ secrets.AUTO_MERGE_TOKEN }}  # Use the PAT here for auto-merge
+          token: ${{ secrets.AUTO_MERGE_TOKEN }}
           repository: ${{ github.repository }}
           pull-request-number: ${{ github.event.pull_request.number }}
           merge-method: merge

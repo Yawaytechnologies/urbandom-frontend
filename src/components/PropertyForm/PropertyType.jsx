@@ -63,11 +63,7 @@ const PropertyTypeSelector = () => {
       {/* Decorative blurred blobs for background */}
       <div
         className="absolute inset-0 w-full h-full z-[-20] bg-center bg-cover blur-2xl"
-        style={{
-          backgroundImage: `url(${bgProperty})`,
-          filter: "blur(30px) brightness(1.08)",
-          opacity: 0.64,
-        }}
+      
       ></div>
       {/* Animated Back Button */}
       {selectedForm && (

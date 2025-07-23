@@ -1,19 +1,38 @@
-// src/layout/MainLayout.jsx
 import React, { useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
-import Sidebar from '../components/common/SideBar';
+import SideBarHome from "../components/common/SideBar"
+import DashboardHeader from '../components/Dashboard/DashboardHeader';
+import DashboardSidebar from '../components/Dashboard/DashboardSidebar';
 
-const MainLayout = ({ children }) => {
+const MainLayout = () => {
+  const location = useLocation();
+  const isDashboard = location.pathname.startsWith('/dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <>
-      <Header onToggleSidebar={() => setSidebarOpen(true)} />
+      {/* HEADER & SIDEBAR */}
+      {isDashboard ? (
+        <>
+          <DashboardHeader onToggleSidebar={() => setSidebarOpen(true)} />
+          <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        </>
+      ) : (
+        <>
+          <Header onToggleSidebar={() => setSidebarOpen(true)} />
+          <SideBarHome isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        </>
+      )}
 
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <main className='pt-0' >{children}</main> 
-      <Footer />
+      {/* MAIN CONTENT */}
+      <main className={isDashboard ? "pt-4" : "pt-9"}>
+        <Outlet />
+      </main>
+
+      {/* FOOTER (Public pages only) */}
+      {!isDashboard && <Footer />}
     </>
   );
 };

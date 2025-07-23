@@ -24,7 +24,7 @@ const SellPropertySection = () => {
         className="flex justify-center mb-6"
       >
         <img
-          src='/public/sellpage.jpeg'
+          src='/sellpage.jpeg'
           alt="Hand Holding Key"
           className="w-32 h-auto drop-shadow-xl"
         />

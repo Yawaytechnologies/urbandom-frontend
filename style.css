@@ -15,7 +15,7 @@
  --accent: #ff4f81; /* Rich ocean blue — more professional than pink/red */
   
   /* Text Colors */
-  --text-primary: #ffffff; /* White text (used in footers, modals) */
+  --text-primary: #1a2650; /* White text (used in footers, modals) */
   --text-secondary: #333333; /* Stronger contrast than #98b8da for body text */
   
   /* Muted Text / Helper Text */
@@ -95,4 +95,7 @@
 
 .show-arrow {
   display: block;
+}
+body.modal-open .bottom-tabs {
+  display: none !important;
 }
