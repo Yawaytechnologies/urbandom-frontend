@@ -91,20 +91,20 @@ const { districts, loading: loadingDistricts } = useSelector(state => state.dist
   };
 
   // Handle Property Type Change
-  const handlePropertyTypeChange = (type) => {
-    setForm((prevForm) => {
-      let lookingTo = 'rent'; // Default to 'rent'
-      if (type === "sell") lookingTo = "sell";
-      if (type === "pg-co/living") lookingTo = "pg-co/living";
-      return {
-        ...prevForm,
-        propertyType: type,
-        lookingTo, // Update the lookingTo field based on property type
-        commercialSubType: type === "commercial" ? "" : prevForm.commercialSubType,
-        bhk: type === "residential" ? "" : prevForm.bhk, // Clear BHK if switching to commercial
-      };
-    });
-  };
+  // const handlePropertyTypeChange = (type) => {
+  //   setForm((prevForm) => {
+  //     let lookingTo = 'rent'; // Default to 'rent'
+  //     if (type === "sell") lookingTo = "sell";
+  //     if (type === "pg-co/living") lookingTo = "pg-co/living";
+  //     return {
+  //       ...prevForm,
+  //       propertyType: type,
+  //       lookingTo, // Update the lookingTo field based on property type
+  //       commercialSubType: type === "commercial" ? "" : prevForm.commercialSubType,
+  //       bhk: type === "residential" ? "" : prevForm.bhk, // Clear BHK if switching to commercial
+  //     };
+  //   });
+  // };
 const handleInputChange = (e) => {
   const { name, value } = e.target;
 
