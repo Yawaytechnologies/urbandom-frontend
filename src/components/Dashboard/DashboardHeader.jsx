@@ -154,7 +154,7 @@ const DashboardHeader = ({ onMenuClick }) => {
               </nav>
               {/* Add Property CTA */}
               <a
-                href="/add-property"
+                href="/propertyform"
                 className="hidden md:block bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-sm px-5 py-2 rounded-md font-semibold transition"
               >
                 + Add Property
