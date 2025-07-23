@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
-import SidebarHome from '../components/common/Sidebar';
+import SideBarHome from '../components/common/SideBar';
 import DashboardHeader from '../components/Dashboard/DashboardHeader';
 import DashboardSidebar from '../components/Dashboard/DashboardSidebar';
 
