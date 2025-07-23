@@ -1,10 +1,32 @@
 // DashboardHeader.jsx
 import React, { useState, useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 import { FiChevronDown, FiMenu, FiX, FiPlus } from "react-icons/fi";
 import { MdOutlineSupportAgent } from "react-icons/md";
 import { HiOutlineHomeModern } from "react-icons/hi2";
 import { IoPersonOutline } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
+
+// Portal dropdown as an inline component
+function DropdownPortal({ open, anchorRef, children }) {
+  if (!open || !anchorRef?.current) return null;
+  const rect = anchorRef.current.getBoundingClientRect();
+  return ReactDOM.createPortal(
+    <div
+      style={{
+        position: "absolute",
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX,
+        minWidth: rect.width,
+        zIndex: 9999,
+      }}
+      className="bg-white shadow-lg rounded-md py-2 w-48"
+    >
+      {children}
+    </div>,
+    document.body
+  );
+}
 
 const DASHBOARD_TABS = [
   { key: "enquiries", icon: <MdOutlineSupportAgent size={18} />, label: "Enquiries" },
@@ -17,7 +39,7 @@ const DashboardHeader = ({ onMenuClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
-  const dropdownRef = useRef(null);
+  const moreBtnRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const tab = new URLSearchParams(location.search).get("tab") || "enquiries";
@@ -38,12 +60,18 @@ const DashboardHeader = ({ onMenuClick }) => {
 
   // Close dropdown on outside click
   useEffect(() => {
+    if (!showMore) return;
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      // Close if click is outside both button and the portal menu
+      if (
+        moreBtnRef.current &&
+        !moreBtnRef.current.contains(event.target) &&
+        !document.getElementById("dashboard-more-dropdown")?.contains(event.target)
+      ) {
         setShowMore(false);
       }
     };
-    if (showMore) document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showMore]);
 
@@ -88,8 +116,9 @@ const DashboardHeader = ({ onMenuClick }) => {
                   Listings
                 </button>
                 {/* More Dropdown */}
-                <div className="relative" ref={dropdownRef}>
+                <div className="relative">
                   <button
+                    ref={moreBtnRef}
                     aria-haspopup="menu"
                     aria-expanded={showMore}
                     onClick={() => setShowMore((prev) => !prev)}
@@ -99,8 +128,8 @@ const DashboardHeader = ({ onMenuClick }) => {
                     <FiChevronDown className={`transition-transform duration-200 ${showMore ? "rotate-180" : ""}`} />
                     <span className="text-red-500">•</span>
                   </button>
-                  {showMore && (
-                    <div className="absolute top-10 right-0 bg-white shadow-lg rounded-md py-2 w-48 z-50">
+                  <DropdownPortal open={showMore} anchorRef={moreBtnRef}>
+                    <div id="dashboard-more-dropdown">
                       <button
                         onClick={() => handleMenuClick("profile")}
                         className="block w-full text-left px-4 py-2 hover:bg-gray-100"
@@ -120,7 +149,7 @@ const DashboardHeader = ({ onMenuClick }) => {
                         Logout
                       </button>
                     </div>
-                  )}
+                  </DropdownPortal>
                 </div>
               </nav>
               {/* Add Property CTA */}

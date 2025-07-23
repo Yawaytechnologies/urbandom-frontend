@@ -1,10 +1,8 @@
-// DashboardSidebar.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { IoMdClose } from "react-icons/io";
 
-// Sidebar menu structure
 const MENU_STRUCTURE = {
   enquiries: ["All", "Contacted", "Matching Tenants"],
   listings: [
@@ -25,7 +23,6 @@ function SidebarContent({
   propertyType,
   setPropertyType,
   openCategory,
-  setOpenCategory,
   activeSubmenu,
   setActiveSubmenu,
   handleCategoryToggle,
@@ -142,7 +139,8 @@ function SidebarContent({
 }
 
 const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
-  const menus = MENU_STRUCTURE[activeSection] || [];
+  // Use useMemo to ensure menus is stable and not recreated every render
+  const menus = useMemo(() => MENU_STRUCTURE[activeSection] || [], [activeSection]);
 
   const [activeSubmenu, setActiveSubmenu] = useState(menus[0]);
   const [propertyType, setPropertyType] = useState("Residential");
@@ -150,7 +148,7 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
   const [subCategories, setSubCategories] = useState([]);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
-  // Subcategories depend on property type
+  // Update sub-categories when propertyType changes
   useEffect(() => {
     if (propertyType === "Commercial") {
       setSubCategories(["Buy", "Lease"]);
@@ -159,11 +157,13 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
     }
   }, [propertyType]);
 
+  // Reset submenu and open category when activeSection/menus changes
   useEffect(() => {
     setActiveSubmenu(menus[0]);
     setOpenCategory("");
-  }, [activeSection]);
+  }, [activeSection, menus]);
 
+  // Notify parent of submenu changes
   useEffect(() => {
     if (onSubmenuChange) {
       onSubmenuChange(activeSubmenu);
@@ -175,7 +175,6 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
     setActiveSubmenu(menus[0]);
   };
 
-  // Animation for sidebar slide-in from left top-to-bottom (mobile)
   const bounceSlide = {
     hidden: { x: "-100%", y: 0, opacity: 0 },
     visible: {
@@ -198,9 +197,9 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
     },
   };
 
-  // Hamburger with smooth slow bounce (bottom-left, mobile/tab only)
   return (
     <>
+      {/* Mobile hamburger */}
       <motion.button
         className="lg:hidden fixed bottom-20 left-5 z-40 bg-[#5f36ff] text-white w-8 h-8 rounded-full flex items-center justify-center shadow-xl transition"
         onClick={() => setShowMobileSidebar(true)}
@@ -210,14 +209,14 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
           repeat: Infinity,
           repeatType: "loop",
           duration: 2,
-          ease: "easeInOut"
+          ease: "easeInOut",
         }}
         whileTap={{ scale: 0.85 }}
       >
         <HiMenuAlt2 size={20} />
       </motion.button>
 
-      {/* MOBILE/TABLET SIDEBAR OVERLAY */}
+      {/* Mobile/Tablet Sidebar Overlay */}
       <AnimatePresence>
         {showMobileSidebar && (
           <motion.div
@@ -227,7 +226,7 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
             exit={{ opacity: 0 }}
             onClick={() => setShowMobileSidebar(false)}
           >
-            {/* SIDEBAR itself */}
+            {/* Sidebar itself */}
             <motion.aside
               className="absolute left-0 top-0 h-full w-[88vw] max-w-xs bg-[#f7f7ff] rounded-tr-2xl rounded-br-2xl p-5 pb-12 shadow-xl overflow-y-auto"
               variants={bounceSlide}
@@ -236,7 +235,6 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
               exit="exit"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close btn */}
               <button
                 className="absolute right-3 top-3 bg-gray-100 rounded-full p-2 text-xl text-gray-600 hover:bg-gray-200"
                 onClick={() => setShowMobileSidebar(false)}
@@ -251,7 +249,6 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
                 propertyType={propertyType}
                 setPropertyType={setPropertyType}
                 openCategory={openCategory}
-                setOpenCategory={setOpenCategory}
                 activeSubmenu={activeSubmenu}
                 setActiveSubmenu={setActiveSubmenu}
                 handleCategoryToggle={handleCategoryToggle}
@@ -262,7 +259,7 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
         )}
       </AnimatePresence>
 
-      {/* DESKTOP SIDEBAR */}
+      {/* Desktop Sidebar */}
       <aside className="hidden lg:block w-72 bg-[#f7f7ff] pt-4 pb-8 px-4 border-r border-gray-200 shadow-inner rounded-tr-2xl max-h-screen overflow-y-auto">
         <SidebarContent
           activeSection={activeSection}
@@ -271,7 +268,6 @@ const DashboardSidebar = ({ activeSection = "enquiries", onSubmenuChange }) => {
           propertyType={propertyType}
           setPropertyType={setPropertyType}
           openCategory={openCategory}
-          setOpenCategory={setOpenCategory}
           activeSubmenu={activeSubmenu}
           setActiveSubmenu={setActiveSubmenu}
           handleCategoryToggle={handleCategoryToggle}

@@ -1,10 +1,35 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
-// --- MAIN COMPONENT ---
+// Example property data for filtering by submenu
+const ALL_PROPERTIES = [
+  {
+    id: "17707798",
+    type: "All",
+    bhk: "1 BHK",
+    title: "1 BHK Apartment",
+    price: 20000,
+    locality: "Mangadu",
+    status: "Active",
+    furnished: "Fully Furnished",
+    lastAdded: "3 Jul 2025",
+    expiringOn: "1 Sept 2025",
+    visibility: "Low (Free Plan)",
+    img: "/sample.jpg",
+  },
+  // Add more property objects here with various 'type' fields like "Active", "Expired", etc.
+];
+
 const ListingMain = ({ activeSubmenu }) => {
-  const totalProperties = 3;
-  const showingProperties = 1;
+  const totalProperties = ALL_PROPERTIES.length;
+
+  // Example filter by activeSubmenu (if provided, else show all)
+  const filteredProperties =
+    activeSubmenu && activeSubmenu !== "All"
+      ? ALL_PROPERTIES.filter((prop) => prop.type === activeSubmenu)
+      : ALL_PROPERTIES;
+
+  const showingProperties = filteredProperties.length;
 
   const [priceRange, setPriceRange] = useState([0, 35000]);
   const [showPriceRange, setShowPriceRange] = useState(false);
@@ -55,102 +80,109 @@ const ListingMain = ({ activeSubmenu }) => {
         </div>
       </div>
 
-      {/* Example Property Card */}
-      <div className="bg-white rounded-xl border border-gray-200 w-full max-w-4xl mx-auto shadow-sm mb-6 mt-4 overflow-hidden">
-        <div className="text-sm text-gray-600 px-4 pt-3">ID:17707798</div>
-        <div className="flex flex-col md:flex-row px-4 py-2">
-          <div className="w-full md:w-40 h-50 flex items-center justify-center bg-gray-100 rounded-md">
-            <img
-              src="/sample.jpg"
-              alt="Building"
-              className="h-50 w-40 "
-            />
+      {/* Property Cards (filtered by activeSubmenu) */}
+      {filteredProperties.map((property) => (
+        <div
+          key={property.id}
+          className="bg-white rounded-xl border border-gray-200 w-full max-w-4xl mx-auto shadow-sm mb-6 mt-4 overflow-hidden"
+        >
+          <div className="text-sm text-gray-600 px-4 pt-3">
+            ID:{property.id}
           </div>
-          <div className="flex-1 pl-0 md:pl-5">
-            <div className="flex justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800">₹ 20,000</h2>
-                <p className="text-base font-semibold mt-1">1 BHK Apartment</p>
-                <p className="text-sm text-gray-500 mt-1">
-                  1400 sq. ft. &nbsp;&nbsp;·&nbsp;&nbsp; Fully Furnished
-                </p>
-              </div>
-              <div className="flex flex-col items-end">
-                <button className="text-xs text-purple-600 font-semibold">
-                  +Advanced Details
-                </button>
-                <div className="flex items-center gap-1 mt-2">
-                  <span className="text-green-500 text-lg">✔</span>
-                  <span className="text-sm font-medium text-green-600">ACTIVE</span>
+          <div className="flex flex-col md:flex-row px-4 py-2">
+            <div className="w-full md:w-40 h-50 flex items-center justify-center bg-gray-100 rounded-md">
+              <img src={property.img} alt="Building" className="h-50 w-40 " />
+            </div>
+            <div className="flex-1 pl-0 md:pl-5">
+              <div className="flex justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    ₹ {property.price.toLocaleString()}
+                  </h2>
+                  <p className="text-base font-semibold mt-1">
+                    {property.title}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    1400 sq. ft. &nbsp;&nbsp;·&nbsp;&nbsp; {property.furnished}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end">
+                  <button className="text-xs text-purple-600 font-semibold">
+                    +Advanced Details
+                  </button>
+                  <div className="flex items-center gap-1 mt-2">
+                    <span className="text-green-500 text-lg">✔</span>
+                    <span className="text-sm font-medium text-green-600">
+                      {property.status.toUpperCase()}
+                    </span>
+                  </div>
                 </div>
               </div>
+              <div className="grid grid-cols-3 gap-3 text-sm text-gray-700 mt-5 bg-violet-50 px-4 py-3 rounded-md">
+                <div>
+                  <p className="text-xs text-gray-400">Last Added</p>
+                  <p>{property.lastAdded}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Expiring On</p>
+                  <p>{property.expiringOn}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Visibility</p>
+                  <p className="text-red-500">{property.visibility}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex justify-end">
+                <button className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-md text-sm font-semibold">
+                  UPGRADE
+                </button>
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-3 text-sm text-gray-700 mt-5 bg-violet-50 px-4 py-3 rounded-md">
-              <div>
-                <p className="text-xs text-gray-400">Last Added</p>
-                <p>3 Jul 2025</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Expiring On</p>
-                <p>1 Sept 2025</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Visibility</p>
-                <p className="text-red-500">Low (Free Plan)</p>
-              </div>
+          </div>
+          <div className="px-4 mt-4">
+            <p className="text-sm">
+              Your listing score: <span className="font-bold">50%</span>
+            </p>
+            <div className="w-full h-2 bg-gray-200 rounded mt-1">
+              <div
+                className="h-2 bg-purple-600 rounded"
+                style={{ width: "50%" }}
+              ></div>
             </div>
-            <div className="mt-4 flex justify-end">
-              <button className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-md text-sm font-semibold">
-                UPGRADE
-              </button>
+            <p className="text-sm mt-2">
+              Improve listing score to sell faster <span className="ml-1">😊</span>
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 py-5 text-sm">
+            <div className="bg-violet-50 p-3 rounded-md flex items-center justify-between">
+              <div>
+                <p className="text-green-600 font-semibold">↑ 15% listing score</p>
+                <p className="text-gray-700">Add Photos</p>
+              </div>
+              <span className="text-2xl text-violet-500">›</span>
+            </div>
+            <div className="bg-violet-50 p-3 rounded-md flex items-center justify-between">
+              <div>
+                <p className="text-green-600 font-semibold">↑ 10% listing score</p>
+                <p className="text-gray-700">Verify now</p>
+              </div>
+              <span className="text-2xl text-violet-500">›</span>
+            </div>
+            <div className="bg-violet-50 p-3 rounded-md flex items-center justify-between">
+              <div>
+                <p className="text-green-600 font-semibold">↑ upto 30% listing score</p>
+                <p className="text-gray-700">Add details</p>
+              </div>
+              <span className="text-2xl text-violet-500">›</span>
             </div>
           </div>
         </div>
-        <div className="px-4 mt-4">
-          <p className="text-sm">
-            Your listing score: <span className="font-bold">50%</span>
-          </p>
-          <div className="w-full h-2 bg-gray-200 rounded mt-1">
-            <div
-              className="h-2 bg-purple-600 rounded"
-              style={{ width: "50%" }}
-            ></div>
-          </div>
-          <p className="text-sm mt-2">
-            Improve listing score to sell faster <span className="ml-1">😊</span>
-          </p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 py-5 text-sm">
-          <div className="bg-violet-50 p-3 rounded-md flex items-center justify-between">
-            <div>
-              <p className="text-green-600 font-semibold">↑ 15% listing score</p>
-              <p className="text-gray-700">Add Photos</p>
-            </div>
-            <span className="text-2xl text-violet-500">›</span>
-          </div>
-          <div className="bg-violet-50 p-3 rounded-md flex items-center justify-between">
-            <div>
-              <p className="text-green-600 font-semibold">↑ 10% listing score</p>
-              <p className="text-gray-700">Verify now</p>
-            </div>
-            <span className="text-2xl text-violet-500">›</span>
-          </div>
-          <div className="bg-violet-50 p-3 rounded-md flex items-center justify-between">
-            <div>
-              <p className="text-green-600 font-semibold">↑ upto 30% listing score</p>
-              <p className="text-gray-700">Add details</p>
-            </div>
-            <span className="text-2xl text-violet-500">›</span>
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };
 
 // --- FILTER DROPDOWN COMPONENTS ---
-// Each dropdown is now mobile-friendly (width: 90vw on mobile, 18rem on desktop).
-
 const PropertyIdDropdown = ({ value, setValue, show, setShow }) => {
   const ref = useRef();
   useEffect(() => {
@@ -168,7 +200,9 @@ const PropertyIdDropdown = ({ value, setValue, show, setShow }) => {
       >
         Property Id
         <FaChevronDown
-          className={`text-xs transition-transform ${show ? "rotate-180 text-purple-600" : ""}`}
+          className={`text-xs transition-transform ${
+            show ? "rotate-180 text-purple-600" : ""
+          }`}
         />
       </button>
       {show && (
@@ -207,7 +241,9 @@ const LocalityDropdown = () => {
       >
         Locality
         <FaChevronDown
-          className={`text-xs transition-transform ${open ? "rotate-180 text-purple-600" : ""}`}
+          className={`text-xs transition-transform ${
+            open ? "rotate-180 text-purple-600" : ""
+          }`}
         />
       </button>
       {open && (
@@ -252,7 +288,9 @@ const PropertyTypeDropdown = () => {
       >
         Property Type
         <FaChevronDown
-          className={`text-xs transition-transform ${open ? "rotate-180 text-purple-600" : ""}`}
+          className={`text-xs transition-transform ${
+            open ? "rotate-180 text-purple-600" : ""
+          }`}
         />
       </button>
       {open && (
@@ -307,7 +345,9 @@ const PriceDropdown = ({
       >
         {showPriceRange ? `0–${priceRange[1] / 1000} K` : "Price"}
         <FaChevronDown
-          className={`text-xs transition-transform ${open ? "rotate-180 text-purple-600" : ""}`}
+          className={`text-xs transition-transform ${
+            open ? "rotate-180 text-purple-600" : ""
+          }`}
         />
       </button>
       {open && (
@@ -349,7 +389,9 @@ const SimpleDropdown = ({ label, options }) => {
       >
         {label}
         <FaChevronDown
-          className={`text-xs transition-transform ${open ? "rotate-180 text-purple-600" : ""}`}
+          className={`text-xs transition-transform ${
+            open ? "rotate-180 text-purple-600" : ""
+          }`}
         />
       </button>
       {open && (

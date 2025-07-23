@@ -14,7 +14,7 @@ const PropertyOverviewPage = () => {
   const { id } = useParams(); // ✅ Get :id from route
 
   return (
-    <div className="w-full min-h-screen bg-[#f7f7f7] pt-[65px]">
+    <div className="w-full min-h-screen bg-[#f7f7f7] pt-[30px]">
       {/* Overview Section */}
       <div id="overview-home" className="scroll-mt-[140px]">
         <Overview propertyId={id} /> {/* ✅ Pass it to Overview */}

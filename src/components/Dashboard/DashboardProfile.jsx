@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FiEdit, FiMenu } from "react-icons/fi";
+import { FiEdit } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { motion } from "framer-motion";
 import { HiMenuAlt2 } from "react-icons/hi";
@@ -34,15 +34,11 @@ const DashboardProfile = () => {
   });
   const [activeSection, setActiveSection] = useState("basicProfile");
 
-  // State to hold the contacted properties data
-  const [contactedProperties, setContactedProperties] = useState([]);
   const [filter, setFilter] = useState("All");
-
-  // State for Your Properties section
   const [properties, setProperties] = useState([]);
   const [contactedData, setContactedData] = useState([]);
 
-  // Load profile from localStorage on mount
+  // Load profile & dummy data on mount
   useEffect(() => {
     const stored = localStorage.getItem("dashboardProfile");
     if (stored) setProfile(JSON.parse(stored));
@@ -50,7 +46,6 @@ const DashboardProfile = () => {
     if (savedImage)
       setProfile((prevState) => ({ ...prevState, image: savedImage }));
 
-    // Dummy property data
     setProperties([
       {
         id: 1,
@@ -67,7 +62,6 @@ const DashboardProfile = () => {
         status: "Inactive",
       },
     ]);
-    // Dummy contacted data
     setContactedData([
       {
         id: 1,
@@ -124,7 +118,7 @@ const DashboardProfile = () => {
     setIsModalOpen(false);
   };
 
-  // Handle outside click for mobile sidebar
+  // Close sidebar on outside click (mobile)
   useEffect(() => {
     if (!sidebarOpen) return;
     const handleClick = (e) => {
@@ -138,7 +132,7 @@ const DashboardProfile = () => {
   const handleSectionChange = (section) => {
     setActiveSection(section);
     setSidebarOpen(false); // Close sidebar on mobile when navigating
-    if (section === "contacted") setContactedProperties([]);
+    // removed setContactedProperties([])
   };
 
   const handleFilterChange = (newFilter) => setFilter(newFilter);
@@ -198,7 +192,6 @@ const DashboardProfile = () => {
 
   return (
     <div className="flex max-w-6xl mx-auto mt-6 px-2 md:px-4 relative">
-      {/* --- MOBILE BOTTOM-LEFT HAMBURGER --- */}
       {/* --- MOBILE BOTTOM-LEFT HAMBURGER (Bounce style) --- */}
       <motion.button
         className="md:hidden fixed bottom-20 left-5 z-50 bg-[#5f36ff] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-xl transition"
@@ -220,11 +213,7 @@ const DashboardProfile = () => {
       <div
         className={`
           fixed inset-0 z-40 bg-black/30 transition-opacity duration-300
-          ${
-            sidebarOpen
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
-          }
+          ${sidebarOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
           md:hidden
         `}
         aria-hidden={!sidebarOpen}
@@ -491,34 +480,6 @@ const DashboardProfile = () => {
               Post Your Property
             </button>
           </>
-        )}
-
-        {/* My Chats */}
-        {activeSection === "basicProfile" && (
-          <div>
-            <h2 className="font-semibold text-black mb-2">My Chats</h2>
-            <div className="bg-white shadow rounded-lg p-4 flex justify-between items-center">
-              <div>
-                <p className="text-sm font-medium text-black mb-1 flex items-center gap-2">
-                  Messages
-                  <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    3
-                  </span>
-                </p>
-                <a
-                  href="#"
-                  className="text-[#7D4AEA] text-sm font-semibold hover:underline"
-                >
-                  View Inbox
-                </a>
-              </div>
-              <img
-                src="/assets/chat-illustration.png"
-                alt="chat illustration"
-                className="w-24 h-20 object-contain"
-              />
-            </div>
-          </div>
         )}
       </div>
     </div>
