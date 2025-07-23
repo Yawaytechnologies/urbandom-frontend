@@ -2,35 +2,33 @@ import React, { useRef, useState, useEffect } from 'react';
 import { FaPause, FaPlay } from 'react-icons/fa';
 
 const FeaturedProperties = ({ properties }) => {
+  const safeProperties = Array.isArray(properties) ? properties : [];
   const containerRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  const scrollToIndex = (index) => {
-    const container = containerRef.current;
-    if (container) {
-      const cardWidth = container.children[0]?.offsetWidth || 300;
-      container.scrollTo({
-        left: index * (cardWidth + 20),
-        behavior: 'smooth',
-      });
+  useEffect(() => {
+    if (safeProperties.length > 0) {
+      const container = containerRef.current;
+      if (container) {
+        const cardWidth = container.children[0]?.offsetWidth || 300;
+        container.scrollTo({
+          left: activeIndex * (cardWidth + 20),
+          behavior: 'smooth',
+        });
+      }
     }
-  };
+  }, [activeIndex, safeProperties.length]);
 
   useEffect(() => {
+    if (safeProperties.length === 0) return;
     const interval = setInterval(() => {
       if (!isPaused) {
-        setActiveIndex((prev) => (prev + 1) % properties.length);
+        setActiveIndex((prev) => (prev + 1) % safeProperties.length);
       }
     }, 4000);
     return () => clearInterval(interval);
-  }, [isPaused, properties.length]); // Add properties.length to the dependency array
-
-  useEffect(() => {
-    if (properties.length > 0) {
-      scrollToIndex(activeIndex);
-    }
-  }, [activeIndex, properties.length]); // Add properties.length to the dependency array
+  }, [isPaused, safeProperties.length]);
 
   return (
     <section className="py-6 px-4 md:px-8 bg-[var(--background)]">
@@ -41,7 +39,7 @@ const FeaturedProperties = ({ properties }) => {
 
       {/* Tabs for Property Names */}
       <div className="flex space-x-3 overflow-x-auto scrollbar-hide mb-4 -mx-2 px-2">
-        {properties && properties.map((property, idx) => (
+        {safeProperties.map((property, idx) => (
           <button
             key={property._id || idx}
             className={`text-sm whitespace-nowrap px-3 py-1 rounded-full border transition-all duration-300 shrink-0 ${
@@ -51,7 +49,7 @@ const FeaturedProperties = ({ properties }) => {
             }`}
             onClick={() => setActiveIndex(idx)}
           >
-            {property.title || 'Unnamed Property'}  {/* Display property title */}
+            {property.title || 'Unnamed Property'}
           </button>
         ))}
       </div>
@@ -66,7 +64,7 @@ const FeaturedProperties = ({ properties }) => {
         </button>
 
         <div ref={containerRef} className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide px-1 py-2">
-          {properties && properties.map((property, idx) => (
+          {safeProperties.map((property, idx) => (
             <div
               key={property._id || idx}
               className={`w-[85vw] sm:w-[280px] md:w-[320px] lg:w-[340px] flex-shrink-0 transition-transform duration-300 ease-in-out rounded-xl shadow-md overflow-hidden ${
@@ -78,27 +76,20 @@ const FeaturedProperties = ({ properties }) => {
                 {/* Image Background */}
                 <div
                   className="h-40 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${property.media.images[0]})` }}  // Make sure property.media.images[0] is a valid URL
+                  style={{ backgroundImage: `url(${property.media?.images?.[0]})` }}
                 />
 
                 {/* Details */}
                 <div className="flex flex-col flex-grow px-4 py-3">
-                  {/* Render property name */}
                   <h3 className="text-lg font-semibold text-gray-800 truncate">{property.title}</h3>
-
                   <div className="mt-3 text-sm text-gray-600">
-                    {/* Render property details like type and location */}
                     <p className="flex items-center gap-1 mb-1">🛏️ {property.subProperty}</p>
                     <p className="flex items-center gap-1">📍 {property.location?.name || 'Location Not Available'}</p>
                   </div>
-
-                  {/* Property Price Range */}
                   <p className="mt-3 font-bold text-[var(--accent)]">
                     {property.priceDetails?.monthlyRent ? `₹${property.priceDetails.monthlyRent}` : 'Price Not Available'}
                   </p>
                 </div>
-
-                {/* CTA Button */}
                 <div className="px-4 pb-4">
                   <button className="w-full bg-[var(--accent)] text-white rounded-md py-2 text-sm hover:brightness-110 transition">
                     View Details
@@ -112,5 +103,4 @@ const FeaturedProperties = ({ properties }) => {
     </section>
   );
 };
-
 export default FeaturedProperties;

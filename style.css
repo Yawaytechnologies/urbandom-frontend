@@ -96,3 +96,6 @@
 .show-arrow {
   display: block;
 }
+body.modal-open .bottom-tabs {
+  display: none !important;
+}
