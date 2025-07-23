@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import { motion } from "framer-motion";
 
 function Header({ onToggleSidebar }) {
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handlePostProperty = () => {
+    navigate("/dashboard");
+  };
 
   return (
     <motion.nav
@@ -23,7 +28,7 @@ function Header({ onToggleSidebar }) {
           : "bg-[#4b2edd]"
       }`}
     >
-      {/* ✅ Mobile View */}
+      {/* Mobile View */}
       <div className="sm:hidden flex items-center justify-between px-3 py-2">
         {/* Logo */}
         <Link
@@ -38,6 +43,8 @@ function Header({ onToggleSidebar }) {
         {/* Right Side */}
         <div className="flex items-center gap-1">
           <motion.button
+            whileHover={{ scale: 1.05 }}
+            onClick={handlePostProperty}
             whileTap={{ scale: 0.95 }}
             className="bg-white text-[#ff4f81] font-semibold text-[9px] px-[6px] py-[2px] rounded-full shadow whitespace-nowrap"
           >
@@ -53,7 +60,8 @@ function Header({ onToggleSidebar }) {
             <div
               className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-xs ml-1"
               style={{
-                background: "linear-gradient(to bottom right, #7e5bef, #5e4eea)",
+                background:
+                  "linear-gradient(to bottom right, #7e5bef, #5e4eea)",
               }}
             >
               👤
@@ -62,7 +70,7 @@ function Header({ onToggleSidebar }) {
         </div>
       </div>
 
-      {/* ✅ Tablet/Desktop View (unchanged) */}
+      {/* Tablet/Desktop View */}
       <div className="hidden sm:flex justify-between items-center px-6 py-3">
         <Link
           to="/"
@@ -76,6 +84,7 @@ function Header({ onToggleSidebar }) {
         <div className="flex items-center gap-6 text-sm">
           <motion.button
             whileHover={{ scale: 1.05 }}
+            onClick={handlePostProperty}
             className="bg-white text-[#ff4f81] font-semibold px-4 py-1 rounded-full shadow-sm transition"
           >
             Post Property
@@ -90,7 +99,8 @@ function Header({ onToggleSidebar }) {
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
               style={{
-                background: "linear-gradient(to bottom right, #7e5bef, #5e4eea)",
+                background:
+                  "linear-gradient(to bottom right, #7e5bef, #5e4eea)",
               }}
             >
               👤
