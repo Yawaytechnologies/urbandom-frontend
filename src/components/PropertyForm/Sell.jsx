@@ -42,7 +42,7 @@ const SellForm = (lookingTo) => {
     propertyType: "residential",
     commercialSubType: "",
     country: "",
-    lookingTo:"sell",
+    lookingTo:lookingTo,
     state: "",
     district: "",
     locality: "",

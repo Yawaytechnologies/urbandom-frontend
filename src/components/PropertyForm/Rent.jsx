@@ -39,7 +39,7 @@ const RentForm = ({ lookingTo }) => {
 const [form, setForm] = useState({
   title: "",
   propertyType: "residential",
-  lookingTo: "rent", 
+  lookingTo: lookingTo, 
   commercialSubType: "",
   country: "",
   state: "",
