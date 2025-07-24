@@ -6,7 +6,7 @@ import UserActivity from "./pages/UserActivity";
 import RentPage from "./pages/RentPage";
 import BuyPage from "./pages/BuyPage";
 import PropertyOverviewPage from "./pages/PropertyOverviewPage"; // Static Property Overview Page
-import PgPage from "./pages/PgPage";
+import PgPage from "./pages/PGPage";
 import PropertyTypeSelector from "./components/PropertyForm/PropertyType";
 import PGCoLivingForm from './components/PropertyForm/PG-Coliving';
 import DashBoard from './pages/DashBoard'; // Directly render Dashboard
