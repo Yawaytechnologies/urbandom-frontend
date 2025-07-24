@@ -7,10 +7,11 @@ const HeroSection = () => {
   const locationHook = useLocation();
   const currentPath = locationHook.pathname;
 
-  const defaultTab = currentPath.includes('rent')
+  // ✅ Use "pg" instead of "/pg-coliving-form" for correct tab matching
+  const defaultTab = currentPath.includes('/rent')
     ? 'rent'
-    : currentPath.includes('/pg-coliving-form')
-    ? '/pg-coliving-form'
+    : currentPath.includes('/pg')
+    ? 'pg'
     : 'buy';
 
   const [tab, setTab] = useState(defaultTab);
@@ -20,7 +21,7 @@ const HeroSection = () => {
   const bgImages = {
     buy: '/buyCover.jpeg',
     rent: '/Rent.jpeg',
-    pg: '/pgCover.jpg',
+    pg: '/pgcover.jpeg',
   };
 
   const accentColors = {
@@ -38,22 +39,21 @@ const HeroSection = () => {
   const tabs = [
     { label: 'Buy', icon: <FaHome />, route: '/buy' },
     { label: 'Rent', icon: <FaBuilding />, route: '/rent' },
-    { label: 'PG/Co-Living', icon: <FaUsers />, route: '/pg-coliving-form' },
+    { label: 'PG/Co-Living', icon: <FaUsers />, route: '/pg' },
   ];
 
-  // Reset location when tab changes, always pick the first city for the tab
   useEffect(() => {
-    setTab(defaultTab); // Always sync tab with route
+    setTab(defaultTab);
   }, [defaultTab]);
 
   useEffect(() => {
-    // When tab changes, always select first location for the tab
-    if (locationsByTab[tab]?.length > 0) {
-      setLocation(locationsByTab[tab][0]);
+    const cities = locationsByTab[tab];
+    if (cities?.length > 0) {
+      setLocation(cities[0]);
     } else {
       setLocation('');
     }
-  }, [tab, locationsByTab]);
+  }, [locationsByTab]);
 
   const handleTabClick = (label, route) => {
     setTab(label.toLowerCase());
@@ -69,27 +69,23 @@ const HeroSection = () => {
       className="relative w-full pt-0 h-screen bg-no-repeat bg-center bg-cover select-none"
       style={{
         color: 'var(--text-primary)',
-        backgroundImage: `linear-gradient(rgba(12, 32, 92, 0.6), rgba(19, 27, 50, 0.6)), url('${bgImages[tab]}')`,
+        backgroundImage: `linear-gradient(rgba(12, 32, 92, 0.6), rgba(19, 27, 50, 0.6)), url('${bgImages[tab] || bgImages.buy}')`,
       }}
     >
       <div className="pt-[72px] pb-20 px-4 sm:px-6 flex flex-col items-center justify-center h-full text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-4">
-  
-
-  {tab === "pg" && (
-    <>
-      Best PGs & Hostels Available in{' '}
-      <span style={{ color: accentColors[tab] }}>{location}</span>
-    </>
-  )}
-
-  {!["pg"].includes(tab) && (
-    <>
-      Properties to <span className="capitalize">{tab}</span> in{' '}
-      <span style={{ color: accentColors[tab] }}>{location}</span>
-    </>
-  )}
-</h1>
+          {tab === 'pg' ? (
+            <>
+              Best PGs & Hostels Available in{' '}
+              <span style={{ color: accentColors[tab] }}>{location}</span>
+            </>
+          ) : (
+            <>
+              Properties to <span className="capitalize">{tab}</span> in{' '}
+              <span style={{ color: accentColors[tab] }}>{location}</span>
+            </>
+          )}
+        </h1>
 
         <p className="text-base sm:text-lg md:text-xl mb-10 text-white">
           <span className="font-bold">8K+</span> listings added daily and{' '}
@@ -115,7 +111,7 @@ const HeroSection = () => {
             ))}
           </div>
 
-          {/* Search Bar with Location Filter Inside */}
+          {/* Search Bar */}
           <div className="flex flex-col sm:flex-row items-stretch gap-3 w-full">
             <div className="flex items-stretch w-full bg-white rounded-full border border-gray-300 overflow-hidden">
               {/* Location Dropdown */}
@@ -125,7 +121,7 @@ const HeroSection = () => {
                   onChange={(e) => setLocation(e.target.value)}
                   className="bg-transparent text-gray-700 text-sm sm:text-base outline-none w-full"
                 >
-                  {locationsByTab[tab].map((city) => (
+                  {(locationsByTab[tab] || []).map((city) => (
                     <option key={city} value={city}>
                       {city}
                     </option>

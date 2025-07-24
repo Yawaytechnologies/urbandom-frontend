@@ -1,14 +1,23 @@
+// src/redux/slices/overviewHomeSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchOverviewHomeData } from '../actions/overviewHomeActions';
 
+const initialState = {
+  dataMap: {},       // Store property data by ID
+  loading: false,
+  error: null,
+};
+
 const overviewHomeSlice = createSlice({
   name: 'overviewHome',
-  initialState: {
-    data: [],
-    loading: false,
-    error: null,
+  initialState,
+  reducers: {
+    clearOverviewData: (state) => {
+      state.dataMap = {};
+      state.loading = false;
+      state.error = null;
+    },
   },
-  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchOverviewHomeData.pending, (state) => {
@@ -17,7 +26,8 @@ const overviewHomeSlice = createSlice({
       })
       .addCase(fetchOverviewHomeData.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        const property = action.payload;
+        state.dataMap[property._id] = property; // Store using ID
       })
       .addCase(fetchOverviewHomeData.rejected, (state, action) => {
         state.loading = false;
@@ -25,5 +35,7 @@ const overviewHomeSlice = createSlice({
       });
   },
 });
+
+export const { clearOverviewData } = overviewHomeSlice.actions;
 
 export default overviewHomeSlice.reducer;
