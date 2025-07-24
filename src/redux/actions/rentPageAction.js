@@ -3,12 +3,12 @@ import rentPageService from '../services/rentPageService' // Make sure you impor
 
 
 // Fetch newly added properties for Rent page
-export const fetchNewlyAddedPropertiesAction = createAsyncThunk(
+export const fetchNewlyAddedProperties = createAsyncThunk(
   'rentPage/fetchNewlyAddedProperties',
   async (_, { rejectWithValue }) => {
     try {
-      const properties = await rentPageService.getNewlyAddedProperties(); // Call the method from rentPageService
-      return properties;
+      const newlyAddedProperties = await rentPageService.getNewlyAddedProperties(); // Call the method from rentPageService
+      return newlyAddedProperties.data;
     } catch (error) {
       return rejectWithValue(error.message);
     }

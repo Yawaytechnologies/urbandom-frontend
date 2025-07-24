@@ -1,106 +1,107 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { FaPause, FaPlay } from 'react-icons/fa';
+// components/FeaturedProperties.jsx
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFeaturedProperties } from '../../redux/actions/buyPageActions';
+import { useNavigate } from 'react-router-dom';
 
-const FeaturedProperties = ({ properties }) => {
-  const safeProperties = Array.isArray(properties) ? properties : [];
-  const containerRef = useRef(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+const getValidImageUrl = (property) => {
+  return property?.media?.images?.[0] || '/defaultImage.jpg';
+};
+
+const FeaturedProperties = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { featuredProperties, loading, error } = useSelector((state) => state.buyPage);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [autoScroll, setAutoScroll] = useState(true);
 
   useEffect(() => {
-    if (safeProperties.length > 0) {
-      const container = containerRef.current;
-      if (container) {
-        const cardWidth = container.children[0]?.offsetWidth || 300;
-        container.scrollTo({
-          left: activeIndex * (cardWidth + 20),
-          behavior: 'smooth',
-        });
-      }
+    dispatch(fetchFeaturedProperties());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (autoScroll) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % featuredProperties.length);
+      }, 3000);
+      return () => clearInterval(interval);
     }
-  }, [activeIndex, safeProperties.length]);
+  }, [featuredProperties, autoScroll]);
 
-  useEffect(() => {
-    if (safeProperties.length === 0) return;
-    const interval = setInterval(() => {
-      if (!isPaused) {
-        setActiveIndex((prev) => (prev + 1) % safeProperties.length);
-      }
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [isPaused, safeProperties.length]);
+   const handleViewDetails = (propertyId) => {
+    navigate(`/property-overview/${propertyId}`);
+  };
+
+  if (loading) return <div className="text-center py-6">Loading...</div>;
+  if (error) return <div className="text-center text-red-500">{error}</div>;
+  if (!featuredProperties.length) return null;
+
+  const current = featuredProperties[currentIndex];
+
+ 
 
   return (
-    <section className="py-6 px-4 md:px-8 bg-[var(--background)]">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-[var(--foreground)]">Housing's top picks</h2>
-        <p className="text-sm text-[var(--text-secondary)]">Explore top living options with us</p>
-      </div>
-
-      {/* Tabs for Property Names */}
-      <div className="flex space-x-3 overflow-x-auto scrollbar-hide mb-4 -mx-2 px-2">
-        {safeProperties.map((property, idx) => (
+    <section className="bg-[var(--background)] py-10">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h2 className="text-2xl font-semibold text-[var(--foreground)]">Housing's top picks</h2>
+            <p className="text-sm text-gray-500">Explore top living options with us</p>
+          </div>
           <button
-            key={property._id || idx}
-            className={`text-sm whitespace-nowrap px-3 py-1 rounded-full border transition-all duration-300 shrink-0 ${
-              idx === activeIndex
-                ? 'bg-white border-purple-600 text-purple-600 font-semibold shadow'
-                : 'bg-gray-100 text-gray-600 border-transparent'
-            }`}
-            onClick={() => setActiveIndex(idx)}
+            onClick={() => setAutoScroll(!autoScroll)}
+            className="border border-gray-400 px-4 py-1 rounded-full text-sm text-[var(--foreground)]"
           >
-            {property.title || 'Unnamed Property'}
+            {autoScroll ? '❚❚ Pause' : '▶ Play'}
           </button>
-        ))}
-      </div>
+        </div>
 
-      {/* Cards Section */}
-      <div className="group relative overflow-hidden">
-        <button
-          onClick={() => setIsPaused((prev) => !prev)}
-          className="absolute right-4 top-4 z-20 p-2 bg-white rounded-full shadow-md md:block hidden"
-        >
-          {isPaused ? <FaPlay className="text-gray-700" /> : <FaPause className="text-gray-700" />}
-        </button>
+        <div className="relative rounded-lg overflow-hidden shadow-md bg-white p-4 flex flex-col md:flex-row gap-4 items-center">
+          <img
+            src={getValidImageUrl(current)}
+            alt={current.title}
+            className="w-full md:w-1/3 h-60 object-cover rounded-md"
+          />
+          <div className="flex-1 w-full">
+            <h3 className="text-lg font-bold text-[var(--foreground)]">{current.title}</h3>
+            <p className="text-sm text-gray-600">
+              {current.location?.name}, {current.location?.state}
+              {current.propertyType}
+            </p>
+            <p className="text-[var(--accent)] mt-2 font-semibold text-lg">
+              ₹ {current.priceDetails?.amount?.toLocaleString()}
+            </p>
 
-        <div ref={containerRef} className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide px-1 py-2">
-          {safeProperties.map((property, idx) => (
-            <div
-              key={property._id || idx}
-              className={`w-[85vw] sm:w-[280px] md:w-[320px] lg:w-[340px] flex-shrink-0 transition-transform duration-300 ease-in-out rounded-xl shadow-md overflow-hidden ${
-                idx === activeIndex ? 'border-4 border-purple-600 shadow-2xl scale-[1.02]' : 'border border-gray-200'
-              }`}
-            >
-              {/* Property Card Content */}
-              <div className="flex flex-col justify-between bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm h-full min-h-[420px]">
-                {/* Image Background */}
-                <div
-                  className="h-40 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${property.media?.images?.[0]})` }}
-                />
-
-                {/* Details */}
-                <div className="flex flex-col flex-grow px-4 py-3">
-                  <h3 className="text-lg font-semibold text-gray-800 truncate">{property.title}</h3>
-                  <div className="mt-3 text-sm text-gray-600">
-                    <p className="flex items-center gap-1 mb-1">🛏️ {property.subProperty}</p>
-                    <p className="flex items-center gap-1">📍 {property.location?.name || 'Location Not Available'}</p>
-                  </div>
-                  <p className="mt-3 font-bold text-[var(--accent)]">
-                    {property.priceDetails?.monthlyRent ? `₹${property.priceDetails.monthlyRent}` : 'Price Not Available'}
-                  </p>
-                </div>
-                <div className="px-4 pb-4">
-                  <button className="w-full bg-[var(--accent)] text-white rounded-md py-2 text-sm hover:brightness-110 transition">
-                    View Details
-                  </button>
-                </div>
-              </div>
+            {/* ✅ View Details button */}
+            <div className="mt-4 text-right">
+              <button
+                onClick={() => handleViewDetails(current._id)}
+                className="text-sm px-4 py-2 bg-[var(--accent)] text-white rounded-full hover:opacity-90"
+              >
+                View Details →
+              </button>
             </div>
-          ))}
+          </div>
+        </div>
+
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={() => setCurrentIndex((prev) => (prev - 1 + featuredProperties.length) % featuredProperties.length)}
+            className="px-4 py-2 bg-gray-200 text-black rounded hover:bg-gray-300"
+          >
+            ← Previous
+          </button>
+          <button
+            onClick={() => setCurrentIndex((prev) => (prev + 1) % featuredProperties.length)}
+            className="px-4 py-2 bg-[var(--accent)] text-white rounded hover:opacity-90"
+          >
+            Next →
+          </button>
         </div>
       </div>
     </section>
   );
 };
+
 export default FeaturedProperties;

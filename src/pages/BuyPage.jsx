@@ -1,8 +1,8 @@
 // BuyPage.jsx
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import HeroSection from '../components/common/HeroSection';
-import { fetchAllProperties, fetchProminentProperties, fetchFeaturedDevelopers ,fetchNewsAndArticles,fetchNewlyAddedPropertiesAction} from '../redux/actions/buyPageActions';
+import {fetchNewsAndArticles} from '../redux/actions/buyPageActions';
 import FeaturedProperties from '../components/Buypage/FeaturedProperties';
 import ProminentProjects from '../components/Buypage/ProminentProjects';
 import SellPropertySection from '../components/Buypage/SellPropertySection';
@@ -14,26 +14,22 @@ import NewlyAddedProperties from '../components/Buypage/NewlyAddedProperties';
 const BuyPage = () => {
   const dispatch = useDispatch();
 
-  const { properties, isLoading, error } = useSelector((state) => state.buyPage);
+  // const { properties, isLoading, error } = useSelector((state) => state.buyPage);
 
   useEffect(() => {
-    dispatch(fetchAllProperties());
-    dispatch(fetchProminentProperties());
-    dispatch(fetchFeaturedDevelopers());
+    // dispatch(fetchAllProperties());
+    // dispatch(fetchProminentProperties());
+    // dispatch(fetchFeaturedDevelopers());
     dispatch(fetchNewsAndArticles());
-    dispatch(fetchNewlyAddedPropertiesAction());
+    // dispatch(fetchNewlyAddedPropertiesAction());
   }, [dispatch]);
 
   return (
     <>
       <HeroSection tabType="buy" />
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : (
+      { (
         <>
-          <FeaturedProperties properties={properties} />
+          <FeaturedProperties  />
           <ProminentProjects /> 
           <FeaturedDevelopers/>
           <NewlyAddedProperties/>

@@ -3,12 +3,12 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import buyPageService from '../../redux/services/buyPageService'; // Import service
 
 // Fetch All Properties
-export const fetchAllProperties = createAsyncThunk(
-  'buyPage/fetchAllProperties',
+export const fetchFeaturedProperties = createAsyncThunk(
+  'buyPage/fetchFeaturedProperties',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await buyPageService.getAllProperties();  // Call the service to get all properties
-      return response;  // Return the fetched properties
+      const response = await buyPageService.getFeaturedProperties();  // Call the service to get all properties
+      return response.data;  // Return the fetched properties
     } catch (error) {
       console.error("Error in action:", error.message);
       return rejectWithValue(error.message);  // Pass the error to Redux
@@ -21,7 +21,7 @@ export const fetchProminentProperties = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await buyPageService.getProminentProperties();  // Call the service to get all properties
-      return response;  // Return the fetched properties
+      return response.data;  // Return the fetched properties
     } catch (error) {
       console.error("Error in action:", error.message);
       return rejectWithValue(error.message);  // Pass the error to Redux
@@ -35,7 +35,7 @@ export const fetchFeaturedDevelopers = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await buyPageService.getFeaturedDevelopers(); 
-      return response;  // Return the fetched properties
+      return response.data;  // Return the fetched properties
     } catch (error) {
       console.error("Error in action:", error.message);
       return rejectWithValue(error.message);  // Pass the error to Redux
@@ -44,12 +44,12 @@ export const fetchFeaturedDevelopers = createAsyncThunk(
 );
 
 // Fetch newly added properties for Rent page
-export const fetchNewlyAddedPropertiesAction = createAsyncThunk(
+export const fetchNewlyAddedProperties = createAsyncThunk(
   'buyPage/fetchNewlyAddedProperties',
   async (_, { rejectWithValue }) => {
     try {
       const response = await buyPageService.getNewlyAddedProperties(); // Call the method from rentPageService
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error in action:", error.message);
       return rejectWithValue(error.message);

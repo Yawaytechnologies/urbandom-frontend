@@ -7,7 +7,7 @@ const rentPageService = {
   // Fetch Newly Added Properties
   getNewlyAddedProperties: async () => {
     try {
-      const response = await axios.get(`${API_URL}property`);  // Adjust endpoint to match your API
+      const response = await axios.get(`${API_URL}property/lookingTo/rent`);  // Adjust endpoint to match your API
       return response.data;
     } catch (error) {
       throw new Error('Error fetching newly added properties: ' + error.message);
