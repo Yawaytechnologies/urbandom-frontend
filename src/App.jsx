@@ -6,7 +6,7 @@ import UserActivity from "./pages/UserActivity";
 import RentPage from "./pages/RentPage";
 import BuyPage from "./pages/BuyPage";
 import PropertyOverviewPage from "./pages/PropertyOverviewPage"; // Static Property Overview Page
-import PGPage from './pages/PGPage';
+import PgPage from "./pages/PgPage";
 import PropertyTypeSelector from "./components/PropertyForm/PropertyType";
 import PGCoLivingForm from './components/PropertyForm/PG-Coliving';
 import DashBoard from './pages/DashBoard'; // Directly render Dashboard
@@ -19,7 +19,7 @@ const App = () => {
         <Route path="/" element={<BuyPage />} />
         <Route path="/buy" element={<BuyPage />} />
         <Route path="/rent" element={<RentPage />} />
-        <Route path="/pg" element={<PGPage />} />
+        <Route path="/pg" element ={<PgPage/>}/>
         <Route path="/property-overview/:id" element={<PropertyOverviewPage />} />
         <Route path="/propertyform" element={<PropertyTypeSelector />} />
         {/* <Route path="/search" element={<SearchResults />} /> */}
