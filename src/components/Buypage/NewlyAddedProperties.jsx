@@ -1,29 +1,36 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaBed } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchNewlyAddedProperties} from '../../redux/actions/buyPageActions';
 
 const NewlyAddedProperties = () => {
   const containerRef = useRef(null);
   const [scrollPercent, setScrollPercent] = useState(0);
 
-  // Get from Redux only!
-  const { newlyAddedProperties = [], loading, error } = useSelector((state) => state.buyPage);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // Scroll left/right handlers
+  const { newlyAddedProperties, loading, error } = useSelector((state) => state.buyPage);
+
+  useEffect(() => {
+    dispatch(fetchNewlyAddedProperties());
+  }, [dispatch]);
+
   const handleScrollLeft = () => {
     containerRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
   };
+
   const handleScrollRight = () => {
     containerRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
   };
 
-  // Scroll progress
   const updateScrollProgress = () => {
     const container = containerRef.current;
     if (container) {
       const totalScroll = container.scrollWidth - container.clientWidth;
       const scrolled = container.scrollLeft;
-      setScrollPercent(totalScroll > 0 ? (scrolled / totalScroll) * 100 : 0);
+      setScrollPercent((scrolled / totalScroll) * 100);
     }
   };
 
@@ -34,9 +41,9 @@ const NewlyAddedProperties = () => {
     return () => container.removeEventListener('scroll', updateScrollProgress);
   }, []);
 
-  // Loading and error
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const handleViewDetails = (propertyId) => {
+    navigate(`/property-overview/${propertyId}`);
+  };
 
   return (
     <section className="relative py-10 px-4 md:px-8 bg-[var(--background)] overflow-hidden">
@@ -48,11 +55,9 @@ const NewlyAddedProperties = () => {
       </div>
 
       <div className="group relative">
-        {/* Edge Fades */}
         <div className="absolute top-0 left-0 w-16 h-full bg-gradient-to-r from-[var(--background)] to-transparent z-10 pointer-events-none" />
         <div className="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-[var(--background)] to-transparent z-10 pointer-events-none" />
 
-        {/* Left Arrow */}
         <button
           onClick={handleScrollLeft}
           className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
@@ -62,12 +67,15 @@ const NewlyAddedProperties = () => {
           ←
         </button>
 
-        {/* Cards */}
         <div
           ref={containerRef}
           className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide px-4 py-2"
         >
-          {Array.isArray(newlyAddedProperties) && newlyAddedProperties.length > 0 ? (
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p className="text-red-500">Error: {error}</p>
+          ) : newlyAddedProperties.length > 0 ? (
             newlyAddedProperties.map((property) => (
               <div
                 key={property._id}
@@ -75,41 +83,44 @@ const NewlyAddedProperties = () => {
                   hover:shadow-xl hover:-translate-y-1 transition-transform duration-300 
                   min-w-[240px] md:min-w-[260px] lg:min-w-[280px] flex-shrink-0"
               >
-                {/* Image */}
-                <div
-                  className="h-40 bg-cover bg-center rounded-t-xl"
-                  style={{
-                    backgroundImage: `url(${property.media?.images?.[0] || '/default-image.jpg'})`,
-                  }}
-                ></div>
+                 {/* Image */}
+                <div className="w-full h-[180px]">
+                  {property.media?.images?.[0] ? (
+                    <img
+                      src={property.media.images[0]}
+                      alt={property.title}
+                      className="w-full h-full object-cover rounded-t-lg"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-t-lg">
+                      <span className="text-gray-500 text-sm">No Image</span>
+                    </div>
+                  )}
+                </div>
 
-                {/* Info section */}
                 <div className="p-4">
                   <h3 className="font-semibold text-base text-[var(--text-secondary)] mb-1 truncate">
                     {property.title || 'Unnamed Property'}
                   </h3>
-                  <p className="text-xs text-gray-500 truncate">
-                    {property.developer || 'Developer not specified'}
-                  </p>
+                  <p className="text-xs text-gray-500 truncate">{property.lookingTo || 'Developer not specified'}</p>
 
                   <hr className="border-t border-gray-200 my-3" />
 
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <FaBed className="text-[var(--accent)]" />
-                    <span>{property.propertyType || property.type || 'Property type not specified'}</span>
+                    <span>{property.propertyType || 'Property type not specified'}</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
                     <FaMapMarkerAlt className="text-[var(--accent)]" />
-                    <span>{property.location?.name || property.locality || 'Location not specified'}</span>
+                    <span>{property.location?.name || 'Location not specified'}</span>
                   </div>
 
                   <p className="text-base font-bold text-[var(--accent)] mb-3">
-                    {property.priceDetails?.monthlyRent
-                      ? `₹${property.priceDetails.monthlyRent}`
-                      : 'Price not available'}
+                    {property.priceDetails?.monthlyRent ? `₹${property.priceDetails.monthlyRent}` : 'Price not available'}
                   </p>
 
                   <button
+                    onClick={() => handleViewDetails(property._id)}
                     className="w-full bg-[var(--accent)] text-white py-2 rounded-md 
                       hover:bg-opacity-90 transition font-medium text-sm"
                   >
@@ -119,11 +130,10 @@ const NewlyAddedProperties = () => {
               </div>
             ))
           ) : (
-            <p className="text-gray-400 py-6">No newly added properties found.</p>
+            <p>No newly added Properties found.</p>
           )}
         </div>
 
-        {/* Right Arrow */}
         <button
           onClick={handleScrollRight}
           className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
@@ -134,7 +144,6 @@ const NewlyAddedProperties = () => {
         </button>
       </div>
 
-      {/* Scroll Progress */}
       <div className="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
         <div
           className="h-full bg-[var(--accent)] transition-all duration-300"

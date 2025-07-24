@@ -4,7 +4,7 @@ import { fetchOverviewHomeData } from '../actions/overviewHomeActions';
 const overviewHomeSlice = createSlice({
   name: 'overviewHome',
   initialState: {
-    data: {},
+    data: [],
     loading: false,
     error: null,
   },

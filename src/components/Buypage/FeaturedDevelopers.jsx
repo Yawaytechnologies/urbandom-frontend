@@ -1,12 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import {useDispatch , useSelector} from 'react-redux';
+import {fetchFeaturedDevelopers} from '../../redux/actions/buyPageActions';
 
 const FeaturedDevelopers = () => {
   const containerRef = useRef(null);
+  const dispatch = useDispatch();
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const { featuredDevelopers = [], loading, error } = useSelector((state) => state.buyPage);
 
+  
   // Scroll left functionality
   const handleScrollLeft = () => {
     containerRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
@@ -27,6 +30,10 @@ const FeaturedDevelopers = () => {
       setScrollProgress(progress);
     }
   };
+   
+   useEffect(() => {
+      dispatch(fetchFeaturedDevelopers());
+    }, [dispatch]);
 
   // Add event listener for scroll progress
   useEffect(() => {
@@ -34,6 +41,9 @@ const FeaturedDevelopers = () => {
     if (container) {
       container.addEventListener('scroll', updateScrollProgress);
     }
+
+   
+
 
     // Cleanup the event listener on component unmount
     return () => {
@@ -100,15 +110,21 @@ const FeaturedDevelopers = () => {
                 <img
                   src={dev.media?.images[0] || '/default-image.jpg'}  // Display a default image if no image exists
                   alt={dev.title}
-                  className="w-16 h-16 mx-auto object-contain mb-3"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <h3 className="font-semibold text-base text-gray-800">{dev.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">{dev.priceDetails?.monthlyRent} / month</p>
+                
+                <h3 className="text-sm font-semibold truncate">{dev.title}</h3>
+                 <p className="text-xs truncate">
+      {dev.location?.name}
+    </p>
+                <p className="text-sm font-bold mt-1">{dev.priceDetails?.monthlyRent}/ month </p>
                 <div className="mt-3 flex justify-center items-center gap-1">
                   <span className="bg-yellow-400 text-black text-xs font-semibold rounded-full px-2 py-0.5">
                     ★ {dev.rating || 'N/A'}
                   </span>
+                  
                 </div>
+               
               </div>
             ))
           )}

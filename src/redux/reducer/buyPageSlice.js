@@ -1,16 +1,16 @@
 // src/redux/buyPageSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import {
-  fetchAllProperties,
+  fetchFeaturedProperties,
   fetchFeaturedDevelopers,
   fetchProminentProperties,
   fetchNewsAndArticles,
-  fetchNewlyAddedPropertiesAction,  
+  fetchNewlyAddedProperties,  
 } from '../actions/buyPageActions';  // Ensure proper import
 
 
 const initialState = {
-  properties: [],  // Array to hold all properties
+  featuredProperties: [],  // Array to hold all properties
   prominentProperties: [],  // Array to hold prominent properties
   featuredDevelopers: [],
   newlyAddedProperties:[],
@@ -26,17 +26,17 @@ const buyPageSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Fetch All Properties Pending (loading state)
-      .addCase(fetchAllProperties.pending, (state) => {
+      .addCase(fetchFeaturedProperties.pending, (state) => {
         state.isLoading = true;
         state.error = null; // Clear previous errors
       })
       // Fetch All Properties Fulfilled (success state)
-      .addCase(fetchAllProperties.fulfilled, (state, action) => {
+      .addCase(fetchFeaturedProperties.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.properties = action.payload;  // Store the fetched properties
+        state.featuredProperties = action.payload;  // Store the fetched properties
       })
       // Fetch All Properties Rejected (error state)
-      .addCase(fetchAllProperties.rejected, (state, action) => {
+      .addCase(fetchFeaturedProperties.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;  // Set the error message
       })
@@ -73,17 +73,17 @@ const buyPageSlice = createSlice({
       })
 
       // Fetch Newly Added Properties Pending (loading state)
-            .addCase(fetchNewlyAddedPropertiesAction.pending, (state) => {
+            .addCase(fetchNewlyAddedProperties.pending, (state) => {
               state.isLoading = true;
               state.error = null; // Clear previous errors
             })
             // Fetch Newly Added Properties Fulfilled (success state)
-            .addCase(fetchNewlyAddedPropertiesAction.fulfilled, (state, action) => {
+            .addCase(fetchNewlyAddedProperties.fulfilled, (state, action) => {
               state.isLoading = false;
-              state.properties = action.payload || []; // If payload is undefined, fall back to empty array
+              state.newlyAddedProperties = action.payload || []; // If payload is undefined, fall back to empty array
             })
             // Fetch Newly Added Properties Rejected (error state)
-            .addCase(fetchNewlyAddedPropertiesAction.rejected, (state, action) => {
+            .addCase(fetchNewlyAddedProperties.rejected, (state, action) => {
               state.isLoading = false;
               state.error = action.payload || 'Error fetching properties'; // Ensure error is defined
             })

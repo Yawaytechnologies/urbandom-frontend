@@ -5,9 +5,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const buyPageService = {
   // Fetch All Properties
-  getAllProperties: async () => {
+  getFeaturedProperties: async () => {
     try {
-      const response = await axios.get(`${API_URL}property`);  // Get all properties (no ID needed)
+      const response = await axios.get(`${API_URL}property/lookingTo/sell`);  // Get all properties (no ID needed)
       return response.data; // Return the list of properties
     } catch {
       throw new Error('Failed to fetch properties');
@@ -17,7 +17,7 @@ const buyPageService = {
   // Fetch Prominent Properties
   getProminentProperties: async () => {
     try {
-      const response = await axios.get(`${API_URL}property`);  // Adjust API endpoint
+      const response = await axios.get(`${API_URL}property/lookingTo/sell`);  // Adjust API endpoint
       return response.data;  // Return the data directly from the API response
     } catch {
       throw new Error('Failed to fetch prominent properties');
@@ -27,7 +27,7 @@ const buyPageService = {
   // Fetch Prominent Properties
   getFeaturedDevelopers: async () => {
     try {
-      const response = await axios.get(`${API_URL}property`);  // Adjust API endpoint
+      const response = await axios.get(`${API_URL}property/lookingTo/sell`);  // Adjust API endpoint
       return response.data;  // Return the data directly from the API response
     } catch {
       throw new Error('Failed to fetch featured developers');
@@ -37,7 +37,7 @@ const buyPageService = {
   // Fetch Newly Added Properties
   getNewlyAddedProperties: async () => {
     try {
-      const response = await axios.get(`${API_URL}property`);  // Adjust endpoint to match your API
+      const response = await axios.get(`${API_URL}property/lookingTo/sell`);  // Adjust endpoint to match your API
       return response.data;
     } catch (error) {
       throw new Error('Error fetching newly added properties: ' + error.message);

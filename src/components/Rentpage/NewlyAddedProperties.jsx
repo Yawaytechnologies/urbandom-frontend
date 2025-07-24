@@ -1,24 +1,30 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaBed } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchNewlyAddedProperties} from '../../redux/actions/rentPageAction';
 
-const NewlyAddedProperties = ({ properties }) => {
+const NewlyAddedProperties = () => {
   const containerRef = useRef(null);
   const [scrollPercent, setScrollPercent] = useState(0);
 
-  const navigate = useNavigate();  // Initialize navigate function
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // Scroll left functionality
+  const { newlyAddedProperties, loading, error } = useSelector((state) => state.rentPage);
+
+  useEffect(() => {
+    dispatch(fetchNewlyAddedProperties());
+  }, [dispatch]);
+
   const handleScrollLeft = () => {
     containerRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
   };
 
-  // Scroll right functionality
   const handleScrollRight = () => {
     containerRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
   };
 
-  // Calculate scroll progress
   const updateScrollProgress = () => {
     const container = containerRef.current;
     if (container) {
@@ -28,7 +34,6 @@ const NewlyAddedProperties = ({ properties }) => {
     }
   };
 
-  // Set up event listener for scroll progress
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -36,10 +41,9 @@ const NewlyAddedProperties = ({ properties }) => {
     return () => container.removeEventListener('scroll', updateScrollProgress);
   }, []);
 
-  // Handle the "View Details" button click, navigating to PropertyOverviewPage
-  const handleViewDetails = (propertyId) => {
-    navigate(`/property-overview/${propertyId}`);  // Navigate to PropertyOverviewPage with propertyId
-  };
+    const handleViewDetails = (propertyId) => {
+      navigate(`/property-overview/${propertyId}`);
+    };
 
   return (
     <section className="relative py-10 px-4 md:px-8 bg-[var(--background)] overflow-hidden">
@@ -51,11 +55,9 @@ const NewlyAddedProperties = ({ properties }) => {
       </div>
 
       <div className="group relative">
-        {/* Edge Fades */}
         <div className="absolute top-0 left-0 w-16 h-full bg-gradient-to-r from-[var(--background)] to-transparent z-10 pointer-events-none" />
         <div className="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-[var(--background)] to-transparent z-10 pointer-events-none" />
 
-        {/* Arrows for scrolling */}
         <button
           onClick={handleScrollLeft}
           className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
@@ -65,37 +67,48 @@ const NewlyAddedProperties = ({ properties }) => {
           ←
         </button>
 
-        {/* Cards displaying properties */}
         <div
           ref={containerRef}
           className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide px-4 py-2"
         >
-          {properties.length > 0 ? (
-            properties.map((property) => (
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p className="text-red-500">Error: {error}</p>
+          ) : newlyAddedProperties.length > 0 ? (
+            newlyAddedProperties.map((property) => (
               <div
                 key={property._id}
                 className="bg-white border border-blue-100 rounded-xl shadow-md 
                   hover:shadow-xl hover:-translate-y-1 transition-transform duration-300 
                   min-w-[240px] md:min-w-[260px] lg:min-w-[280px] flex-shrink-0"
               >
-                {/* Image */}
-                <div
-                  className="h-40 bg-cover bg-center rounded-t-xl"
-                  style={{ backgroundImage: `url(${property.media?.images[0] || '/default-image.jpg'})` }}
-                ></div>
+                 {/* Image */}
+                <div className="w-full h-[180px]">
+                  {property.media?.images?.[0] ? (
+                    <img
+                      src={property.media.images[0]}
+                      alt={property.title}
+                      className="w-full h-full object-cover rounded-t-lg"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-t-lg">
+                      <span className="text-gray-500 text-sm">No Image</span>
+                    </div>
+                  )}
+                </div>
 
-                {/* Info section */}
                 <div className="p-4">
                   <h3 className="font-semibold text-base text-[var(--text-secondary)] mb-1 truncate">
                     {property.title || 'Unnamed Property'}
                   </h3>
-                  <p className="text-xs text-gray-500 truncate">{property.developer || 'Developer not specified'}</p>
+                  <p className="text-xs text-gray-500 truncate">{property.lookingTo || 'Developer not specified'}</p>
 
                   <hr className="border-t border-gray-200 my-3" />
 
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <FaBed className="text-[var(--accent)]" />
-                    <span>{property.type || 'Property type not specified'}</span>
+                    <span>{property.propertyType || 'Property type not specified'}</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
                     <FaMapMarkerAlt className="text-[var(--accent)]" />
@@ -107,7 +120,7 @@ const NewlyAddedProperties = ({ properties }) => {
                   </p>
 
                   <button
-                    onClick={() => handleViewDetails(property._id)}  // Trigger the navigation with property ID
+                    onClick={() => handleViewDetails(property._id)}
                     className="w-full bg-[var(--accent)] text-white py-2 rounded-md 
                       hover:bg-opacity-90 transition font-medium text-sm"
                   >
@@ -117,14 +130,12 @@ const NewlyAddedProperties = ({ properties }) => {
               </div>
             ))
           ) : (
-            <p>No newly added properties found.</p>
+            <p>No newly added Properties found.</p>
           )}
         </div>
 
-        {/* Right Arrow for scrolling */}
         <button
           onClick={handleScrollRight}
-          
           className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
             shadow hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
           aria-label="Scroll Right"
@@ -133,7 +144,6 @@ const NewlyAddedProperties = ({ properties }) => {
         </button>
       </div>
 
-      {/* Scroll Progress */}
       <div className="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
         <div
           className="h-full bg-[var(--accent)] transition-all duration-300"
