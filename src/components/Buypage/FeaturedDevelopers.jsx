@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import {useDispatch , useSelector} from 'react-redux';
-import {fetchFeaturedDevelopers} from '../../redux/actions/buyPageActions';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFeaturedDevelopers } from '../../redux/actions/buyPageActions';
 
 const FeaturedDevelopers = () => {
   const containerRef = useRef(null);
@@ -9,18 +9,14 @@ const FeaturedDevelopers = () => {
 
   const { featuredDevelopers = [], loading, error } = useSelector((state) => state.buyPage);
 
-  
-  // Scroll left functionality
   const handleScrollLeft = () => {
     containerRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
   };
 
-  // Scroll right functionality
   const handleScrollRight = () => {
     containerRef.current?.scrollBy({ left: 300, behavior: 'smooth' });
   };
 
-  // Function to calculate scroll progress
   const updateScrollProgress = () => {
     const container = containerRef.current;
     if (container) {
@@ -30,22 +26,16 @@ const FeaturedDevelopers = () => {
       setScrollProgress(progress);
     }
   };
-   
-   useEffect(() => {
-      dispatch(fetchFeaturedDevelopers());
-    }, [dispatch]);
 
-  // Add event listener for scroll progress
+  useEffect(() => {
+    dispatch(fetchFeaturedDevelopers());
+  }, [dispatch]);
+
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
       container.addEventListener('scroll', updateScrollProgress);
     }
-
-   
-
-
-    // Cleanup the event listener on component unmount
     return () => {
       if (container) {
         container.removeEventListener('scroll', updateScrollProgress);
@@ -53,48 +43,29 @@ const FeaturedDevelopers = () => {
     };
   }, []);
 
-  // Display loading state
   if (loading) return <div>Loading...</div>;
-
-  // Display error state
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <section className="py-8 px-4 md:px-12" style={{ backgroundColor: 'var(--color-background)' }}>
+    <section className="py-8 px-4 md:px-12 bg-[--background]">
       <div className="mb-6">
-        <h2 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
-          Featured Developers
-        </h2>
-        <p className="text-sm md:text-base mt-1" style={{ color: 'var(--color-text-secondary)' }}>
-          Trusted names in real estate development
-        </p>
+        <h2 className="text-2xl font-extrabold tracking-tight text-[--foreground]">Featured Developers</h2>
+        <p className="text-sm md:text-base mt-1 text-[--text-secondary]">Trusted names in real estate development</p>
       </div>
 
       <div className="group relative overflow-x-hidden pb-6">
-        {/* Gradient Fade Edges */}
-        <div className="absolute left-0 top-0 h-full w-10 z-10 pointer-events-none hidden md:block"
-             style={{ background: 'linear-gradient(to right, var(--color-background), transparent)' }} />
-        <div className="absolute right-0 top-0 h-full w-10 z-10 pointer-events-none hidden md:block"
-             style={{ background: 'linear-gradient(to left, var(--color-background), transparent)' }} />
+        <div className="absolute left-0 top-0 h-full w-10 z-10 pointer-events-none hidden md:block bg-gradient-to-r from-[--background] to-transparent" />
+        <div className="absolute right-0 top-0 h-full w-10 z-10 pointer-events-none hidden md:block bg-gradient-to-l from-[--background] to-transparent" />
 
-        {/* Left Arrow */}
         <button
           onClick={handleScrollLeft}
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 z-20 
-                     w-10 h-10 items-center justify-center rounded-full 
-                     backdrop-blur-md shadow-md border border-white/20 
-                     text-white text-xl font-bold transition-all duration-300
-                     hidden md:flex md:opacity-0 md:group-hover:opacity-100"
-          style={{
-            background: 'var(--btn-gradient)',
-            color: 'var(--text-primary)',
-          }}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 hidden md:flex items-center justify-center rounded-full backdrop-blur-md shadow-md border border-white/20 text-white text-xl font-bold transition-all duration-300 opacity-0 group-hover:opacity-100"
+          style={{ background: 'var(--btn-gradient)', color: 'var(--text-primary)' }}
           aria-label="Scroll Left"
         >
           ‹
         </button>
 
-        {/* Developer Cards */}
         <div
           ref={containerRef}
           className="flex gap-5 overflow-x-auto scroll-smooth px-2 md:px-4 py-2 scrollbar-hide"
@@ -104,58 +75,43 @@ const FeaturedDevelopers = () => {
           ) : (
             featuredDevelopers.map((dev) => (
               <div
-                key={dev._id}  // Ensure you use the unique property (e.g., _id)
-                className="min-w-[220px] bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-[var(--accent)] transition-all duration-300 p-4 text-center transform hover:-translate-y-1"
+                key={dev._id}
+                className="min-w-[220px] bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 text-center"
               >
-                <img
-                  src={dev.media?.images[0] || '/default-image.jpg'}  // Display a default image if no image exists
-                  alt={dev.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                
-                <h3 className="text-sm font-semibold truncate">{dev.title}</h3>
-                 <p className="text-xs truncate">
-      {dev.location?.name}
-    </p>
-                <p className="text-sm font-bold mt-1">{dev.priceDetails?.monthlyRent}/ month </p>
-                <div className="mt-3 flex justify-center items-center gap-1">
+                <div className="w-full h-32 mb-2 rounded-xl overflow-hidden">
+                  <img
+                    src={dev.media?.images[0] || '/default-image.jpg'}
+                    alt={dev.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="text-base font-semibold truncate text-gray-800">{dev.title}</h3>
+                <p className="text-xs text-gray-500 truncate">{dev.location?.name}</p>
+                <p className="text-sm font-bold mt-1 text-[--accent]">₹{dev.priceDetails?.monthlyRent?.toLocaleString()}/month</p>
+                <div className="mt-2 flex justify-center">
                   <span className="bg-yellow-400 text-black text-xs font-semibold rounded-full px-2 py-0.5">
                     ★ {dev.rating || 'N/A'}
                   </span>
-                  
                 </div>
-               
               </div>
             ))
           )}
         </div>
 
-        {/* Right Arrow */}
         <button
           onClick={handleScrollRight}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 
-                     w-10 h-10 items-center justify-center rounded-full 
-                     backdrop-blur-md shadow-md border border-white/20 
-                     text-white text-xl font-bold transition-all duration-300
-                     hidden md:flex md:opacity-0 md:group-hover:opacity-100"
-          style={{
-            background: 'var(--btn-gradient)',
-            color: 'var(--text-primary)',
-          }}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 hidden md:flex items-center justify-center rounded-full backdrop-blur-md shadow-md border border-white/20 text-white text-xl font-bold transition-all duration-300 opacity-0 group-hover:opacity-100"
+          style={{ background: 'var(--btn-gradient)', color: 'var(--text-primary)' }}
           aria-label="Scroll Right"
         >
           ›
         </button>
       </div>
 
-      {/* Scroll Progress Bar */}
       <div className="relative h-1 mt-4 bg-gray-200 rounded-full overflow-hidden">
         <div
           className="absolute top-0 left-0 h-full transition-all duration-300"
-          style={{
-            width: `${scrollProgress}%`,
-            background: 'var(--accent)',
-          }}
+          style={{ width: `${scrollProgress}%`, background: 'var(--accent)' }}
         />
       </div>
     </section>
