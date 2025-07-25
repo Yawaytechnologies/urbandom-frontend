@@ -9,6 +9,7 @@ import rentPageReducer from '../reducer/rentPageSlice';
 import buyPageReducer from '../reducer/buyPageSlice';  // Import the buyPage slice
 import userLoginReducer from '../reducer/userLoginSlice'
 import overviewHomeReducer from '../reducer/overviewHomeSlice';
+import ownerAuthReducer from '../reducer/ownerAuthSlice'; // Import the ownerAuth slice
 const store = configureStore({
   reducer: {
     property: propertyReducer, // Your property slice
@@ -18,7 +19,8 @@ const store = configureStore({
     overviewHome: overviewHomeReducer, // OverviewHome reducer for managing overview property data
     rentPage: rentPageReducer,
     buyPage: buyPageReducer,
-    userLogin: userLoginReducer
+    userLogin: userLoginReducer,
+    ownerAuth: ownerAuthReducer
   },
 });
 

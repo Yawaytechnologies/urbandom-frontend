@@ -14,24 +14,27 @@ const Sidebar = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const { user, token, status, error } = useSelector((state) => state.userLogin ?? {});
   const [isNewUser, setIsNewUser] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
   const [loginForm, setLoginForm] = useState({
     username: "",
     email: "",
-    userPassword: "",
     phone: "",
-    firstName: "",
-    lastName: "",
+    userPassword: "",
     userProfile: null,
   });
 
+  // Load user profile on mount
   useEffect(() => {
-    const localToken = token || localStorage.getItem("token");
-    const localId = user?.id || localStorage.getItem("userId");
+    const localToken = localStorage.getItem("token");
+    const localId = localStorage.getItem("userId");
+
     if (localToken && localId) {
       dispatch(getUserProfileThunk({ id: localId, token: localToken }));
     }
-  }, [user, token, dispatch]);
+  }, [dispatch]);
 
+  // Store token/ID after login
   useEffect(() => {
     if (user?.id && token) {
       localStorage.setItem("token", token);
@@ -39,16 +42,28 @@ const Sidebar = ({ isOpen, onClose }) => {
     }
   }, [user?.id, token]);
 
-  const handleFileChange = (e) => {
-    setLoginForm((f) => ({ ...f, userProfile: e.target.files[0] }));
-  };
+  // Show success and auto-close
+  useEffect(() => {
+    if (status === "succeeded") {
+      setSuccessMessage(isNewUser ? "Signup successful!" : "Login successful!");
+      const timer = setTimeout(() => {
+        setSuccessMessage("");
+        onClose?.(); // auto-close sidebar
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [status, isNewUser, onClose]);
 
   const handleSignup = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    Object.entries(loginForm).forEach(([key, value]) => {
-      if (value) formData.append(key, value);
-    });
+    formData.append("username", loginForm.username);
+    formData.append("email", loginForm.email);
+    formData.append("phone", loginForm.phone);
+    formData.append("userPassword", loginForm.userPassword);
+    if (loginForm.userProfile) {
+      formData.append("userProfile", loginForm.userProfile);
+    }
     dispatch(signupThunk(formData));
   };
 
@@ -64,10 +79,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     setLoginForm({
       username: "",
       email: "",
-      userPassword: "",
       phone: "",
-      firstName: "",
-      lastName: "",
+      userPassword: "",
       userProfile: null,
     });
     setIsNewUser(false);
@@ -116,6 +129,42 @@ const Sidebar = ({ isOpen, onClose }) => {
               Your Trusted Real Estate Partner
             </h1>
 
+            {/* Feedback Message */}
+            <div className="w-full max-w-sm mb-2">
+              <AnimatePresence>
+                {status === "succeeded" && successMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    className="w-full px-4 py-2 rounded-md bg-green-100 text-green-700 text-sm font-medium text-center shadow-sm"
+                  >
+                    {successMessage}
+                  </motion.div>
+                )}
+                {status === "failed" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    className="w-full px-4 py-2 rounded-md bg-red-100 text-red-700 text-sm font-medium text-center shadow-sm"
+                  >
+                    {error || "Something went wrong"}
+                  </motion.div>
+                )}
+                {status === "loading" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    className="w-full px-4 py-2 rounded-md bg-blue-100 text-blue-700 text-sm font-medium text-center shadow-sm"
+                  >
+                    Please wait...
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Auth Form */}
             <form
               onSubmit={isNewUser ? handleSignup : handleLogin}
@@ -129,41 +178,21 @@ const Sidebar = ({ isOpen, onClose }) => {
                     placeholder="Username"
                     value={loginForm.username}
                     onChange={(e) => setLoginForm((f) => ({ ...f, username: e.target.value }))}
-                    className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300 focus:ring focus:ring-indigo-300"
+                    className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300"
                   />
                   <input
                     type="email"
                     placeholder="Email"
                     value={loginForm.email}
                     onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))}
-                    className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300 focus:ring focus:ring-indigo-300"
+                    className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300"
                   />
                   <input
                     type="text"
                     placeholder="Phone Number"
                     value={loginForm.phone}
                     onChange={(e) => setLoginForm((f) => ({ ...f, phone: e.target.value }))}
-                    className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300 focus:ring focus:ring-indigo-300"
-                  />
-                  <input
-                    type="text"
-                    placeholder="First Name"
-                    value={loginForm.firstName}
-                    onChange={(e) => setLoginForm((f) => ({ ...f, firstName: e.target.value }))}
-                    className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300 focus:ring focus:ring-indigo-300"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    value={loginForm.lastName}
-                    onChange={(e) => setLoginForm((f) => ({ ...f, lastName: e.target.value }))}
-                    className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300 focus:ring focus:ring-indigo-300"
-                  />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="w-full text-sm text-gray-700"
+                    className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300"
                   />
                 </>
               )}
@@ -174,7 +203,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                   placeholder="Phone Number"
                   value={loginForm.phone}
                   onChange={(e) => setLoginForm((f) => ({ ...f, phone: e.target.value }))}
-                  className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300 focus:ring focus:ring-indigo-300"
+                  className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300"
                   autoFocus
                 />
               )}
@@ -184,14 +213,16 @@ const Sidebar = ({ isOpen, onClose }) => {
                 placeholder="Password"
                 value={loginForm.userPassword}
                 onChange={(e) => setLoginForm((f) => ({ ...f, userPassword: e.target.value }))}
-                className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300 focus:ring focus:ring-pink-300"
+                className="w-full px-4 py-2 rounded-lg border text-sm border-gray-300"
               />
 
-              {status === "failed" && (
-                <div className="text-xs text-red-600 text-center">{error || "Internal server error"}</div>
-              )}
-              {status === "loading" && (
-                <div className="text-xs text-blue-600 text-center">Please wait...</div>
+              {isNewUser && (
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setLoginForm((f) => ({ ...f, userProfile: e.target.files[0] }))}
+                  className="w-full text-sm text-gray-700"
+                />
               )}
 
               <button
@@ -210,6 +241,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               </button>
             </form>
 
+            {/* Logout */}
             {user && (
               <button
                 onClick={handleLogout}

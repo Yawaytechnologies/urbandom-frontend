@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import AuthModal from "../../pages/AuthPage";
 
 function Header({ onToggleSidebar }) {
   const [scrolled, setScrolled] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+
+  const { user } = useSelector((state) => state.userAuth || {});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,101 +19,96 @@ function Header({ onToggleSidebar }) {
   }, []);
 
   const handlePostProperty = () => {
-    navigate("/dashboard");
+    if (user && user.id) {
+      navigate("/dashboard"); // You can change this route
+    } else {
+      setShowAuth(true); // Show login/register modal
+    }
   };
 
   return (
-    <motion.nav
-      initial={{ y: -60, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out ${
-        scrolled
-          ? "bg-gradient-to-r from-[#1a2650]/90 to-[#131b32]/90 backdrop-bl-md shadow-md"
-          : "bg-[#4b2edd]"
-      }`}
-    >
-      {/* Mobile View */}
-      <div className="sm:hidden flex items-center justify-between px-3 py-2">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-1 text-white font-bold text-xs"
-        >
-          <span className="text-yellow-400 text-sm">▴</span>
-          <span>Urbandom</span>
-          <span className="text-purple-200">.com</span>
-        </Link>
+    <>
+      <motion.nav
+        initial={{ y: -60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out ${
+          scrolled
+            ? "bg-gradient-to-r from-[#1a2650]/90 to-[#131b32]/90 backdrop-bl-md shadow-md"
+            : "bg-[#4b2edd]"
+        }`}
+      >
+        {/* Mobile View */}
+        <div className="sm:hidden flex items-center justify-between px-3 py-2">
+          <Link to="/" className="flex items-center gap-1 text-white font-bold text-xs">
+            <span className="text-yellow-400 text-sm">▴</span>
+            <span>Urbandom</span>
+            <span className="text-purple-200">.com</span>
+          </Link>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-1">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            onClick={handlePostProperty}
-            whileTap={{ scale: 0.95 }}
-            className="bg-white text-[#ff4f81] font-semibold text-[9px] px-[6px] py-[2px] rounded-full shadow whitespace-nowrap"
-          >
-            Post Property
-          </motion.button>
-
-          <motion.div
-            whileTap={{ scale: 0.95 }}
-            onClick={onToggleSidebar}
-            className="flex items-center px-[6px] py-[5px] rounded-full bg-white text-gray-800 shadow cursor-pointer"
-          >
-            <FiMenu className="text-[16px]" />
-            <div
-              className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-xs ml-1"
-              style={{
-                background:
-                  "linear-gradient(to bottom right, #7e5bef, #5e4eea)",
-              }}
+          <div className="flex items-center gap-1">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handlePostProperty}
+              className="bg-white text-[#ff4f81] font-semibold text-[9px] px-[6px] py-[2px] rounded-full shadow"
             >
-              👤
-            </div>
-          </motion.div>
-        </div>
-      </div>
+              Post Property
+            </motion.button>
 
-      {/* Tablet/Desktop View */}
-      <div className="hidden sm:flex justify-between items-center px-6 py-3">
-        <Link
-          to="/"
-          className="text-xl sm:text-2xl font-bold flex items-center gap-1 text-white"
-        >
-          <span className="text-yellow-400 text-2xl">▴</span>
-          <span>Urbandom</span>
-          <span className="text-purple-200">.com</span>
-        </Link>
-
-        <div className="flex items-center gap-6 text-sm">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            onClick={handlePostProperty}
-            className="bg-white text-[#ff4f81] font-semibold px-4 py-1 rounded-full shadow-sm transition"
-          >
-            Post Property
-          </motion.button>
-
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            onClick={onToggleSidebar}
-            className="flex items-center gap-2 px-2 py-1 rounded-full bg-white text-gray-800 shadow cursor-pointer"
-          >
-            <FiMenu className="text-xl" />
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
-              style={{
-                background:
-                  "linear-gradient(to bottom right, #7e5bef, #5e4eea)",
-              }}
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              onClick={onToggleSidebar}
+              className="flex items-center px-[6px] py-[5px] rounded-full bg-white text-gray-800 shadow cursor-pointer"
             >
-              👤
-            </div>
-          </motion.div>
+              <FiMenu className="text-[16px]" />
+              <div
+                className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-xs ml-1"
+                style={{ background: "linear-gradient(to bottom right, #7e5bef, #5e4eea)" }}
+              >
+                👤
+              </div>
+            </motion.div>
+          </div>
         </div>
-      </div>
-    </motion.nav>
+
+        {/* Desktop View */}
+        <div className="hidden sm:flex justify-between items-center px-6 py-3">
+          <Link to="/" className="text-xl sm:text-2xl font-bold flex items-center gap-1 text-white">
+            <span className="text-yellow-400 text-2xl">▴</span>
+            <span>Urbandom</span>
+            <span className="text-purple-200">.com</span>
+          </Link>
+
+          <div className="flex items-center gap-6 text-sm">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              onClick={handlePostProperty}
+              className="bg-white text-[#ff4f81] font-semibold px-4 py-1 rounded-full shadow-sm"
+            >
+              Post Property
+            </motion.button>
+
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              onClick={onToggleSidebar}
+              className="flex items-center gap-2 px-2 py-1 rounded-full bg-white text-gray-800 shadow cursor-pointer"
+            >
+              <FiMenu className="text-xl" />
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
+                style={{ background: "linear-gradient(to bottom right, #7e5bef, #5e4eea)" }}
+              >
+                👤
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* ✅ Auth Modal */}
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+    </>
   );
 }
 
