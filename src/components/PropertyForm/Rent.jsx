@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createPropertyAsync } from '../../redux/actions/propertyAction'; // Import action
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createPropertyAsync } from "../../redux/actions/propertyAction"; // Import action
 import { fetchCountries } from "../../redux/actions/countryactions";
 import { fetchStatesByCountry } from "../../redux/actions/stateActions";
 import { fetchDistrictsByState } from "../../redux/actions/districtActions";
 import { MdBusiness, MdStoreMallDirectory, MdHomeWork } from "react-icons/md";
-
+import { uploadPropertyFiles } from "../../redux/services/propertyService"; // Import file upload service
 // 20 Amenities for demo
 const amenitiesList = [
   { name: "Wi-Fi", icon: "📶" },
@@ -31,51 +31,66 @@ const amenitiesList = [
 
 const commercialTypes = [
   { value: "office", label: "Office", icon: <MdBusiness size={18} /> },
-  { value: "retailshop", label: "Retail Shop", icon: <MdStoreMallDirectory size={18} /> },
+  {
+    value: "retailshop",
+    label: "Retail Shop",
+    icon: <MdStoreMallDirectory size={18} />,
+  },
   { value: "showroom", label: "Showroom", icon: <MdHomeWork size={18} /> },
 ];
 
 const RentForm = ({ lookingTo }) => {
-const [form, setForm] = useState({
-  title: "",
-  propertyType: "residential",
-  lookingTo: lookingTo, 
-  commercialSubType: "",
-  country: "",
-  state: "",
-  district: "",
-  location: {
-  _id: "66b5f3de5349ac522e309f2d",
-  country: "6879d601db874e1c5703d40c",
-  state: "6879d6f0dbbb294ecc29e8e7",
-  district: "6879d74edbbb294ecc29e8eb",
-  name: "Medavakkam"
-},
-  bhk: "",
-  builtUpArea: "",
-  areaUnit: "sqft",
-  amenities: [],
-  priceDetails: {
-    monthlyRent: "100",  // Numeric value
-    securityDeposit: "100",  // Numeric value
-  },
-  availableDate: "",
-  images: [],
-  videos: [],
-  possessionStatus: "",
-  commercialAvailableDate: "",
-  locationHub: "",
-  ownership: "",
-  floorsAvailable: "",
-  expectedRent: "",
-});
-
+  const [form, setForm] = useState({
+    title: "",
+    propertyType: "residential",
+    lookingTo: lookingTo,
+    commercialSubType: "",
+    country: "",
+    state: "",
+    district: "",
+    location: {
+      _id: "66b5f3de5349ac522e309f2d",
+      country: "6879d601db874e1c5703d40c",
+      state: "6879d6f0dbbb294ecc29e8e7",
+      district: "6879d74edbbb294ecc29e8eb",
+      name: "Medavakkam",
+    },
+    bhk: "",
+    builtUpArea: "",
+    areaUnit: "sqft",
+    amenities: [],
+    priceDetails: {
+      monthlyRent: "100", // Numeric value
+      securityDeposit: "100", // Numeric value
+    },
+    availableDate: "",
+    images: [],
+    videos: [],
+    possessionStatus: "",
+    commercialAvailableDate: "",
+    locationHub: "",
+    ownership: "",
+    floorsAvailable: "",
+    expectedRent: "",
+  });
 
   const dispatch = useDispatch();
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const { countries, loading: loadingCountries } = useSelector(state => state.countries);
-const { states, loading: loadingStates } = useSelector(state => state.states);
-const { districts, loading: loadingDistricts } = useSelector(state => state.districts);
+  const { countries, loading: loadingCountries } = useSelector(
+    (state) => state.countries
+  );
+  const { states, loading: loadingStates } = useSelector(
+    (state) => state.states
+  );
+  const { districts, loading: loadingDistricts } = useSelector(
+    (state) => state.districts
+  );
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [uploadedVideos, setUploadedVideos] = useState([]);
+  const [newPropertyId, setNewPropertyId] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
+
   const handleSelectAmenities = (amenity) => {
     setForm((prevForm) => {
       const updatedAmenities = prevForm.amenities.includes(amenity)
@@ -86,93 +101,126 @@ const { districts, loading: loadingDistricts } = useSelector(state => state.dist
   };
 
   const handleFileChange = (e, type) => {
-    const files = e.target.files;
-    setForm({ ...form, [type]: files });
+    const files = Array.from(e.target.files);
+
+    if (type === "images") {
+      setUploadedImages((prev) => [...prev, ...files]);
+    }
+    if (type === "videos") {
+      setUploadedVideos((prev) => [...prev, ...files]);
+    }
   };
 
-  // Handle Property Type Change
-  // const handlePropertyTypeChange = (type) => {
-  //   setForm((prevForm) => {
-  //     let lookingTo = 'rent'; // Default to 'rent'
-  //     if (type === "sell") lookingTo = "sell";
-  //     if (type === "pg-co/living") lookingTo = "pg-co/living";
-  //     return {
-  //       ...prevForm,
-  //       propertyType: type,
-  //       lookingTo, // Update the lookingTo field based on property type
-  //       commercialSubType: type === "commercial" ? "" : prevForm.commercialSubType,
-  //       bhk: type === "residential" ? "" : prevForm.bhk, // Clear BHK if switching to commercial
-  //     };
-  //   });
-  // };
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
 
-  if (name.startsWith('priceDetails')) {
-    const fieldName = name.split('.')[1]; // Extract the property name from priceDetails
-    setForm((prevForm) => ({
-      ...prevForm,
-      priceDetails: {
-        ...prevForm.priceDetails,
-        [fieldName]: value,  // Update the specific field in priceDetails
-      },
-    }));
-  } else {
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: value,
-    }));
-  }
-};
-
-
-const handleSubmit = (e) => {
+    if (name.startsWith("priceDetails")) {
+      const fieldName = name.split(".")[1]; // Extract the property name from priceDetails
+      setForm((prevForm) => ({
+        ...prevForm,
+        priceDetails: {
+          ...prevForm.priceDetails,
+          [fieldName]: value, // Update the specific field in priceDetails
+        },
+      }));
+    } else {
+      setForm((prevForm) => ({
+        ...prevForm,
+        [name]: value,
+      }));
+    }
+  };
+  const handleSubmit = async (e) => {
   e.preventDefault();
 
-  // Ensure priceDetails fields are numeric before submitting
+  const ownerId = localStorage.getItem("ownerId");
+  if (!ownerId) {
+    alert("Owner ID not found. Please log in as Owner.");
+    return;
+  }
+
   const priceDetails = {
-    monthlyRent: Number(form.priceDetails.monthlyRent), // Ensure it's a number
-    securityDeposit: Number(form.priceDetails.securityDeposit), // Ensure it's a number
+    monthlyRent: Number(form.priceDetails.monthlyRent),
+    securityDeposit: Number(form.priceDetails.securityDeposit),
   };
 
   const formData = {
     ...form,
-    priceDetails, // Send the properly formatted priceDetails object
+    priceDetails,
+    owner: ownerId,
   };
 
-  // Log the form data for debugging
-  console.log("Form Data being submitted:", formData);
+  try {
+    const result = await dispatch(createPropertyAsync(formData)).unwrap();
+    console.log("Property creation response:", result);
 
-  // Dispatch the form data (Make sure you have the action implemented in your Redux)
-  dispatch(createPropertyAsync(formData));
+    // Property ID is here:
+    const propertyId = result.property && result.property._id;
 
-  // Optionally, open the upload modal if needed
-  setShowUploadModal(true);
+    if (!propertyId) {
+      alert("Property creation failed! No property ID returned.");
+      return;
+    }
+
+    setNewPropertyId(propertyId);
+    setShowUploadModal(true);
+  } catch (err) {
+    alert(err.message || "Error creating property");
+  }
 };
 
-// Fetch countries when form loads
-useEffect(() => {
-  dispatch(fetchCountries());
-}, [dispatch]);
 
-// Fetch states when country changes
-useEffect(() => {
-  if (form.country) {
-    dispatch(fetchStatesByCountry(form.country));
-    // Reset state and district selection
-    setForm(f => ({ ...f, state: "", district: "" }));
-  }
-}, [form.country, dispatch]);
 
-// Fetch districts when state changes
-useEffect(() => {
-  if (form.state) {
-    dispatch(fetchDistrictsByState(form.state));
-    // Reset district selection
-    setForm(f => ({ ...f, district: "" }));
-  }
-}, [form.state, dispatch]);
+  const handleUploadFiles = async () => {
+    if (!newPropertyId) {
+      setUploadMessage("Property not created!");
+      return;
+    }
+    if (uploadedImages.length === 0 && uploadedVideos.length === 0) {
+      setUploadMessage("Please select at least one image or video.");
+      return;
+    }
+    setUploading(true);
+    setUploadMessage("");
 
+    try {
+      // Merge images and videos into one array (as File[])
+      const allFiles = [...uploadedImages, ...uploadedVideos];
+
+      await uploadPropertyFiles(newPropertyId, allFiles);
+      setUploadMessage("Files uploaded successfully!");
+      // Optionally: close modal, reset form, or redirect
+      setShowUploadModal(false);
+      setUploadedImages([]);
+      setUploadedVideos([]);
+    } catch (err) {
+      setUploadMessage(err.message || "Error uploading files");
+    }
+    setUploading(false);
+  };
+
+  // Fetch countries when form loads
+  useEffect(() => {
+    dispatch(fetchCountries());
+  }, [dispatch]);
+
+  // Fetch states when country changes
+  useEffect(() => {
+    if (form.country) {
+      dispatch(fetchStatesByCountry(form.country));
+      // Reset state and district selection
+      setForm((f) => ({ ...f, state: "", district: "" }));
+    }
+  }, [form.country, dispatch]);
+
+  // Fetch districts when state changes
+  useEffect(() => {
+    if (form.state) {
+      dispatch(fetchDistrictsByState(form.state));
+      // Reset district selection
+      setForm((f) => ({ ...f, district: "" }));
+    }
+  }, [form.state, dispatch]);
 
   return (
     <form className="w-full px-8" onSubmit={handleSubmit}>
@@ -182,7 +230,9 @@ useEffect(() => {
 
       {/* Property Title */}
       <div className="mb-6">
-        <label className="block mb-2 text-sm font-semibold text-gray-700">Property Title</label>
+        <label className="block mb-2 text-sm font-semibold text-gray-700">
+          Property Title
+        </label>
         <input
           type="text"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition"
@@ -194,7 +244,9 @@ useEffect(() => {
 
       {/* Property Type Buttons */}
       <div className="mb-6">
-        <label className="block mb-2 text-sm font-semibold text-gray-700">Property Type</label>
+        <label className="block mb-2 text-sm font-semibold text-gray-700">
+          Property Type
+        </label>
         <div className="flex gap-4">
           <button
             type="button"
@@ -203,7 +255,13 @@ useEffect(() => {
                 ? "bg-blue-600 text-white border-blue-600"
                 : "bg-gray-50 text-gray-800 border-gray-200"
             }`}
-            onClick={() => setForm({ ...form, propertyType: "residential", commercialSubType: "" })}
+            onClick={() =>
+              setForm({
+                ...form,
+                propertyType: "residential",
+                commercialSubType: "",
+              })
+            }
           >
             Residential
           </button>
@@ -214,7 +272,9 @@ useEffect(() => {
                 ? "bg-blue-600 text-white border-blue-600"
                 : "bg-gray-50 text-gray-800 border-gray-200"
             }`}
-            onClick={() => setForm({ ...form, propertyType: "commercial", bhk: "" })}
+            onClick={() =>
+              setForm({ ...form, propertyType: "commercial", bhk: "" })
+            }
           >
             Commercial
           </button>
@@ -224,7 +284,9 @@ useEffect(() => {
       {/* Commercial Subtype (with icons) */}
       {form.propertyType === "commercial" && (
         <div className="mb-6">
-          <label className="block mb-2 text-sm font-semibold text-gray-700">Commercial Type</label>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">
+            Commercial Type
+          </label>
           <div className="flex gap-4">
             {commercialTypes.map((ct) => (
               <button
@@ -235,7 +297,9 @@ useEffect(() => {
                     ? "bg-blue-500 text-white border-blue-600"
                     : "bg-gray-50 text-gray-800 border-gray-200"
                 }`}
-                onClick={() => setForm({ ...form, commercialSubType: ct.value })}
+                onClick={() =>
+                  setForm({ ...form, commercialSubType: ct.value })
+                }
               >
                 {ct.icon} {ct.label}
               </button>
@@ -246,50 +310,64 @@ useEffect(() => {
 
       {/* Location Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-       <div>
-  <label className="block mb-2 text-sm font-semibold text-gray-700">Country</label>
-  <select
-    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-    value={form.country}
-    onChange={(e) => setForm({ ...form, country: e.target.value })}
-    disabled={loadingCountries}
-  >
-    <option value="">Select Country</option>
-    {countries.map((c) => (
-      <option key={c._id} value={c._id}>{c.name}</option>
-    ))}
-  </select>
-</div>
-<div>
-  <label className="block mb-2 text-sm font-semibold text-gray-700">State</label>
-  <select
-    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-    value={form.state}
-    onChange={(e) => setForm({ ...form, state: e.target.value })}
-    disabled={!form.country || loadingStates}
-  >
-    <option value="">Select State</option>
-    {states.map((s) => (
-      <option key={s._id} value={s._id}>{s.name}</option>
-    ))}
-  </select>
-</div>
-<div>
-  <label className="block mb-2 text-sm font-semibold text-gray-700">District</label>
-  <select
-    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-    value={form.district}
-    onChange={(e) => setForm({ ...form, district: e.target.value })}
-    disabled={!form.state || loadingDistricts}
-  >
-    <option value="">Select District</option>
-    {districts.map((d) => (
-      <option key={d._id} value={d._id}>{d.name}</option>
-    ))}
-  </select>
-</div>
-<div>
-          <label className="block mb-2 text-sm font-medium text-gray-700">Locality</label>
+        <div>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">
+            Country
+          </label>
+          <select
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+            value={form.country}
+            onChange={(e) => setForm({ ...form, country: e.target.value })}
+            disabled={loadingCountries}
+          >
+            <option value="">Select Country</option>
+            {countries.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">
+            State
+          </label>
+          <select
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+            value={form.state}
+            onChange={(e) => setForm({ ...form, state: e.target.value })}
+            disabled={!form.country || loadingStates}
+          >
+            <option value="">Select State</option>
+            {states.map((s) => (
+              <option key={s._id} value={s._id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">
+            District
+          </label>
+          <select
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+            value={form.district}
+            onChange={(e) => setForm({ ...form, district: e.target.value })}
+            disabled={!form.state || loadingDistricts}
+          >
+            <option value="">Select District</option>
+            {districts.map((d) => (
+              <option key={d._id} value={d._id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Locality
+          </label>
           <input
             type="text"
             className="w-full border rounded-lg px-4 py-2"
@@ -305,7 +383,9 @@ useEffect(() => {
         <>
           {/* BHK */}
           <div className="mb-6">
-            <label className="block mb-2 text-sm font-semibold text-gray-700">BHK</label>
+            <label className="block mb-2 text-sm font-semibold text-gray-700">
+              BHK
+            </label>
             <div className="flex gap-4">
               {["1bhk", "2bhk", "3bhk", "4bhk+"].map((bhk) => (
                 <button
@@ -326,19 +406,25 @@ useEffect(() => {
           {/* Built-Up, Rent, Deposit, Available */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block mb-2 text-sm font-semibold text-gray-700">Built-Up Area</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Built-Up Area
+              </label>
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
                 <input
                   type="number"
                   className="flex-1 px-4 py-2 outline-none border-0 focus:ring-0"
                   placeholder="Area"
                   value={form.builtUpArea}
-                  onChange={(e) => setForm({ ...form, builtUpArea: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, builtUpArea: e.target.value })
+                  }
                 />
                 <select
                   className="h-full border-0 bg-transparent px-3 py-2 outline-none focus:ring-0"
                   value={form.areaUnit}
-                  onChange={(e) => setForm({ ...form, areaUnit: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, areaUnit: e.target.value })
+                  }
                 >
                   <option value="sqft">Sqft</option>
                   <option value="sqyd">Sq Yd</option>
@@ -346,55 +432,66 @@ useEffect(() => {
                 </select>
               </div>
             </div>
-     {/* Monthly Rent */}
-<div className="mb-6">
-  <label className="block mb-2 text-sm font-semibold text-gray-700">Monthly Rent</label>
-  <input
-    type="number"
-    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition"
-    placeholder="Enter Monthly Rent"
-    value={form.priceDetails.monthlyRent}
-    onChange={handleInputChange}
-    name="priceDetails.monthlyRent"
-  />
-</div>
+            {/* Monthly Rent */}
+            <div className="mb-6">
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Monthly Rent
+              </label>
+              <input
+                type="number"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition"
+                placeholder="Enter Monthly Rent"
+                value={form.priceDetails.monthlyRent}
+                onChange={handleInputChange}
+                name="priceDetails.monthlyRent"
+              />
+            </div>
 
-{/* Security Deposit */}
-<div className="mb-6">
-  <label className="block mb-2 text-sm font-semibold text-gray-700">Security Deposit</label>
-  <input
-    type="number"
-    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition"
-    placeholder="Enter Security Deposit"
-    value={form.priceDetails.securityDeposit}
-    onChange={handleInputChange}
-    name="priceDetails.securityDeposit"
-  />
-</div>
+            {/* Security Deposit */}
+            <div className="mb-6">
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Security Deposit
+              </label>
+              <input
+                type="number"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition"
+                placeholder="Enter Security Deposit"
+                value={form.priceDetails.securityDeposit}
+                onChange={handleInputChange}
+                name="priceDetails.securityDeposit"
+              />
+            </div>
 
-      <div className="mb-6">
-  <label className="block mb-2 text-sm font-semibold text-gray-700">Ownership</label>
-  <select
-    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-    value={form.ownership}
-    onChange={(e) => setForm({ ...form, ownership: e.target.value })}
-  >
-    <option value="">Select Ownership</option>
-    <option value="freehold">Freehold</option>
-    <option value="leasehold">Leasehold</option>
-    <option value="cooperative society">Cooperative Society</option>
-    <option value="power of attorney">Power of Attorney</option>
-  </select>
-</div>
-
+            <div className="mb-6">
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Ownership
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                value={form.ownership}
+                onChange={(e) =>
+                  setForm({ ...form, ownership: e.target.value })
+                }
+              >
+                <option value="">Select Ownership</option>
+                <option value="freehold">Freehold</option>
+                <option value="leasehold">Leasehold</option>
+                <option value="cooperative society">Cooperative Society</option>
+                <option value="power of attorney">Power of Attorney</option>
+              </select>
+            </div>
 
             <div>
-              <label className="block mb-2 text-sm font-semibold text-gray-700">Available Date</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Available Date
+              </label>
               <input
                 type="date"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
                 value={form.availableDate}
-                onChange={(e) => setForm({ ...form, availableDate: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, availableDate: e.target.value })
+                }
               />
             </div>
           </div>
@@ -406,7 +503,9 @@ useEffect(() => {
         <>
           {/* Possession Status */}
           <div className="mb-6">
-            <label className="block mb-2 text-sm font-semibold text-gray-700">Possession Status</label>
+            <label className="block mb-2 text-sm font-semibold text-gray-700">
+              Possession Status
+            </label>
             <div className="flex gap-4">
               <button
                 type="button"
@@ -433,12 +532,19 @@ useEffect(() => {
             </div>
             {form.possessionStatus === "under" && (
               <div className="mt-4">
-                <label className="block mb-1 text-sm font-semibold text-gray-700">Available Date</label>
+                <label className="block mb-1 text-sm font-semibold text-gray-700">
+                  Available Date
+                </label>
                 <input
                   type="date"
                   className="w-full border border-gray-300 rounded-lg px-4 py-2"
                   value={form.commercialAvailableDate}
-                  onChange={(e) => setForm({ ...form, commercialAvailableDate: e.target.value })}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      commercialAvailableDate: e.target.value,
+                    })
+                  }
                 />
               </div>
             )}
@@ -446,29 +552,39 @@ useEffect(() => {
           {/* About the property */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block mb-2 text-sm font-semibold text-gray-700">Location Hub</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Location Hub
+              </label>
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
                 placeholder="IT Park, Business Park, Others"
                 value={form.locationHub}
-                onChange={(e) => setForm({ ...form, locationHub: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, locationHub: e.target.value })
+                }
               />
             </div>
             <div>
-              <label className="block mb-2 text-sm font-semibold text-gray-700">Built-Up Area</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Built-Up Area
+              </label>
               <div className="flex gap-2">
                 <input
                   type="number"
                   className="flex-1 border border-gray-300 rounded-lg px-4 py-2"
                   placeholder="Area"
                   value={form.builtUpArea}
-                  onChange={(e) => setForm({ ...form, builtUpArea: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, builtUpArea: e.target.value })
+                  }
                 />
                 <select
                   className="w-24 border border-gray-300 rounded-lg px-2"
                   value={form.areaUnit}
-                  onChange={(e) => setForm({ ...form, areaUnit: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, areaUnit: e.target.value })
+                  }
                 >
                   <option value="sqft">Sqft</option>
                   <option value="sqyd">Sq Yd</option>
@@ -477,11 +593,15 @@ useEffect(() => {
               </div>
             </div>
             <div>
-              <label className="block mb-2 text-sm font-semibold text-gray-700">Ownership</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Ownership
+              </label>
               <select
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
                 value={form.ownership}
-                onChange={(e) => setForm({ ...form, ownership: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, ownership: e.target.value })
+                }
               >
                 <option value="">Select Ownership</option>
                 <option value="freehold">Freehold</option>
@@ -490,25 +610,33 @@ useEffect(() => {
               </select>
             </div>
             <div>
-              <label className="block mb-2 text-sm font-semibold text-gray-700">Total Floors</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Total Floors
+              </label>
               <input
                 type="number"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
                 placeholder="No. of Floors"
                 value={form.floorsAvailable}
-                onChange={(e) => setForm({ ...form, floorsAvailable: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, floorsAvailable: e.target.value })
+                }
               />
             </div>
           </div>
           {/* Price */}
           <div className="mb-6">
-            <label className="block mb-2 text-sm font-semibold text-gray-700">Expected Rent (Financials)</label>
+            <label className="block mb-2 text-sm font-semibold text-gray-700">
+              Expected Rent (Financials)
+            </label>
             <input
               type="number"
               className="w-full border border-gray-300 rounded-lg px-4 py-2"
               placeholder="₹ / month"
               value={form.expectedRent}
-              onChange={(e) => setForm({ ...form, expectedRent: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, expectedRent: e.target.value })
+              }
             />
           </div>
         </>
@@ -516,7 +644,9 @@ useEffect(() => {
 
       {/* Amenities */}
       <div className="mb-10">
-        <label className="block mb-2 text-sm font-semibold text-gray-700">Amenities</label>
+        <label className="block mb-2 text-sm font-semibold text-gray-700">
+          Amenities
+        </label>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {amenitiesList.map((amenity) => (
             <button
@@ -550,11 +680,15 @@ useEffect(() => {
       {showUploadModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
           <div className="bg-white p-8 rounded-lg max-w-lg w-full">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-6">Upload Property Images & Videos</h3>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6">
+              Upload Property Images & Videos
+            </h3>
 
             {/* Image Upload */}
             <div className="mb-6">
-              <label className="block mb-2 text-sm font-semibold text-gray-700">Upload Photos</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Upload Photos
+              </label>
               <input
                 type="file"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
@@ -565,7 +699,9 @@ useEffect(() => {
 
             {/* Video Upload */}
             <div className="mb-6">
-              <label className="block mb-2 text-sm font-semibold text-gray-700">Upload Videos</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                Upload Videos
+              </label>
               <input
                 type="file"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
@@ -583,12 +719,18 @@ useEffect(() => {
                 Cancel
               </button>
               <button
-                type="submit"
+                type="button"
                 className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                onClick={() => setShowUploadModal(false)}
+                disabled={uploading}
+                onClick={handleUploadFiles}
               >
-                Confirm Uploads
+                {uploading ? "Uploading..." : "Confirm Uploads"}
               </button>
+              {uploadMessage && (
+                <div className="text-center text-sm text-green-700 mt-3">
+                  {uploadMessage}
+                </div>
+              )}
             </div>
           </div>
         </div>

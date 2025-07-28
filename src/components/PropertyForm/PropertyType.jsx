@@ -50,7 +50,7 @@ const PropertyTypeSelector = () => {
       } else if (form === "Sell") {
         lookingToValue = "sell";
       } else if (form === "PG/Co-living") {
-        lookingToValue = "pg-co/living";
+        lookingToValue = 'pg-co-living';
       }
 
       setLookingTo(lookingToValue); // Set lookingTo in state here

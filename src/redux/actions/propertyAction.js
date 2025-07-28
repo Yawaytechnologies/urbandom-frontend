@@ -7,9 +7,23 @@ export const createPropertyAsync = createAsyncThunk(
   async (propertyData, { rejectWithValue }) => {
     try {
       const response = await createProperty(propertyData);
-      return response; // This will be the fulfilled action's payload
+
+      // --- Normalize owner to just owner._id ---
+      let property = response.property || response.data?.property || response.data;
+      if (property && typeof property.owner === "object" && property.owner._id) {
+        property.owner = property.owner._id;
+      }
+
+      // If the structure is { property: ... }, return the full object, else fallback
+      if (response.property) {
+        return { ...response, property };
+      } else if (response.data?.property) {
+        return { ...response.data, property };
+      } else {
+        return property;
+      }
     } catch (error) {
-      return rejectWithValue(error.message); // This will be the rejected action's payload
+      return rejectWithValue(error.message);
     }
   }
 );

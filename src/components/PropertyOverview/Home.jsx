@@ -66,7 +66,7 @@ const Overview = ({ propertyId: propId }) => {
               <span>
                 {property.lookingTo === 'sell' && `₹${property.priceDetails?.amount?.toLocaleString()}`}
                 {property.lookingTo === 'rent' && `₹${property.priceDetails?.monthlyRent?.toLocaleString()} / month`}
-                {property.lookingTo === 'pg-co/living' && `${property.pgDetails?.roomDetails?.length} PG Room(s)`}
+                {property.lookingTo === 'pg-co-living' && `${property.pgDetails?.roomDetails?.length} PG Room(s)`}
               </span>
             </div>
           </div>
