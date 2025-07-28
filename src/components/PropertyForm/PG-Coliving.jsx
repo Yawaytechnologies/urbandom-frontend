@@ -422,45 +422,27 @@ const handleSubmit = async (e) => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="flex flex-col">
-          <label className="mb-2 text-sm font-medium text-gray-700">
-            Best Suited For
-          </label>
-          <div className="flex gap-4">
-            <button
-              type="button"
-              className={`${
-                form.pgDetails.suitedFor === "students"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200"
-              } border rounded-lg px-4 py-2`}
-              onClick={() => handlePGDetailField("suitedFor", "students")}
-            >
-              Students
-            </button>
-            <button
-              type="button"
-              className={`${
-                form.pgDetails.suitedFor === "professionals"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200"
-              } border rounded-lg px-4 py-2`}
-              onClick={() => handlePGDetailField("suitedFor", "professionals")}
-            >
-              Professionals
-            </button>
-            <button
-              type="button"
-              className={`${
-                form.pgDetails.suitedFor === "both"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200"
-              } border rounded-lg px-4 py-2`}
-              onClick={() => handlePGDetailField("suitedFor", "both")}
-            >
-              Both
-            </button>
-          </div>
-        </div>
+  <label className="mb-2 text-sm font-medium text-gray-700">
+    Best Suited For
+  </label>
+  <div className="flex flex-wrap gap-2">
+    {["students", "professionals", "both"].map((option) => (
+      <button
+        key={option}
+        type="button"
+        className={`${
+          form.pgDetails.suitedFor === option
+            ? "bg-blue-500 text-white"
+            : "bg-gray-200"
+        } border rounded-lg px-4 py-2 whitespace-nowrap`}
+        onClick={() => handlePGDetailField("suitedFor", option)}
+      >
+        {option.charAt(0).toUpperCase() + option.slice(1)}
+      </button>
+    ))}
+  </div>
+</div>
+
         <div className="flex flex-col">
           <label className="mb-2 text-sm font-medium text-gray-700">
             Meals Available

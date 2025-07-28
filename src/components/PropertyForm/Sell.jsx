@@ -394,33 +394,35 @@ const SellForm = ({ lookingTo }) => {
           </div>
           {/* Built-up Area, Cost */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">
-                Built-Up Area
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  className="flex-1 border rounded-lg px-4 py-2"
-                  placeholder="Area"
-                  value={form.builtUpArea}
-                  onChange={(e) =>
-                    setForm({ ...form, builtUpArea: e.target.value })
-                  }
-                />
-                <select
-                  className="w-24 border rounded-lg px-2"
-                  value={form.areaUnit}
-                  onChange={(e) =>
-                    setForm({ ...form, areaUnit: e.target.value })
-                  }
-                >
-                  <option value="sqft">Sqft</option>
-                  <option value="sqyd">Sq Yd</option>
-                  <option value="sqmt">Sq Mt</option>
-                </select>
-              </div>
-            </div>
+  <div>
+    <label className="block mb-2 text-sm font-medium text-gray-700">
+      Built-Up Area
+    </label>
+    <div className="relative flex">
+      <input
+        type="number"
+        className="w-full border rounded-l-lg px-4 py-2 focus:outline-none"
+        placeholder="Enter area"
+        value={form.builtUpArea}
+        onChange={(e) =>
+          setForm({ ...form, builtUpArea: e.target.value })
+        }
+      />
+      <select
+        className="border border-l-0 rounded-r-lg px-3 py-2 bg-white text-gray-700"
+        value={form.areaUnit}
+        onChange={(e) =>
+          setForm({ ...form, areaUnit: e.target.value })
+        }
+      >
+        <option value="sqft">Sqft</option>
+        <option value="sqyd">Sq yd</option>
+        <option value="sqmt">Sq mt</option>
+      </select>
+    </div>
+  </div>
+
+
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-700">
                 Cost
