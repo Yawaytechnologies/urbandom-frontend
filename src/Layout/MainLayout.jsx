@@ -27,7 +27,7 @@ const MainLayout = () => {
       )}
 
       {/* MAIN CONTENT */}
-      <main className={isDashboard ? "pt-4" : "pt-9"}>
+      <main className={isDashboard ? "pt-4" : "pt-"}>
         <Outlet />
       </main>
 

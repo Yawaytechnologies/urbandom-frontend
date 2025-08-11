@@ -99,3 +99,55 @@
 body.modal-open .bottom-tabs {
   display: none !important;
 }
+/* Key shake animation: quick and subtle */
+@keyframes key-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg);}
+  15% { transform: translateX(-2px) rotate(-8deg);}
+  30% { transform: translateX(3px) rotate(6deg);}
+  45% { transform: translateX(-2px) rotate(-4deg);}
+  60% { transform: translateX(1px) rotate(3deg);}
+  75% { transform: translateX(-1px) rotate(-2deg);}
+}
+
+/* Only animates when .key-shake is applied */
+.key-shake {
+  animation: key-shake 0.8s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Black fade shadow for the key icon */
+.key-fade-shadow {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.key-fade-mobile {
+  bottom: -4px;
+  width: 28px; height: 7px;
+  border-radius: 9999px;
+  background: rgba(0,0,0,0.30);
+  filter: blur(2px);
+}
+
+.key-fade-desktop {
+  bottom: -5px;
+  width: 44px; height: 9px;
+  border-radius: 9999px;
+  background: rgba(0,0,0,0.40);
+  filter: blur(3px);
+}
+@keyframes pulse-bg-color {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
+}
+
+.animate-pulse-color {
+  animation: pulse-bg-color 3s ease-in-out infinite;
+}
+
