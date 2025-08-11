@@ -14,14 +14,8 @@ import NewlyAddedProperties from '../components/Buypage/NewlyAddedProperties';
 const BuyPage = () => {
   const dispatch = useDispatch();
 
-  // const { properties, isLoading, error } = useSelector((state) => state.buyPage);
-
   useEffect(() => {
-    // dispatch(fetchAllProperties());
-    // dispatch(fetchProminentProperties());
-    // dispatch(fetchFeaturedDevelopers());
     dispatch(fetchNewsAndArticles());
-    // dispatch(fetchNewlyAddedPropertiesAction());
   }, [dispatch]);
 
   return (

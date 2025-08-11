@@ -1,112 +1,233 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FiMenu } from "react-icons/fi";
-import { motion } from "framer-motion";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { GiHouseKeys } from "react-icons/gi";
+import { LiaUserCircleSolid } from "react-icons/lia";
 import { useSelector } from "react-redux";
 import AuthModal from "../../pages/AuthPage";
 
 function Header({ onToggleSidebar }) {
   const [scrolled, setScrolled] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const { user } = useSelector((state) => state.userAuth || {});
+  // key wobble
+  const [shake, setShake] = useState(false);
+  useEffect(() => {
+    const t = setInterval(() => {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }, 3000);
+    return () => clearInterval(t);
+  }, []);
+
+  // overlay color
+  const { pathname } = useLocation();
+  const tab = pathname.includes("/rent") ? "rent" : pathname.includes("/pg") ? "pg" : "buy";
+  const overlayAtTop = `bg-gradient-to-b ${
+    { buy: "from-black/50 to-black/25", rent: "from-black/50 to-black/25", pg: "from-black/50 to-black/25" }[tab]
+  }`;
+
+  const { user } = useSelector((s) => s.userAuth || {});
   const navigate = useNavigate();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Only Post Property opens auth
   const handlePostProperty = () => {
-    if (user && user.id) {
-      navigate("/dashboard"); // You can change this route
-    } else {
-      setShowAuth(true); // Show login/register modal
-    }
+    if (user && user.id) navigate("/dashboard");
+    else setShowAuth(true);
   };
+
+  const handleMenuToggle = () => {
+    const next = !menuOpen;
+    setMenuOpen(next);
+    onToggleSidebar?.(next);
+  };
+
+  const keyIconStyle = {
+    background: "linear-gradient(120deg, #ffa726 30%, #ffe259 80%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    display: "inline-block",
+    verticalAlign: "middle",
+    filter: "drop-shadow(0 2px 8px #21212160)",
+  };
+
+  const avatarStyle = {
+    color: "white",
+    background: "linear-gradient(to bottom right, #7e5bef, #5e4eea)",
+    borderRadius: "50%",
+  };
+
+  /* ===================== Buttons ===================== */
+
+  // Desktop button with floating NEW badge
+  const PostPropertyButton = () => (
+    <div className="relative hidden sm:inline-block">
+      <span
+        className="
+          absolute -top-2 -right-2
+          bg-[#F5C518] text-black text-[10px] font-bold
+          px-2 py-[1px] rounded-full shadow
+        "
+      >
+        NEW
+      </span>
+      <button
+        onClick={handlePostProperty}
+        className="
+          inline-flex items-center
+          bg-gradient-to-r from-purple-700 via-purple-600 to-purple-500
+          hover:from-purple-800 hover:via-purple-700 hover:to-purple-600
+          text-white font-semibold py-2 px-5 rounded-xl
+          transition duration-300 ease-in-out
+          shadow-md shadow-purple-400/40
+          whitespace-nowrap
+        "
+      >
+        Post Property
+      </button>
+    </div>
+  );
+
+  // Smaller mobile button with floating NEW badge
+  const PostPropertyButtonMobile = () => (
+    <div className="relative inline-block sm:hidden">
+      <span
+        className="
+          absolute -top-1 -right-1
+          bg-[#F5C518] text-black text-[9px] font-bold
+          px-1.5 py-[1px] rounded-full shadow
+        "
+      >
+        NEW
+      </span>
+      <button
+        onClick={handlePostProperty}
+        className="
+          inline-flex items-center justify-center
+          bg-gradient-to-r from-purple-700 via-purple-600 to-purple-500
+          hover:from-purple-800 hover:via-purple-700 hover:to-purple-600
+          text-white font-semibold text-xs leading-none
+          py-1 px-2 rounded-md shadow-md shadow-purple-400/40
+          whitespace-nowrap
+        "
+        aria-label="Post Property"
+      >
+        Post Property
+      </button>
+    </div>
+  );
+
+  // Desktop-only burger (user icon is NOT a toggle on desktop)
+  const BurgerMenu = ({ onClick }) => (
+    <button
+      onClick={onClick}
+      className="hidden sm:flex w-6 h-5 flex-col justify-between items-center bg-white/90 shadow rounded-full p-1"
+      aria-label="Toggle menu"
+    >
+      <span className="block w-full h-[2px] bg-black rounded"></span>
+      <span className="block w-full h-[2px] bg-black rounded"></span>
+      <span className="block w-full h-[2px] bg-black rounded"></span>
+    </button>
+  );
+
+  /* ===================== Render ===================== */
 
   return (
     <>
-      <motion.nav
-        initial={{ y: -60, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out ${
+      <nav
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-gradient-to-r from-[#1a2650]/90 to-[#131b32]/90 backdrop-bl-md shadow-md"
-            : "bg-[#4b2edd]"
+            ? "bg-gradient-to-b from-[#1a1f3b] via-[#2a2f5e] to-[#3a3f7a] shadow-lg border-b border-blue-100/20"
+            : overlayAtTop
         }`}
       >
-        {/* Mobile View */}
-        <div className="sm:hidden flex items-center justify-between px-3 py-2">
-          <Link to="/" className="flex items-center gap-1 text-white font-bold text-xs">
-            <span className="text-yellow-400 text-sm">▴</span>
-            <span>Urbandom</span>
-            <span className="text-purple-200">.com</span>
-          </Link>
-
-          <div className="flex items-center gap-1">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handlePostProperty}
-              className="bg-white text-[#ff4f81] font-semibold text-[9px] px-[6px] py-[2px] rounded-full shadow"
+        {/* MOBILE */}
+        <div className="sm:hidden flex items-center justify-between gap-2 px-3 py-2">
+          {/* Logo (two lines) */}
+          <div className="flex items-center min-w-0">
+            <Link
+              to="/"
+              className="flex items-center text-white relative"
+              style={{ textShadow: "0 1px 8px rgba(0,0,0,0.18)" }}
             >
-              Post Property
-            </motion.button>
+              <span className="relative flex items-end mr-1 shrink-0">
+                <GiHouseKeys style={keyIconStyle} size={16} className={shake ? "key-shake" : ""} />
+                <span className="key-fade-shadow" style={{ bottom: -3 }}>
+                  <span className="key-fade-mobile"></span>
+                </span>
+              </span>
+              <span className="leading-3">
+                <span className="block text-[10px] font-semibold tracking-[0.14em]">URBANDOM</span>
+                <span className="block text-[9px] tracking-[0.12em]">
+                  <span className="bg-[#F5C518] text-black font-semibold px-1 rounded-sm">REAL</span>&nbsp;ESTATE
+                </span>
+              </span>
+            </Link>
+          </div>
 
-            <motion.div
-              whileTap={{ scale: 0.95 }}
-              onClick={onToggleSidebar}
-              className="flex items-center px-[6px] py-[5px] rounded-full bg-white text-gray-800 shadow cursor-pointer"
+          {/* Right controls: tiny Post + USER ICON AS TOGGLE */}
+          <div className="flex items-center gap-2 shrink-0">
+            <PostPropertyButtonMobile />
+            <button
+              type="button"
+              onClick={handleMenuToggle}
+              aria-label="Open menu"
+              className="grid place-items-center w-8 h-8 rounded-full"
+              style={avatarStyle}
+              title="Menu"
             >
-              <FiMenu className="text-[16px]" />
-              <div
-                className="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-xs ml-1"
-                style={{ background: "linear-gradient(to bottom right, #7e5bef, #5e4eea)" }}
-              >
-                👤
-              </div>
-            </motion.div>
+              <LiaUserCircleSolid size={18} />
+            </button>
           </div>
         </div>
 
-        {/* Desktop View */}
-        <div className="hidden sm:flex justify-between items-center px-6 py-3">
-          <Link to="/" className="text-xl sm:text-2xl font-bold flex items-center gap-1 text-white">
-            <span className="text-yellow-400 text-2xl">▴</span>
-            <span>Urbandom</span>
-            <span className="text-purple-200">.com</span>
-          </Link>
-
-          <div className="flex items-center gap-6 text-sm">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              onClick={handlePostProperty}
-              className="bg-white text-[#ff4f81] font-semibold px-4 py-1 rounded-full shadow-sm"
+        {/* DESKTOP */}
+        <div className="hidden sm:flex justify-between items-center px-6 py-4">
+          {/* Logo */}
+          <div className="flex items-center ml-8">
+            <Link
+              to="/"
+              className="flex items-center font-semibold text-[15px] sm:text-[16px] tracking-[0.14em] uppercase text-white relative"
+              style={{ textShadow: "0 1px 12px rgba(0,0,0,0.18)" }}
             >
-              Post Property
-            </motion.button>
+              <span className="relative flex items-end">
+                <GiHouseKeys style={keyIconStyle} size={40} className={shake ? "key-shake" : ""} />
+                <span className="key-fade-shadow" style={{ bottom: -4 }}>
+                  <span className="key-fade-desktop"></span>
+                </span>
+              </span>
+              <span className="relative top-[2px] ml-2">
+                URBANDOM
+                <br />
+                <span className="bg-[#F5C518] text-black font-semibold px-1 rounded-sm">REAL</span> ESTATE
+              </span>
+            </Link>
+          </div>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              onClick={onToggleSidebar}
-              className="flex items-center gap-2 px-2 py-1 rounded-full bg-white text-gray-800 shadow cursor-pointer"
-            >
-              <FiMenu className="text-xl" />
+          {/* Right: burger toggles sidebar; avatar is just an icon (NO LOGIN MODAL) */}
+          <div className="flex items-center gap-6 text-sm mr-8">
+            <PostPropertyButton />
+            <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-white text-gray-800 shadow">
+              <BurgerMenu onClick={handleMenuToggle} />
               <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
-                style={{ background: "linear-gradient(to bottom right, #7e5bef, #5e4eea)" }}
+                className="grid place-items-center w-8 h-8 rounded-full"
+                style={avatarStyle}
+                title="Account"
+                aria-label="Account"
               >
-                👤
+                <LiaUserCircleSolid size={18} />
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
-      </motion.nav>
+      </nav>
 
-      {/* ✅ Auth Modal */}
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
     </>
   );
