@@ -8,7 +8,7 @@ import { fetchNewlyAddedProperties } from "../../redux/actions/rentPageAction";
 const NewlyAddedProperties = () => {
   const containerRef = useRef(null);
 
-  const [scrollPercent, setScrollPercent] = useState(0);
+  const [, setScrollPercent] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 

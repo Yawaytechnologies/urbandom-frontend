@@ -136,7 +136,7 @@ const Footer = () => {
               <li>
                 Email: <span className="break-words">support@urbandom.com</span>
               </li>
-              <li>Phone: +91 70927 04551</li>
+              <li>Phone: +91 7545665216</li>
               <li>Chennai, India</li>
             </ul>
           </div>
