@@ -1,109 +1,156 @@
 // src/redux/buyPageSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 import {
   fetchFeaturedProperties,
   fetchFeaturedDevelopers,
   fetchProminentProperties,
   fetchNewsAndArticles,
-  fetchNewlyAddedProperties,  
-} from '../actions/buyPageActions';  // Ensure proper import
-
+  fetchNewlyAddedProperties,
+} from "../actions/buyPageActions";
 
 const initialState = {
-  featuredProperties: [],  // Array to hold all properties
-  prominentProperties: [],  // Array to hold prominent properties
+  // data
+  featuredProperties: [],
+  prominentProperties: [],
   featuredDevelopers: [],
-  newlyAddedProperties:[],
+  newlyAddedProperties: [],
   newsAndArticles: [],
-  isLoading: false,
-  error: null,
+
+  // loading per section
+  loading: {
+    featured: false,
+    prominent: false,
+    developers: false,
+    newlyAdded: false,
+    news: false,
+  },
+
+  // error per section
+  error: {
+    featured: null,
+    prominent: null,
+    developers: null,
+    newlyAdded: null,
+    news: null,
+  },
+
+  // flags (useful for UI)
+  uiFlags: {
+    useDummyFeatured: false,
+    useDummyProminent: false,
+    useDummyDevelopers: false,
+    useDummyNewlyAdded: false,
+    useDummyNews: false,
+  },
 };
 
 const buyPageSlice = createSlice({
-  name: 'buyPage',
+  name: "buyPage",
   initialState,
-  reducers: {},
+  reducers: {
+    // optional: clear a specific error manually
+    clearBuyError: (state, action) => {
+      const key = action.payload; // "featured" | "prominent" | ...
+      if (state.error[key] !== undefined) state.error[key] = null;
+    },
+  },
   extraReducers: (builder) => {
+    /* ---------------- Featured Properties ---------------- */
     builder
-      // Fetch All Properties Pending (loading state)
       .addCase(fetchFeaturedProperties.pending, (state) => {
-        state.isLoading = true;
-        state.error = null; // Clear previous errors
+        state.loading.featured = true;
+        state.error.featured = null;
+        state.uiFlags.useDummyFeatured = false;
       })
-      // Fetch All Properties Fulfilled (success state)
       .addCase(fetchFeaturedProperties.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.featuredProperties = action.payload;  // Store the fetched properties
+        state.loading.featured = false;
+        const list = Array.isArray(action.payload) ? action.payload : [];
+        state.featuredProperties = list;
+        state.uiFlags.useDummyFeatured = list.length === 0;
       })
-      // Fetch All Properties Rejected (error state)
       .addCase(fetchFeaturedProperties.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;  // Set the error message
-      })
-      // Fetch Prominent Properties Pending (loading state)
+        state.loading.featured = false;
+        state.error.featured = action.payload || action.error?.message || "Network Error";
+        state.uiFlags.useDummyFeatured = true;
+      });
+
+    /* ---------------- Prominent Properties ---------------- */
+    builder
       .addCase(fetchProminentProperties.pending, (state) => {
-        state.isLoading = true;
-        state.error = null; // Clear previous errors
+        state.loading.prominent = true;
+        state.error.prominent = null;
+        state.uiFlags.useDummyProminent = false;
       })
-      // Fetch Prominent Properties Fulfilled (success state)
       .addCase(fetchProminentProperties.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.prominentProperties = action.payload;  // Store the fetched prominent properties
+        state.loading.prominent = false;
+        const list = Array.isArray(action.payload) ? action.payload : [];
+        state.prominentProperties = list;
+        state.uiFlags.useDummyProminent = list.length === 0;
       })
-      // Fetch Prominent Properties Rejected (error state)
       .addCase(fetchProminentProperties.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;  // Set the error message
-      })
+        state.loading.prominent = false;
+        state.error.prominent = action.payload || action.error?.message || "Network Error";
+        state.uiFlags.useDummyProminent = true;
+      });
 
-      // Fetch Featured Developers Pending (loading state)
+    /* ---------------- Featured Developers ---------------- */
+    builder
       .addCase(fetchFeaturedDevelopers.pending, (state) => {
-        state.isLoading = true;
-        state.error = null; // Clear previous errors
+        state.loading.developers = true;
+        state.error.developers = null;
+        state.uiFlags.useDummyDevelopers = false;
       })
-      // Fetch Featured Developers Fulfilled (success state)
       .addCase(fetchFeaturedDevelopers.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.featuredDevelopers = action.payload;  // Store the fetched developers
+        state.loading.developers = false;
+        const list = Array.isArray(action.payload) ? action.payload : [];
+        state.featuredDevelopers = list;
+        state.uiFlags.useDummyDevelopers = list.length === 0;
       })
-      // Fetch Featured Developers Rejected (error state)
       .addCase(fetchFeaturedDevelopers.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;  // Set the error message
+        state.loading.developers = false;
+        state.error.developers = action.payload || action.error?.message || "Network Error";
+        state.uiFlags.useDummyDevelopers = true;
+      });
+
+    /* ---------------- Newly Added Properties ---------------- */
+    builder
+      .addCase(fetchNewlyAddedProperties.pending, (state) => {
+        state.loading.newlyAdded = true;
+        state.error.newlyAdded = null;
+        state.uiFlags.useDummyNewlyAdded = false;
       })
+      .addCase(fetchNewlyAddedProperties.fulfilled, (state, action) => {
+        state.loading.newlyAdded = false;
+        const list = Array.isArray(action.payload) ? action.payload : [];
+        state.newlyAddedProperties = list;
+        state.uiFlags.useDummyNewlyAdded = list.length === 0;
+      })
+      .addCase(fetchNewlyAddedProperties.rejected, (state, action) => {
+        state.loading.newlyAdded = false;
+        state.error.newlyAdded = action.payload || action.error?.message || "Network Error";
+        state.uiFlags.useDummyNewlyAdded = true;
+      });
 
-      // Fetch Newly Added Properties Pending (loading state)
-            .addCase(fetchNewlyAddedProperties.pending, (state) => {
-              state.isLoading = true;
-              state.error = null; // Clear previous errors
-            })
-            // Fetch Newly Added Properties Fulfilled (success state)
-            .addCase(fetchNewlyAddedProperties.fulfilled, (state, action) => {
-              state.isLoading = false;
-              state.newlyAddedProperties = action.payload || []; // If payload is undefined, fall back to empty array
-            })
-            // Fetch Newly Added Properties Rejected (error state)
-            .addCase(fetchNewlyAddedProperties.rejected, (state, action) => {
-              state.isLoading = false;
-              state.error = action.payload || 'Error fetching properties'; // Ensure error is defined
-            })
-
-      // Fetch News and Articles Pending (loading state)
+    /* ---------------- News & Articles ---------------- */
+    builder
       .addCase(fetchNewsAndArticles.pending, (state) => {
-        state.isLoading = true;
-        state.error = null; // Clear previous errors
+        state.loading.news = true;
+        state.error.news = null;
+        state.uiFlags.useDummyNews = false;
       })
-      // Fetch News and Articles Fulfilled (success state)
       .addCase(fetchNewsAndArticles.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.newsAndArticles = action.payload || []; // Ensure payload is defined and fallback to empty array
+        state.loading.news = false;
+        const list = Array.isArray(action.payload) ? action.payload : [];
+        state.newsAndArticles = list;
+        state.uiFlags.useDummyNews = list.length === 0;
       })
-      // Fetch News and Articles Rejected (error state)
       .addCase(fetchNewsAndArticles.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || 'Error fetching news and articles'; // Handle undefined payloads
+        state.loading.news = false;
+        state.error.news = action.payload || action.error?.message || "Network Error";
+        state.uiFlags.useDummyNews = true;
       });
   },
 });
 
+export const { clearBuyError } = buyPageSlice.actions;
 export default buyPageSlice.reducer;

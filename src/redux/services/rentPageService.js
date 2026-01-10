@@ -1,37 +1,30 @@
-// src/redux/services/rentPageService.js
-import axios from 'axios';
+import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const joinUrl = (base, path) => {
+  const b = (base || "").replace(/\/+$/, "");
+  const p = (path || "").replace(/^\/+/, "");
+  return `${b}/${p}`;
+};
+
 const rentPageService = {
-  // Fetch Newly Added Properties
   getNewlyAddedProperties: async () => {
-    try {
-      const response = await axios.get(`${API_URL}property/lookingTo/rent`);  // Adjust endpoint to match your API
-      return response.data;
-    } catch (error) {
-      throw new Error('Error fetching newly added properties: ' + error.message);
-    }
+    const url = joinUrl(API_URL, "property/lookingTo/rent");
+    const res = await axios.get(url);
+    return res.data;
   },
 
-  // Fetch Recommended Sellers
   getRecommendedSellers: async () => {
-    try {
-      const response = await axios.get(`${API_URL}property`);  // Adjust endpoint to match your API
-      return response.data;
-    } catch (error) {
-      throw new Error('Error fetching recommended sellers: ' + error.message);
-    }
+    const url = joinUrl(API_URL, "property");
+    const res = await axios.get(url);
+    return res.data;
   },
 
-  // Fetch News and Articles
   getNewsAndArticles: async () => {
-    try {
-      const response = await axios.get(`${API_URL}property`);  // Correct the endpoint for articles
-      return response.data;  // Return the list of articles
-    } catch (error) {
-      throw new Error('Error fetching articles: ' + error.message);
-    }
+    const url = joinUrl(API_URL, "property");
+    const res = await axios.get(url);
+    return res.data;
   },
 };
 

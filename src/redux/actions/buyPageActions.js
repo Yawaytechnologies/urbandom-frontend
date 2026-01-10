@@ -1,73 +1,72 @@
 // src/redux/actions/buyPageActions.js
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import buyPageService from '../../redux/services/buyPageService'; // Import service
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import buyPageService from "../services/buyPageService";
 
-// Fetch All Properties
+// dummies
+import { DUMMY_PROMINENT_PROJECTS } from "../../components/dummy/prominentProjectsDummy";
+import { DUMMY_NEWLY_ADDED_PROPERTIES } from "../../components/dummy/newlyAddedPropertiesDummy";
+
+/* ---------------- Featured ---------------- */
 export const fetchFeaturedProperties = createAsyncThunk(
-  'buyPage/fetchFeaturedProperties',
+  "buyPage/fetchFeaturedProperties",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await buyPageService.getFeaturedProperties();  // Call the service to get all properties
-      return response.data;  // Return the fetched properties
-    } catch (error) {
-      console.error("Error in action:", error.message);
-      return rejectWithValue(error.message);  // Pass the error to Redux
+      const data = await buyPageService.getFeaturedProperties();
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      return rejectWithValue(err?.message || "Failed to fetch properties");
     }
   }
 );
 
+/* ---------------- Prominent (fallback dummy, never reject) ---------------- */
 export const fetchProminentProperties = createAsyncThunk(
-  'buyPage/fetchProminentProperties',
-  async (_, { rejectWithValue }) => {
+  "buyPage/fetchProminentProperties",
+  async () => {
     try {
-      const response = await buyPageService.getProminentProperties();  // Call the service to get all properties
-      return response.data;  // Return the fetched properties
-    } catch (error) {
-      console.error("Error in action:", error.message);
-      return rejectWithValue(error.message);  // Pass the error to Redux
+      const data = await buyPageService.getProminentProperties();
+      return Array.isArray(data) && data.length ? data : DUMMY_PROMINENT_PROJECTS;
+    } catch {
+      return DUMMY_PROMINENT_PROJECTS;
     }
   }
 );
 
-// Fetch Developers from the API
+/* ---------------- Developers ---------------- */
 export const fetchFeaturedDevelopers = createAsyncThunk(
-  'buyPage/fetchFeaturedDevelopers',
+  "buyPage/fetchFeaturedDevelopers",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await buyPageService.getFeaturedDevelopers(); 
-      return response.data;  // Return the fetched properties
-    } catch (error) {
-      console.error("Error in action:", error.message);
-      return rejectWithValue(error.message);  // Pass the error to Redux
+      const data = await buyPageService.getFeaturedDevelopers();
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      return rejectWithValue(err?.message || "Failed to fetch featured developers");
     }
   }
 );
 
-// Fetch newly added properties for Rent page
+/* ---------------- Newly Added (fallback dummy, never reject) ---------------- */
 export const fetchNewlyAddedProperties = createAsyncThunk(
-  'buyPage/fetchNewlyAddedProperties',
-  async (_, { rejectWithValue }) => {
+  "buyPage/fetchNewlyAddedProperties",
+  async () => {
     try {
-      const response = await buyPageService.getNewlyAddedProperties(); // Call the method from rentPageService
-      return response.data;
-    } catch (error) {
-      console.error("Error in action:", error.message);
-      return rejectWithValue(error.message);
+      const data = await buyPageService.getNewlyAddedProperties();
+      return Array.isArray(data) && data.length ? data : DUMMY_NEWLY_ADDED_PROPERTIES;
+    } catch {
+      return DUMMY_NEWLY_ADDED_PROPERTIES;
     }
   }
 );
 
-// Fetch News and Articles section
+/* ---------------- News ---------------- */
 export const fetchNewsAndArticles = createAsyncThunk(
-  'buyPage/fetchNewsAndArticles',
+  "buyPage/fetchNewsAndArticles",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await buyPageService.getNewsAndArticles(); // Call the method from newsAndArticleService
-      return response;
-    } catch (error) {
-      console.error("Error in action:", error.message);
-      return rejectWithValue(error.message);
+      const data = await buyPageService.getNewsAndArticles();
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      return rejectWithValue(err?.message || "Failed to fetch articles");
     }
   }
 );
-

@@ -151,3 +151,12 @@ body.modal-open .bottom-tabs {
   animation: pulse-bg-color 3s ease-in-out infinite;
 }
 
+/* Hide scrollbar but keep scroll working */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}

@@ -1,0 +1,58 @@
+export const DUMMY_PROMINENT_PROJECTS = [
+  {
+    _id: "DUMMY-PP-001",
+    title: "Urban Heights",
+    location: { district: "HSR Layout", state: "Karnataka" },
+    price: 6500000,
+    media: { images: ["https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=1200&q=80"] },
+  },
+  {
+    _id: "DUMMY-PP-002",
+    title: "Lakeview Residency",
+    location: { district: "OMR", state: "Tamil Nadu" },
+    price: 9200000,
+    media: { images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&q=80"] },
+  },
+  {
+    _id: "DUMMY-PP-003",
+    title: "Metro Garden",
+    location: { district: "Guindy", state: "Tamil Nadu" },
+    price: 5400000,
+    media: { images: ["https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1200&q=80"] },
+  },
+  {
+    _id: "DUMMY-PP-004",
+    title: "Green Valley Homes",
+    location: { district: "Tambaram", state: "Tamil Nadu" },
+    price: 7800000,
+    media: { images: ["https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=1200&q=80"] },
+  },
+  {
+    _id: "DUMMY-PP-005",
+    title: "Skyline Towers",
+    location: { district: "Anna Nagar", state: "Tamil Nadu" },
+    price: 8600000,
+    media: { images: ["https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200&q=80"] },
+  },
+  {
+    _id: "DUMMY-PP-006",
+    title: "Pearl Bay Villas",
+    location: { district: "ECR", state: "Tamil Nadu" },
+    price: 14500000,
+    media: { images: ["https://images.unsplash.com/photo-1501183638710-841dd1904471?w=1200&q=80"] },
+  },
+  {
+    _id: "DUMMY-PP-007",
+    title: "City Central Residency",
+    location: { district: "T Nagar", state: "Tamil Nadu" },
+    price: 11200000,
+    media: { images: ["https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200&q=80"] },
+  },
+  {
+    _id: "DUMMY-PP-008",
+    title: "Sunrise Avenue",
+    location: { district: "Velachery", state: "Tamil Nadu" },
+    price: 6100000,
+    media: { images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&q=80"] },
+  },
+];

@@ -3,7 +3,7 @@ import { FaHome, FaBuilding, FaUsers } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 /* ---------- static data (stable refs) ---------- */
-const BG_IMAGES = { buy: '/buycover.jpeg', rent: '/Rent.jpeg', pg: '/pgcover.jpeg' };
+const BG_IMAGES = { buy: '/buyCover.jpeg', rent: '/Rent.jpeg', pg: '/pgcover.jpeg' };
 
 const LOCATIONS_BY_TAB = {
   buy: ['Chennai', 'Bengaluru', 'Hyderabad', 'Mumbai'],

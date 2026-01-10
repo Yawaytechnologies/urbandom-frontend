@@ -1,60 +1,43 @@
-// src/services/buyPageService.js
-import axios from 'axios';
+import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const joinUrl = (base, path) => {
+  const b = (base || "").replace(/\/+$/, "");
+  const p = (path || "").replace(/^\/+/, "");
+  return `${b}/${p}`;
+};
+
 const buyPageService = {
-  // Fetch All Properties
   getFeaturedProperties: async () => {
-    try {
-      const response = await axios.get(`${API_URL}property/lookingTo/sell`);  // Get all properties (no ID needed)
-      return response.data; // Return the list of properties
-    } catch {
-      throw new Error('Failed to fetch properties');
-    }
+    const url = joinUrl(API_URL, "property/lookingTo/sell");
+    const res = await axios.get(url);
+    return res.data;
   },
 
-  // Fetch Prominent Properties
   getProminentProperties: async () => {
-    try {
-      const response = await axios.get(`${API_URL}property/lookingTo/sell`);  // Adjust API endpoint
-      return response.data;  // Return the data directly from the API response
-    } catch {
-      throw new Error('Failed to fetch prominent properties');
-    }
+    const url = joinUrl(API_URL, "property/lookingTo/sell");
+    const res = await axios.get(url);
+    return res.data;
   },
 
-  // Fetch Prominent Properties
   getFeaturedDevelopers: async () => {
-    try {
-      const response = await axios.get(`${API_URL}property/lookingTo/sell`);  // Adjust API endpoint
-      return response.data;  // Return the data directly from the API response
-    } catch {
-      throw new Error('Failed to fetch featured developers');
-    }
+    const url = joinUrl(API_URL, "property/lookingTo/sell");
+    const res = await axios.get(url);
+    return res.data;
   },
 
-  // Fetch Newly Added Properties
   getNewlyAddedProperties: async () => {
-    try {
-      const response = await axios.get(`${API_URL}property/lookingTo/sell`);  // Adjust endpoint to match your API
-      return response.data;
-    } catch (error) {
-      throw new Error('Error fetching newly added properties: ' + error.message);
-    }
+    const url = joinUrl(API_URL, "property/lookingTo/sell");
+    const res = await axios.get(url);
+    return res.data;
   },
 
-  // Fetch News and Articles
   getNewsAndArticles: async () => {
-    try {
-      const response = await axios.get(`${API_URL}property`);  // Correct the endpoint for articles
-      return response.data;  // Return the list of articles
-    } catch (error) {
-      throw new Error('Error fetching articles: ' + error.message);
-    }
+    const url = joinUrl(API_URL, "property");
+    const res = await axios.get(url);
+    return res.data;
   },
-
-  
 };
 
 export default buyPageService;

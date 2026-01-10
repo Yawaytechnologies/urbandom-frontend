@@ -1,16 +1,13 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { FaMapMarkerAlt, FaBed } from "react-icons/fa";
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchNewlyAddedProperties } from "../../redux/actions/rentPageAction";
+import { DUMMY_NEWLY_ADDED_PROPERTIES } from "../dummy/newlyAddedPropertiesDummy";
 
 const NewlyAddedProperties = () => {
   const containerRef = useRef(null);
-
-  const [, setScrollPercent] = useState(0);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [scrollPercent, setScrollPercent] = useState(0);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -23,51 +20,46 @@ const NewlyAddedProperties = () => {
     dispatch(fetchNewlyAddedProperties());
   }, [dispatch]);
 
-  const updateScrollState = useCallback(() => {
-    const el = containerRef.current;
-    if (!el) return;
+  const hasRealData = useMemo(() => {
+    return (
+      Array.isArray(newlyAddedProperties) && newlyAddedProperties.length > 0
+    );
+  }, [newlyAddedProperties]);
 
-    const max = Math.max(0, el.scrollWidth - el.clientWidth);
-    const left = el.scrollLeft;
-
-    setScrollPercent(max > 0 ? Math.min(100, (left / max) * 100) : 0);
-    setCanScrollLeft(left > 0);
-    setCanScrollRight(left < max - 1);
-  }, []);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    el.scrollTo({ left: 0, behavior: "auto" });
-    updateScrollState();
-
-    el.addEventListener("scroll", updateScrollState, { passive: true });
-    window.addEventListener("resize", updateScrollState);
-    return () => {
-      el.removeEventListener("scroll", updateScrollState);
-      window.removeEventListener("resize", updateScrollState);
-    };
-  }, [updateScrollState, newlyAddedProperties?.length]);
-
-  const getScrollAmount = () => {
-    const el = containerRef.current;
-    if (!el) return 300;
-    const first = el.querySelector("[data-card]");
-    if (!first) return 300;
-    const rect = first.getBoundingClientRect();
-    return Math.round(rect.width + 24); // gap-6 ~ 24px
-  };
+  const showDummy = !!error || !hasRealData;
+  const listToRender = showDummy
+    ? DUMMY_NEWLY_ADDED_PROPERTIES
+    : newlyAddedProperties;
 
   const handleScrollLeft = () => {
-    const amount = getScrollAmount();
-    containerRef.current?.scrollBy({ left: -amount, behavior: "smooth" });
+    containerRef.current?.scrollBy({ left: -300, behavior: "smooth" });
   };
 
   const handleScrollRight = () => {
-    const amount = getScrollAmount();
-    containerRef.current?.scrollBy({ left: amount, behavior: "smooth" });
+    containerRef.current?.scrollBy({ left: 300, behavior: "smooth" });
   };
+
+  const updateScrollProgress = () => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const totalScroll = container.scrollWidth - container.clientWidth;
+    if (totalScroll <= 0) {
+      setScrollPercent(0);
+      return;
+    }
+
+    const scrolled = container.scrollLeft;
+    setScrollPercent((scrolled / totalScroll) * 100);
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    container.addEventListener("scroll", updateScrollProgress);
+    updateScrollProgress();
+    return () => container.removeEventListener("scroll", updateScrollProgress);
+  }, []);
 
   const handleViewDetails = (propertyId) => {
     navigate(`/property-overview/${propertyId}`);
@@ -76,167 +68,116 @@ const NewlyAddedProperties = () => {
   return (
     <section className="relative py-10 px-4 md:px-8 bg-[var(--background)] overflow-hidden">
       <div className="mb-6">
-        <h2 className="text-3xl font-bold text-center text-[var(--foreground)]">
+        <h2 className="text-2xl font-bold text-[var(--foreground)]">
           Newly Added Properties
         </h2>
-        <h5 className="text-lg text-center md:text-base mt-1 text-[var(--text-secondary)]">
+        <p className="text-sm md:text-base mt-1 text-[var(--text-secondary)]">
           Recently listed homes you might like
-        </h5>
+        </p>
+
       </div>
 
       <div className="group relative">
-        {/* edge fades */}
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 w-16 z-10"
-          style={{
-            background:
-              "linear-gradient(90deg, var(--background, #fff) 30%, rgba(255,255,255,0) 100%)",
-            opacity: canScrollLeft ? 0 : 0,
-           
-          }}
-        />
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 w-16 z-10"
-          style={{
-            background:
-              "linear-gradient(270deg, var(--background, #fff) 30%, rgba(255,255,255,0) 100%)",
-            opacity: canScrollRight ? 0 : 0,
-            
-          }}
-        />
+        <div className="absolute top-0 left-0 w-16 h-full bg-gradient-to-r from-[var(--background)] to-transparent z-10 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-[var(--background)] to-transparent z-10 pointer-events-none" />
 
-        {/* LEFT ARROW – premium style */}
         <button
           onClick={handleScrollLeft}
-          disabled={!canScrollLeft}
-          className={`absolute left-2 top-[42%] -translate-y-1/2 z-20
-                      h-12 w-12 rounded-full cursor-pointer
-                      bg-white/95 backdrop-blur
-                      shadow-[0_6px_18px_rgba(0,0,0,.15)]
-                      ring-2 ring-[var(--accent)]/70
-                      flex items-center justify-center
-                      transition-all duration-200
-                      ${canScrollLeft ? "opacity-100 hover:scale-105 active:scale-95" : "opacity-0 pointer-events-none"}`}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
+            shadow hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
           aria-label="Scroll Left"
         >
-          <MdChevronLeft size={28} aria-hidden="true" />
+          ←
         </button>
 
-        {/* scroller */}
         <div
           ref={containerRef}
-          className="flex gap-6 overflow-x-auto scroll-smooth px-4 py-2 snap-x snap-mandatory scrollbar-hide justify-start"
+          className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide px-4 py-2"
         >
           {loading ? (
             <p>Loading...</p>
-          ) : error ? (
-            <p className="text-red-900">Error: {error}</p>
-          ) : newlyAddedProperties?.length > 0 ? (
-            newlyAddedProperties.map((property, idx) => (
+          ) : (
+            listToRender.map((property) => (
               <div
-                data-card
-                key={property._id || idx}
-                className="flex flex-col justify-between bg-white border border-gray-200 rounded-xl shadow-md 
-                           hover:shadow-lg hover:-translate-y-1 transition-transform duration-300 
-                           min-w-[270px] max-w-[270px] sm:min-w-[320px] sm:max-w-[320px] h-[500px] flex-shrink-0 snap-start"
+                key={property._id}
+                className="bg-white border border-blue-100 rounded-xl shadow-md 
+                  hover:shadow-xl hover:-translate-y-1 transition-transform duration-300 
+                  min-w-[240px] md:min-w-[260px] lg:min-w-[280px] flex-shrink-0"
               >
-                {/* IMAGE — clearer, taller, no overlay under arrows */}
-                <div className="relative w-full h-[240px] bg-gray-100 rounded-t-xl overflow-hidden">
-                  {property?.media?.images?.[0] ? (
+                {/* Image */}
+                <div className="w-full h-[180px]">
+                  {property.media?.images?.[0] ? (
                     <img
-                      src={
-                        typeof property.media.images[0] === "string"
-                          ? property.media.images[0]
-                          : property.media.images[0].url || ""
-                      }
-                      alt={property.title || "Property"}
-                      loading={idx < 2 ? "eager" : "lazy"}
-                      fetchPriority={idx < 2 ? "high" : "auto"}
-                      decoding="async"
-                      sizes="(min-width:1024px) 320px, 270px"
-                      className="w-full h-full object-cover select-none"
-                      style={{ transform: "translateZ(0)" }} // helps crispness on some GPUs
-                      onError={(e) => {
-                        e.currentTarget.src =
-                          "data:image/svg+xml;charset=UTF-8," +
-                          encodeURIComponent(
-                            `<svg xmlns='http://www.w3.org/2000/svg' width='640' height='240'><rect width='100%' height='100%' fill='#f3f4f6'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='#9ca3af' font-size='16'>Image unavailable</text></svg>`
-                          );
-                      }}
+                      src={property.media.images[0]}
+                      alt={property.title}
+                      className="w-full h-full object-cover rounded-t-lg"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-t-lg">
                       <span className="text-gray-500 text-sm">No Image</span>
                     </div>
                   )}
                 </div>
 
                 <div className="p-4">
-                  <h3 className="font-bold text-center text-[var(--text-secondary)] mb-1 truncate capitalize">
+                  <h3 className="font-semibold text-base text-[var(--text-secondary)] mb-1 truncate">
                     {property.title || "Unnamed Property"}
                   </h3>
-
-                  <p className="text-md text-center text-gray-500 truncate capitalize">
+                  <p className="text-xs text-gray-500 truncate">
                     {property.lookingTo || "Developer not specified"}
                   </p>
 
                   <hr className="border-t border-gray-200 my-3" />
 
-                  <p className="text-center font-bold text-[var(--accent)] mb-3">
-                    {property?.priceDetails?.monthlyRent
+                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <FaBed className="text-[var(--accent)]" />
+                    <span>
+                      {property.propertyType || "Property type not specified"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
+                    <FaMapMarkerAlt className="text-[var(--accent)]" />
+                    <span>
+                      {property.location?.name || "Location not specified"}
+                    </span>
+                  </div>
+
+                  <p className="text-base font-bold text-[var(--accent)] mb-3">
+                    {property.priceDetails?.monthlyRent
                       ? `₹${property.priceDetails.monthlyRent}`
                       : "Price not available"}
                   </p>
 
-                  <div className="flex flex-col items-start gap-1 text-md text-blue-600 mb-3">
-                    <div className="flex items-center gap-2">
-                      <FaBed className="text-black" />
-                      <span className="capitalize">
-                        {property.propertyType || "Property type not specified"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt className="text-black" />
-                      <span className="capitalize">
-                        {property?.location?.name || "Location Not Specified"}
-                      </span>
-                    </div>
-                  </div>
-
                   <button
                     onClick={() => handleViewDetails(property._id)}
                     className="w-full bg-[var(--accent)] text-white py-2 rounded-md 
-                               hover:bg-opacity-90 transition font-medium text-sm cursor-pointer"
+                      hover:bg-opacity-90 transition font-medium text-sm"
                   >
                     View Details
                   </button>
                 </div>
               </div>
             ))
-          ) : (
-            <p>No newly added Properties found.</p>
           )}
         </div>
 
-        {/* RIGHT ARROW – premium style */}
         <button
           onClick={handleScrollRight}
-          disabled={!canScrollRight}
-          className={`absolute right-2 top-[42%] -translate-y-1/2 z-20
-                      h-12 w-12 rounded-full cursor-pointer
-                      bg-white/95 backdrop-blur
-                      shadow-[0_6px_18px_rgba(0,0,0,.15)]
-                      ring-2 ring-[var(--accent)]/70
-                      flex items-center justify-center
-                      transition-all duration-200
-                      ${canScrollRight ? "opacity-100 hover:scale-105 active:scale-95" : "opacity-0 pointer-events-none"}`}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-black rounded-full 
+            shadow hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
           aria-label="Scroll Right"
         >
-          <MdChevronRight size={28} aria-hidden="true" />
+          →
         </button>
       </div>
 
-      
+      <div className="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-[var(--accent)] transition-all duration-300"
+          style={{ width: `${scrollPercent}%` }}
+        />
+      </div>
     </section>
   );
 };
